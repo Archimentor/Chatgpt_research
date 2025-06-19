@@ -1,0 +1,326 @@
+<?php 
+include_once('../_common.php');
+include_once(G5_LIB_PATH.'/thumbnail.lib.php');
+
+include_once(G5_EDITOR_LIB);
+
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) $is_admin = true; 
+
+//건축주 협의게시판
+if($is_guest) alert('로그인 후 이용바랍니다.');
+
+
+if(!$is_admin && !owner_check($member['mb_id'])) {
+	alert('건축주만 이용가능한 메뉴 입니다.');
+}
+
+$owner_num = owner_check($member['mb_id']);
+
+$chk = sql_fetch("select * from  {$none['worksite']} where nw_status = 0 and (nw_ptype3_1 = '{$owner_num}' or nw_ptype3_2 = '{$owner_num}' or nw_ptype3_3 = '{$owner_num}') and nw_code = '$code' order by nw_code desc");
+
+if(!$is_admin && !$chk) {
+	alert('해당 시공현장의 건축주만 이용가능 합니다.', '/');
+}
+
+
+
+
+$row = sql_fetch("select * from  {$none['home_board']} where bo_table= '$bo_table' and seq = '$seq'");
+
+if(!$is_admin && ($row['mb_id'] != $member['mb_id'])) { 
+//관리자, 본인글이 아니고 비밀글일때
+	
+	if($row['wr_secret'] == 1)
+		alert('비밀글입니다.');
+
+
+}
+
+if($is_admin || $member['mb_id'] == $row['mb_id']) {
+	$delete_href = "./update/board_update.php?w=d&bo_table=".$bo_table."&seq=".$seq."&code=".$code;
+	$modify_href = "./board_write.html?w=u&bo_table=".$bo_table."&seq=".$seq."&code=".$code;
+
+} else {
+	$delete_href = "";
+	$modify_href = "";
+
+}
+
+
+$ss_name = 'ss_view_'.$bo_table.'_'.$seq;
+if (!get_session($ss_name))
+{
+	set_session($ss_name, true);
+	sql_query(" update {$none['home_board']} set wr_view = wr_view + 1 where seq = '{$seq}' ");
+
+}
+
+$work = sql_fetch("select * from {$none['worksite']} where nw_code = '{$code}'");
+$info = sql_fetch("select * from {$none['enterprise_list']} where seq = '{$work['nw_ptype4_1']}'");
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Document Title -->
+<title>엔원종합건설</title>
+
+<!-- Metas -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:url" content="http://n1con.com/homepage/project_view.html?seq=<?php echo $seq?>" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="<?php echo $work['pj_title_en']?> | <?php echo $work['pj_year']?>" />
+<meta property="og:description" content="[(주)엔원종합건설] <?php echo $work['pj_title_kr']?>" />
+<meta property="og:image" content="<?php echo $img[1][0]?>" />
+<meta property="fb:app_id" content="947729072844951" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+<!-- Links -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css" />
+<link rel='stylesheet' id='bootstrap-css'  href='assets/lib/bootstrap/css/bootstrap.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='font-awesome-css'  href='assets/css/icons/font-awesome.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='swiper-css' href='assets/lib/swiper/css/swiper.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='cubeportfolio-css'  href='assets/lib/cubeportfolio/css/cubeportfolio.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='main-css'  href='style.css' type='text/css' media='all' />
+</head>
+<body class="single single-portfolio portfolio-details-left">
+
+<!-- Page Wrapper -->
+<div id="page" class="site">
+<header id="masthead" class="site-header standard sticky" role="banner">
+  <?php include_once('./inc.menu.php')?>
+  <!-- .wrap --> 
+</header>
+<!-- #masthead -->
+
+<div class="site-content-contain">
+  <div id="content" class="site-content">
+    <div id="primary" class="content-area">
+      <main id="main" class="site-main" role="main">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            <article class="portfolio left-sidebar clearfix">
+              <header class="entry-header">
+                <h2 class="entry-title"><?php echo $work['pj_title_en']?> | <?php echo $work['pj_year']?></h2>
+                <div class="description"><?php echo $work['pj_title_kr']?></div>
+                <div class="entry-meta">
+                  <div class="meta-desc">
+                    <ul class="c-list04">
+                      <li><span class="tit">ARCHITECT</span><span class="txt"><?php echo $work['pj_upche']?></span></li>
+                      <li><span class="tit">Engineer</span><span class="txt"><?php echo $work['pj_person']?></span></li>
+                      <li><span class="tit">Location</span><span class="txt"><?php echo $work['pj_addr']?></span></li>
+                      <li><span class="tit">Use</span><span class="txt"> <?php echo $work['pj_type']?></span></li>
+                      <li><span class="tit">Site area</span><span class="txt"><?php echo $work['nw_area1']?>㎡</span></li>
+                      <li><span class="tit">Building area</span><span class="txt"><?php echo $work['nw_area2']?>㎡</span></li>
+                      <li><span class="tit">Gross floor area</span><span class="txt"><?php echo $work['nw_area3']?>㎡</span></li>
+                      <li><span class="tit">Construction period </span><span class="txt"><?php echo date('Y.m.d', strtotime($work['nw_sdate']))?>~ <?php echo date('Y.m.d', strtotime($work['nw_edate']))?></span></li>
+                      <li><span class="tit">Photographer </span><span class="txt"><?php echo $work['pj_photo']?></span></li>
+                    </ul>
+                  </div>
+                  <div class="meta-entries ">
+                    <ul>
+                      <li class="has-children"> <span>건축사</span> <a href="#none" data-toggle="modal" data-target="#Modal"><?php echo $work['pj_upche']?></a></li>
+                      <li class="portfolio-social-share-links"> <span>Share</span> <a href="<?php echo $facebook?>" target="_blank" title="Share portfolio on Facebook"> Facebook </a> <a href="<?php echo $twitter?>"  target="_blank" title="Share portfolio on twitter"> Twitter </a> <a href="<?php echo $pinterest?>" target="_blank" title="Share portfolio on Pinterest">Pinterest </a> </li>
+                     
+					 
+                    </ul>
+                  </div>
+                </div>
+              </header>
+              <!-- .entry-header -->
+              
+              <div class="entry-content">
+              <div class="cbp-wrapper-outer"><div class="cbp-wrapper">
+                <ul class="tabType01">
+                  <li><a href="./construction_view01.html?code=<?php echo $code?>">스마트일보</a></li>
+                  <li  class="tabON"><a href="./board2.html?bo_table=board7&code=<?php echo $code?>">건축주협의게시판</a></li>
+                </ul>
+			
+				<div id="Request">
+				<div class="header">
+					<?php if($row['ca_name']) {?>
+					<span><?php echo $row['ca_name']?></span>
+					<?php }?>
+					<h3><?php echo $row['wr_subject']?></h3>
+					<span><i class="fa fa-user" aria-hidden="true"></i> <?php echo $row['wr_name']?></span>
+					<span style="margin-left:15px"><i class="fa fa-clock" aria-hidden="true"></i> <?php echo date('y-m-d h:i', strtotime($row['wr_datetime']))?></span>
+					<span style="margin-left:15px"><i class="fa fa-eye" aria-hidden="true"></i> <?php echo number_format($row['wr_view'])?></span>
+				</div>
+				
+				<div class="content" style="min-height:300px"><?php echo get_view_thumbnail($row['wr_content']); ?></div>
+				
+                
+				<?php if($row['wr_file1'] || $row['wr_file2']) {?>
+				<table>
+						<colgroup>			
+							<col class="titWIDTH">
+							<col class="subWIDTH">
+						</colgroup>
+						<tbody>
+						<?php if($row['wr_file1']) {?>
+                        <tr>
+							<td class="txtCenter">첨부파일1</td>
+							<td class="PL">
+								<a href="./update/board_file_download.php?seq=<?php echo $row['seq']?>&no=1"><?php echo $row['wr_file1_name']?></a>
+							</td>
+						</tr>
+						<?php } ?>
+						<?php if($row['wr_file2']) {?>
+                        <tr>
+							<td class="txtCenter">첨부파일2</td>
+							<td class="PL">
+								<a href="./update/board_file_download.php?seq=<?php echo $row['seq']?>&no=2"><?php echo $row['wr_file2_name']?></a>
+							</td>
+						</tr>
+						<?php }?>
+					</tbody>
+                   </table>
+                   <?php } else {?>
+				   <hr>
+				   <?php }?>
+                   
+				   <?php if( $bo_table == "board7") {?>
+				   
+				   
+				   <?php if($is_admin) {?>
+				   <form action="./update/board_answer.php" method="post">
+				   <input type="hidden" name="bo_table" value="<?php echo $bo_table?>">
+				   <input type="hidden" name="seq" value="<?php echo $seq?>">
+				   <table>
+						<colgroup>			
+							<col class="titWIDTH">
+							<col class="subWIDTH">
+						</colgroup>
+						<tbody>
+						
+                        <tr>
+							<td class="txtCenter">답변</td>
+							<td class="PL"  style="border-right:0">
+								<textarea name="wr_answer"><?php echo $row['wr_answer']?></textarea>
+							</td>
+							<td style="border-left:0"><button type="submit" style="height:100%">작성완료</button></td>
+						</tr>
+						
+					</tbody>
+                   </table>
+				   </form>
+				   <?php } else {?>
+				   <table>
+						<colgroup>			
+							<col class="titWIDTH">
+							<col class="subWIDTH">
+						</colgroup>
+						<tbody>
+						
+                        <tr>
+							<td class="txtCenter">답변</td>
+							<td class="PL">
+								<?php 
+								
+								if(!$row['wr_answer'])
+									echo '답변 준비 중입니다.';
+								else
+									echo nl2br($row['wr_answer'])
+								
+								?>
+							</td>
+						</tr>
+						
+					</tbody>
+                   </table>
+				   <?php }?>
+				   
+				   <?php }?>
+				   
+				   
+                   <p style="text-align:center; margin-top:20px;">
+						
+						<?php if($modify_href) {?>
+						<input type="button" value="수정" class="kraftcf-form-control kraftcf-submit" style="background:blue" onclick="location.href='<?php echo $modify_href?>'" >
+						<?php }?>
+						<?php if($delete_href) {?>
+						<input type="button" value="삭제" class="kraftcf-form-control kraftcf-submit" style="background:red" onclick="del(<?php echo $row['seq']?>)" >
+						<?php }?>
+						
+						
+						<input type="button" value="목록" class="kraftcf-form-control kraftcf-submit" style="background:#666" onclick="location.href='./board2.html?bo_table=<?php echo $bo_table?>&code=<?php echo $code?>'">
+						
+					</p>
+               </div>
+			
+				
+			  </div>
+				</div>
+				
+			  </div>
+			  <!--End container--> 
+			  
+			</div>
+			 </div>  
+				 </div>  
+				 </div>
+				 </div>
+				 </div>
+				 </div>
+		  </article>
+		</main>
+		<!-- #main --> 
+	  </div>
+	  <!-- #primary --> 
+	  
+	  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700" ><i class="fa fa-angle-up"></i></a> </div>
+
+<? include "footer.html"; ?>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	  <script>
+	  
+	  
+		function del(seq) {
+			
+			if(confirm('정말 삭제하시겠습니까?')) {
+				
+				location.href = './update/board_update.php?w=d&bo_table=<?php echo $bo_table?>&seq='+seq+'&code=<?php echo $code?>';
+				return false;
+				
+			} else {
+				return false;
+			}
+			
+		}
+		function chkfrm(f) {
+			<?php echo get_editor_js("wr_content"); ?>
+			
+			return true;
+		}
+		
+		$(function() {
+			
+			$('#nw_code').bind('change', function() {
+				
+				$.post('./update/chk.code.php', { nw_code : $(this).val() }, function(data) {
+				
+					if(data) {
+						alert(data);
+						$('#nw_code').val('');
+						return false;
+					}
+					
+				})
+			})
+		 
+			//검색형 셀렉트박스로 변경
+			 $('.select2').select2({
+				  language: {
+					noResults: function (params) {
+					  return "검색 결과가 없습니다.";
+					}
+				  }
+			 });
+		 })
+	  </script>

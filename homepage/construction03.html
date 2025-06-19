@@ -1,0 +1,78 @@
+<?php 
+$body_class = ' class="blog blog-list-style"';
+$subMenu = 3;
+include_once("header.html"); 
+include_once(G5_LIB_PATH.'/thumbnail.lib.php');
+
+if($is_guest) alert('로그인 후 이용바랍니다.');
+
+if(!$is_admin && !owner_check($member['mb_id'])) {
+	alert('건축주만 이용가능한 메뉴 입니다.');
+}
+
+?>
+<style>
+.pagination { justify-content:center }
+</style>
+<div class="site-content-contain">
+<?php 
+$subMenu = 3;
+include_once("left05.html"); ?>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row ">
+           
+              <div class="col-md-12 ">
+                <div class="pricing ingTable">
+                  <h3>&nbsp;
+                    <div class="btn-container solid"> <a href="construction03_write.html"> 하자보수 접수 </a> </div>
+                  </h3>
+                  <div class="ingLIST">
+                    <ul>
+                      <li>
+                        <table>
+                          </colgroup>
+						  <thead>
+							<tr>
+							<th>접수일</th>
+							<th>현장명</th>
+							<th>하자공종</th>
+							<th>현장소장</th>
+							<th>접수자</th>
+							<th>진행상황</th>
+							</tr>
+						  </thead>
+                          <tbody>
+							<tr>
+								<td colspan="6">등록 된 하자보수건이 없습니다.</td>
+							
+							</tr>
+                          </tbody>
+                        </table>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            
+            
+            
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- #main --> 
+  </div>
+  <!-- #primary --> 
+  
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a> </div>
+<!-- #content -->
+
+<? include "footer.html"; ?>

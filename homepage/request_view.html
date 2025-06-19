@@ -1,0 +1,195 @@
+<?php 
+include_once('../_common.php');
+
+$row = sql_fetch("select * from {$none['home_request']} where seq = '$seq'");
+$ss_name = "ss_veiw_".$row['seq']; 
+
+if($member['mb_level2'] == 1  || $member['mb_level2'] == 3 ) $is_admin = true; 
+
+if(!$is_admin) {
+	if(!get_session($ss_name))
+		alert('정상적인 접근이 아닙니다.', './request.html');
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Document Title -->
+<title>엔원종합건설</title>
+
+<!-- Metas -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+<!-- Links -->
+
+<link rel='stylesheet' id='bootstrap-css'  href='assets/lib/bootstrap/css/bootstrap.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='font-awesome-css'  href='assets/css/icons/font-awesome.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='swiper-css' href='assets/lib/swiper/css/swiper.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='cubeportfolio-css'  href='assets/lib/cubeportfolio/css/cubeportfolio.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='main-css'  href='style.css' type='text/css' media='all' />
+</head>
+<body>
+
+<!-- Page Wrapper -->
+<div id="page" class="site">
+<header id="masthead" class="site-header standard sticky" role="banner">
+ <?php include_once('./inc.menu.php')?>
+  <!-- .wrap --> 
+</header>
+<!-- #masthead -->
+<div class="site-content-contain">
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+          <div id="Request">
+		  <form name="frm" action="./update/request_update.php" method="post" enctype="multipart/form-data" onsubmit="return chkfrm(this)">
+		  <input type="hidden" name="w" value="">
+          <table >
+						<colgroup>			
+							<col class="titWIDTH">
+							<col class="subWIDTH">
+						</colgroup>
+						<tbody>
+                        <tr>
+							<td class="txtCenter">이름</td>
+							<td class="PL"><?php echo $row['wr_name']?></td>
+						</tr>
+						<tr>
+							<td class="txtCenter">연락처</td>
+							<td class="PL"><?php echo $row['wr_tel']?></td>
+						</tr>
+						<tr>
+							<td class="txtCenter">건축지 주소</td>
+							<td class="PL"><?php echo $row['wr_addr']?></td>
+						</tr>
+						<tr>
+							<td class="txtCenter">진행상태</td>
+							<td class="PL"><?php echo $row['wr_state']?></td>
+						</tr>
+						<tr>
+							<td class="txtCenter">설계도서 유무</td>
+							<td class="PL"><?php if($row['wr_plan_yn']) echo "있음"; else echo "없음";?></td>
+						</tr>
+						<tr>
+							<td class="txtCenter">설계도서 등록</td>
+							<td class="PL">
+								<?php if($row['wr_plan_file']) {?>
+								
+								<a href="./update/request_download.php?seq=<?php echo $row['seq']?>" target="_blank"><?php echo $row['wr_plan_file_name']?></a>
+								
+								<button type="button" onclick="del_file(<?php echo $row['seq']?>)" style="padding:5px;margin-left:10px">파일삭제</button>
+								<?php }?>
+								
+
+							</td>
+						</tr>
+                         
+                        <tr>
+							<td class="txtCenter">대지면적</td>
+							<td class="PL">
+								
+								<?php echo $row['wr_area1']?>&nbsp;&nbsp;㎡  &nbsp;&nbsp; = &nbsp;&nbsp; 
+								<?php echo $row['wr_area4']?>&nbsp;&nbsp;평 
+							</td>
+						</tr>
+                        
+						<tr>
+							<td class="txtCenter">건축면적</td>
+							<td class="PL">
+								
+								<?php echo $row['wr_area2']?>&nbsp;&nbsp;㎡  &nbsp;&nbsp; = &nbsp;&nbsp; <?php echo $row['wr_area5']?>&nbsp;&nbsp;평 
+							</td>
+						</tr>
+                        
+                        <tr>
+							<td class="txtCenter">연면적</td>
+							<td class="PL">
+								
+								<?php echo $row['wr_area3']?>&nbsp;&nbsp;㎡  &nbsp;&nbsp; = &nbsp;&nbsp; <?php echo $row['wr_area6']?>&nbsp;&nbsp;평 
+							</td>
+						</tr>
+                       
+                        <tr>
+							<td class="txtCenter">층수</td>
+							<td class="PL">
+								지상 <?php echo $row['wr_floor1']?> 층  / 지하  <?php echo $row['wr_floor2']?> 층
+							</td>
+						</tr>
+						<tr>
+							<td class="txtCenter">용도</td>
+							<td class="PL">
+								 <?php echo $row['wr_use']?>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">기타 상담내용</td>
+							<td class="PL">
+								 <?php echo nl2br($row['wr_content'])?>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">작성일시</td>
+							<td class="PL">
+								 <?php echo $row['wr_datetime']?>
+							</td>
+						</tr>
+						
+					</tbody>
+                   </table>
+                   
+                   
+                   <p style="text-align:center; margin-top:20px;">
+                   <input type="button" value="목록으로" class="kraftcf-form-control kraftcf-submit" onclick="location.href='./request.html'">
+                   <input type="button" value="삭제" class="kraftcf-form-control kraftcf-submit" style="background:red" onclick="del(<?php echo $row['seq']?>)">
+                   </p>
+				 
+               </div>
+				
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- #main --> 
+  </div>
+  <!-- #primary --> 
+  
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a> </div>
+<!-- #content -->
+<script>
+function del(seq) {
+			
+	if(confirm('정말 삭제하시겠습니까?\n삭제 후 복구는 불가능합니다.')) {
+		
+		location.href = './update/request_update.php?w=d&seq='+seq;
+		return false;
+		
+	} else {
+		return false;
+	}
+	
+}
+</script>
+<script>
+function del_file(seq) {
+			
+	if(confirm('정말 설계도서 첨부파일을 삭제하시겠습니까?\n삭제 후 복구는 불가능합니다.')) {
+		
+		location.href = './update/request_update.php?w=f&seq='+seq;
+		return false;
+		
+	} else {
+		return false;
+	}
+	
+}
+</script>
+
+<? include "footer.html"; ?>

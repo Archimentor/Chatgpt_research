@@ -1,0 +1,286 @@
+<?php
+include_once('../_common.php');
+include_once(G5_LIB_PATH.'/thumbnail.lib.php');
+
+// --- 뉴스 목록 쿼리 (기존과 동일) ---
+$sql_common = " FROM {$none['home_news']} ";
+$sql_search = " WHERE (1) ";
+
+if (!$sst) {
+    $sst = "seq";
+    $sod = "desc";
+}
+$sql_order = " ORDER BY $sst $sod ";
+
+// 전체 개수
+$sql = "SELECT COUNT(*) as cnt {$sql_common} {$sql_search} {$sql_order}";
+$row = sql_fetch($sql);
+$total_count = $row['cnt'] ?? 0;
+
+// 페이징
+$rows = 9;
+$total_page = ceil($total_count / $rows);
+if ($page < 1) { $page = 1; }
+$from_record = ($page - 1) * $rows;
+
+// 실제 목록
+$sql = "SELECT * {$sql_common} {$sql_search} {$sql_order} LIMIT {$from_record}, {$rows}";
+$result = sql_query($sql);
+
+// 관리자 여부
+$is_admin = false;
+if ($member['mb_level2'] == 1 || $member['mb_level2'] == 3) {
+    $is_admin = true;
+}
+?>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>엔원종합건설 - 뉴스</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/lib/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet" href="assets/css/icons/font-awesome.min.css" />
+<link rel="stylesheet" href="style.css" />
+
+<style>
+/* 기본 폰트, 배경 */
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0; 
+  padding: 0;
+  color: #333;
+}
+.site-content-contain {
+  background-color: #fff;
+}
+.news-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 15px;
+}
+/* 관리자 글쓰기 버튼 */
+.btn-write {
+  display: inline-block;
+  margin-bottom: 15px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  border-radius: 4px;
+  text-decoration: none;
+}
+.btn-write:hover {
+  background-color: #f0f0f0;
+}
+
+/* 뉴스 그리드: 3열 → 2열 → 1열 */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 992px) {
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 576px) {
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 뉴스 카드 */
+.news-item {
+  background-color: #fff;
+  /* 테두리 색상 조금 더 진하게 + 기본 그림자 */
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.3s;
+}
+/* hover 시 그림자를 더 진하게 */
+.news-item:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+/* 이미지 (원본비율 유지) */
+.news-thumb {
+  width: 100%;
+  background-color: #f2f2f2;
+}
+.news-thumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 내용 영역 */
+.news-body {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.news-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #222;
+}
+.news-excerpt {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.news-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.news-date {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+.admin-edit {
+  font-size: 0.8rem;
+  color: #999;
+  text-decoration: none;
+}
+.admin-edit:hover {
+  text-decoration: underline;
+}
+
+/* 검색된 글이 없을때 */
+.no-result {
+  text-align: center;
+  padding: 40px;
+  color: #777;
+  font-size: 1rem;
+}
+
+/* 페이지네이션 - 숫자만 */
+.pagination-holder {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+.pagination-holder ul.pagination {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+.pagination-holder ul.pagination li {
+  margin: 0 5px;
+}
+.pagination-holder ul.pagination li a {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.9rem;
+  color: #333;
+  text-decoration: none;
+}
+.pagination-holder ul.pagination li a:hover {
+  text-decoration: underline;
+  color: #000;
+}
+.pagination-holder ul.pagination li.active a {
+  font-weight: 700;
+  text-decoration: underline;
+  color: #000;
+}
+</style>
+</head>
+<body>
+<div id="page" class="site">
+  <header id="masthead" class="site-header standard sticky" role="banner">
+    <?php include_once('./inc.menu.php'); ?>
+  </header>
+
+  <div class="site-content-contain">
+    <div id="content" class="site-content">
+      <div class="news-container">
+
+        <!-- 관리자 작성 버튼 -->
+        <?php if($is_admin) { ?>
+          <a href="./news_write.html" class="btn-write">+ 작성</a>
+        <?php } ?>
+
+        <?php
+        $i = 0;
+        ?>
+        <div class="news-grid">
+        <?php
+        while($row = sql_fetch_array($result)) {
+          $i++;
+          $img_url = NONE_URL.'/_data/news/'.$row['wr_img'];
+          $date_str = date('Y-m-d', strtotime($row['wr_datetime']));
+          // 여기선 본문 전체 or 일부
+          $excerpt = $row['wr_content'];
+        ?>
+          <div class="news-item">
+            <div class="news-thumb">
+              <?php if(!empty($row['wr_img'])) { ?>
+                <img src="<?php echo $img_url; ?>" alt="뉴스 이미지">
+              <?php } ?>
+            </div>
+            <div class="news-body">
+              <div class="news-title">
+                <?php echo htmlspecialchars($row['wr_subject']); ?>
+              </div>
+              <div class="news-excerpt">
+                <?php echo $excerpt; ?>
+              </div>
+              <div class="news-footer">
+                <?php if($is_admin) { ?>
+                  <a href="./news_write.html?w=u&seq=<?php echo $row['seq'];?>" 
+                     class="admin-edit">[수정]</a>
+                <?php } else { ?>
+                  <span></span>
+                <?php } ?>
+                <span class="news-date"><?php echo $date_str; ?></span>
+              </div>
+            </div>
+          </div>
+        <?php } ?>
+        </div><!-- .news-grid -->
+
+        <?php if($i == 0) { ?>
+          <div class="no-result">검색 된 글이 없습니다.</div>
+        <?php } ?>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination-holder">
+          <?php 
+          echo get_paging_home(5, $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&page=');
+          ?>
+        </div>
+
+        <?php if($is_admin) { ?>
+          <a href="./news_write.html" class="btn-write">+ 작성</a>
+        <?php } ?>
+
+      </div><!-- .news-container -->
+    </div><!-- #content -->
+  </div><!-- .site-content-contain -->
+</div><!-- #page -->
+
+<?php include "footer.html"; ?>
+
+<script src="assets/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="assets/lib/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

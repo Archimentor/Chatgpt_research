@@ -1,0 +1,203 @@
+<?php 
+include_once("header.html"); 
+include_once(G5_LIB_PATH.'/thumbnail.lib.php');
+
+if($bo_table == "board7") goto_url('./board2.html?bo_table=board7&code='.$code); //건축주
+if($bo_table == "board3") goto_url('./board_gallery.html?bo_table=board3'); //건축기행 갤러리스킨 
+
+$sql_common = " from  {$none['home_board']}  ";
+$sql_search = " where bo_table = '$bo_table'";
+
+
+if (!$sst) {
+	$sst  = "seq";
+	$sod = "desc";
+}
+$sql_order = " order by $sst $sod ";
+
+$sql = " select count(*) as cnt {$sql_common} {$sql_search} {$sql_order} ";
+$row = sql_fetch($sql);
+$total_count = $row['cnt'];
+
+$rows = 10;
+$total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
+if ($page < 1) { $page = 1; } // 페이지가 없으면 첫 페이지 (1 페이지)
+$from_record = ($page - 1) * $rows; // 시작 열을 구함
+
+$sql = " select * {$sql_common} {$sql_search} {$sql_order} limit {$from_record}, {$rows} ";
+$result = sql_query($sql);
+
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) $is_admin = true; 
+
+$qstr .= "&amp;bo_table=$bo_table";
+
+if($is_admin) {
+
+
+	$write_href = './board_write.html?bo_table='.$bo_table;
+	
+} else if($is_member) {
+	
+	
+	switch($bo_table) {
+		case "board4" : //자유 
+		$write_href = './board_write.html?bo_table='.$bo_table;
+		break;
+		case "board5" : //질의응답 
+		$write_href = './board_write.html?bo_table='.$bo_table;
+		break;
+		default :
+		$write_href = "";
+		break;
+	
+	}
+
+} else {
+	$write_href = "";
+}
+$ca = sql_fetch("select * from {$none['home_board_cate']} where bo_table = '$bo_table'");
+$caArr = explode('@', $ca['nb_category']);	
+?>
+<style>
+.pagination { justify-content:center }
+</style>
+<div class="site-content-contain">
+<?php include "left06.html"; ?>
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+			<div class="ingLIST" style="margin-top:40px">
+                    <ul>
+                      <li>
+                        <table>
+                          </colgroup>
+						  <thead style="background:#fbfbfb">
+							<tr>
+							<th>번호</th>
+							<?php if($ca['nb_category']) {?>
+							<th>카테고리</th>
+							<?php }?>
+							<th style="width:60%">제목</th>
+							<th>작성자</th>
+							<th class="mobile_display">작성일</th>
+							</tr>
+						  </thead>
+                          <tbody>
+							<?php 
+							for($i=0; $row = sql_fetch_array($result); $i++) {
+							
+							$num = $total_count - ($page - 1) * $rows - $i;
+							
+							
+							
+							?>
+							<tr>
+								<td style="padding:0" class="text-center b-b"><?php echo $num?></td>
+								<?php if($ca['nb_category']) {?>
+								<td style="padding:0" class="text-center b-b"><?php echo $row['ca_name']?></td>
+								<?php }?>
+								<td>
+								
+								<?php if($row['wr_secret'] == 1) {?><i class="fa fa-lock" aria-hidden="true" style="font-size:13px"></i><?php }?>
+								
+								<a href="./board_view.html?bo_table=<?php echo $bo_table?>&seq=<?php echo $row['seq']?>"><?php echo $row['wr_subject']?></a>
+								
+								
+								</td>
+								<td style="padding:0" class="text-center b-b"><?php echo $row['wr_name'];?></td>
+								<td style="padding:0" class="text-center mobile_display b-b"><?php echo date('Y.m.d', strtotime($row['wr_datetime']))?></td>
+							
+							</tr>
+							<?php }?>
+							<?php if($i == 0) { ?> <tr><td colspan="5">등록 된 글이 없습니다.</td></tr><?php }?>
+                          </tbody>
+						  
+                        </table>
+                      </li>
+                    </ul>
+					<div class="pagination-holder pagination-holder-right  m-t-50   m-b-50">
+						<?php echo get_paging_home(5, $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='); ?>
+					</div>
+			
+					<?php if($write_href) {?>
+				  <input type="button" value="작성" class="kraftcf-form-control kraftcf-submit" style="margin-top:10px;float:right" onclick="location.href='<?php echo $write_href?>'">
+				  <div style="clear:both"></div>
+				  <?php }?>
+				  
+                  </div>
+				  
+				
+			
+				
+			
+			</div>
+        </div>
+      </div>
+    </main>
+    <!-- #main --> 
+  </div>
+  <!-- #primary --> 
+  
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a> </div>
+<!-- #content -->
+<style>
+.modal-body .tit, .modal-body .txt { font-size:13px;}
+</style>
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="font-size:17px">비밀번호 입력</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	  <form name="passFrm" action="./update/chk_request_pass.php" method="post">
+      <div class="modal-body">
+        <div class="input-group mb-2">
+        <div class="input-group-prepend">
+          <div class="input-group-text"><i class="fa fa-lock" aria-hidden="true" style="font-size:13px"></i></div>
+        </div>
+		<input type="hidden" name="seq" value="">
+        <input type="password" name="wr_password" class="form-control" id="inlineFormInputGroup" placeholder="작성시 입력한 비밀번호를 입력하세요.">
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" style="font-size:13px">확인</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="font-size:13px">닫기</button>
+     
+      </div>
+	  </form>
+    </div>
+  </div>
+</div>
+
+<? include "footer.html"; ?>
+<script>
+$('#Modal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var seq = button.data('seq') // Extract info from data-* attributes
+  var modal = $(this)
+  modal.find('.modal-body input[name="seq"]').val(seq)
+})
+function chkfrm(f) {
+	
+	if(f.wr_name.value == "") {
+		alert('성함을 입력하세요.');
+		f.wr_name.focus();
+		return false;
+	}
+	if(f.wr_tel.value == "") {
+		alert('연락처를 입력하세요.');
+		f.wr_tel.focus();
+		return false;
+	}
+
+}
+
+function inputPhoneNumber(obj) { var number = obj.value.replace(/[^0-9]/g, ""); var phone = ""; if(number.length < 4) { return number; } else if(number.length < 7) { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3); } else if(number.length < 11) { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3, 3); phone += "-"; phone += number.substr(6); } else { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3, 4); phone += "-"; phone += number.substr(7); } obj.value = phone; }
+
+</script>

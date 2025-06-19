@@ -1,0 +1,122 @@
+<? include "header.html"; ?>
+
+<? 
+$subMenu = 2;
+include "left01.html"; 
+?>
+
+<!-- line-height를 !important로 지정해 다른 스타일을 덮어씁니다 -->
+<style>
+  * {
+    font-family: 'Noto Sans KR' !important;
+  }
+  /* 모든 p와 span에 line-height 적용 */
+  p, span {
+    line-height: 1.8 !important; /* 필요 시 1.6 ~ 1.8 등 적절히 조정 */
+  }
+</style>
+
+<div class="site-content-contain">
+  <div id="content" class="site-content">                    
+    <div id="primary" class="content-area">
+      <main id="main" class="site-main" role="main">
+        <article class="page">                                
+          <div class="entry-content">
+            <div class="container">
+              <div class="row">                                    
+                <div class="d-none d-lg-block d-xl-block">                                                                     
+                  <div class="empty-space-30"></div><!-- 상단 여백 -->
+                </div>                                           
+              </div>
+
+              <div class="row m-b-90">  
+                <div class="col-sm-12">
+
+                  <!-- 대표이사 인사말 제목 -->
+                  <h3>
+                    <span style="font-size: 20px;">
+                      대표이사 인사말
+                    </span>
+                  </h3>
+
+                  <!-- 한글 본문 -->
+                  <p style="font-size: 16px;">
+                    엔원종합건설의 홈페이지를 찾아주신 건축주 및 고객 여러분께 깊은 감사의 말씀을 드립니다. 
+                    저희는 창립 이후, 단지 ‘건물을 짓는 기업’이 아니라, 사람과 공간이 조화롭게 어우러지는 
+                    삶의 무대를 만들어가는 데 주력해 왔습니다.
+                  </p>
+                  <p style="font-size: 16px;">
+                    지난 시간 동안, 각 분야에서 쌓아온 노하우와 전문성을 융합하여, 더 높은 가치를 담은 
+                    건축물을 구현하기 위해 꾸준히 연구하고 노력해 왔습니다. 건축주 여러분이 꿈꾸는 공간을 
+                    현실화할 때, 저희는 시공 품질은 물론, 에너지 효율과 지속 가능한 기술까지 종합적으로 
+                    고려하여 책임 있는 건축을 실천하고 있습니다.
+                  </p>
+                  <p style="font-size: 16px;">
+                    엔원종합건설이 가장 중요하게 여기는 가치는 ‘신뢰’입니다. 작은 개선사항부터 대규모 프로젝트까지, 
+                    모든 단계에서 투명한 소통을 통해 고객의 의견을 반영하고, 첨단기술과 협업 네트워크를 적극 활용해 
+                    최적의 결과를 도출합니다. 저희 임직원들은 각자 맡은 분야에서 최고가 되겠다는 열정과 책임감으로 
+                    매 순간을 임하며, 한 프로젝트 한 프로젝트에 정성을 다하고 있습니다.
+                  </p>
+                  <p style="font-size: 16px;">
+                    앞으로도 엔원종합건설은 지속적인 혁신과 품질 향상을 통해, 건축주 여러분께 
+                    더 나은 미래공간을 선사하기 위해 최선을 다하겠습니다. 여러분의 든든한 동반자로서, 
+                    전문성과 신뢰를 바탕으로 기대를 뛰어넘는 가치를 전해 드릴 수 있도록 늘 정진하겠습니다. 
+                    감사합니다.
+                  </p><br/>
+
+                  <!-- 영어 번역문 -->
+                  <p style="font-size: 16px;">
+                    We sincerely thank you for visiting the N1 Construction website. Since our establishment, 
+                    we have focused on crafting living environments that harmoniously blend people and spaces, 
+                    rather than merely constructing buildings.
+                  </p>
+                  <p style="font-size: 16px;">
+                    Throughout the years, we have integrated expertise from various disciplines to create 
+                    architectural works that embody greater value. In bringing our clients’ visions to life, 
+                    we not only emphasize construction quality but also consider energy efficiency 
+                    and sustainability, reinforcing our commitment to responsible building.
+                  </p>
+                  <p style="font-size: 16px;">
+                    At N1 Construction, trust is our top priority. From minor improvements to large-scale projects, 
+                    we maintain transparent communication at every stage. We actively incorporate leading-edge 
+                    technologies and collaborative networks to ensure optimal outcomes. Our dedicated team members 
+                    approach each project with passion and accountability, striving to excel in their respective fields.
+                  </p>
+                  <p style="font-size: 16px;">
+                    Looking ahead, N1 Construction will continue to innovate and enhance quality, delivering 
+                    advanced living spaces to our clients. As a steadfast partner, we remain committed to 
+                    exceeding your expectations through professionalism and reliability. Thank you for your 
+                    continued support.
+                  </p>
+
+                  <!-- 대표이사 이름 표기 -->
+                  <p style="text-align:right; font-size: 16px;">
+                    C.E.O / President<br />
+                    <strong>권기원, 위성수</strong>
+                  </p>
+
+                  <!-- 이미지 예시 (필요 시 생략) -->
+                  <div class="col-sm-12 m-t-30">
+                    <div class="single-image">
+                      <figure class="figure">
+                        <img src="assets/images/other/about-us-min.jpg" alt="About Us">
+                      </figure>
+                    </div>
+                  </div>
+
+                </div><!-- col-sm-12 -->
+              </div><!-- row m-b-90 -->
+
+            </div><!-- container -->
+          </div><!-- entry-content -->
+        </article>        
+      </main><!-- #main -->
+    </div><!-- #primary -->                                
+
+    <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700">
+      <i class="fa fa-angle-up"></i>
+    </a>
+  </div><!-- #content -->
+</div><!-- site-content-contain -->
+
+<? include "footer.html"; ?>

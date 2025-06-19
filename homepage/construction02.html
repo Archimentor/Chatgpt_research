@@ -1,0 +1,406 @@
+<?php
+/******************************************************
+ * 완료현장 - 3열 카드 레이아웃 (진행공사 스타일)
+ ******************************************************/
+
+// --- 기본 설정 ---
+$body_class = ' class="blog blog-list-style"';
+include_once("header.html"); // _common.php가 포함돼 있다면 OK
+// 아니라면 필요 시 include_once('../_common.php');
+
+// G5_LIB_PATH가 미정의라면 환경에 맞게 정의
+if (!defined('G5_LIB_PATH')) {
+    define('G5_LIB_PATH', '/path/to/g5/lib');
+}
+include_once(G5_LIB_PATH.'/thumbnail.lib.php');
+
+// $none 배열을 정의하는 파일
+// (실제 경로에 맞게 수정)
+include_once('./include/b_update_table.php');
+
+// NONE_URL 등이 정의되지 않았다면 정의
+if (!defined('NONE_URL')) {
+    define('NONE_URL', '/절대경로_or_도메인');
+}
+
+// 완료현장 조건(nw_status=1)
+$sql_common = " FROM {$none['worksite']} ";
+$sql_search = " WHERE nw_status = 1 AND nw_main_open = 1 ";
+
+if (!$sst) {
+    $sst = "nw_code";
+    $sod = "desc";
+}
+$sql_order = " ORDER BY $sst $sod ";
+
+// 전체 개수
+$sql = " SELECT count(*) as cnt {$sql_common} {$sql_search} ";
+$row_count = sql_fetch($sql);
+$total_count = $row_count['cnt'] ?? 0;
+
+// 페이지당 9개 (3열 카드)
+$rows = 9;
+$total_page = ceil($total_count / $rows);
+if (!isset($page) || $page < 1) {
+    $page = 1;
+}
+$from_record = ($page - 1) * $rows;
+
+// 목록 추출
+$sql = " SELECT * {$sql_common} {$sql_search} {$sql_order} LIMIT {$from_record}, {$rows} ";
+$result = sql_query($sql);
+
+// 관리자 여부 (원본 수준 맞춤)
+$is_admin = false;
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) {
+    $is_admin = true;
+}
+?>
+<style>
+/* ===== 카드 형태 (진행공사 스타일) ===== */
+/* 카드 비율 유지 컨테이너 */
+.project-card .card-img-aspect-ratio {
+    position: relative;
+    width: 100%;
+    padding-top: 75%; /* 4:3 */
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+.project-card .card-img-aspect-ratio img,
+.project-card .card-img-aspect-ratio .no_img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-top-left-radius: 0.25rem; 
+    border-top-right-radius: 0.25rem;
+}
+/* 이미지 없을 때 */
+.project-card .no_img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 0.9rem;
+}
+
+/* 카드 본문 */
+.project-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+.project-card .card-content {
+    flex-grow: 1;
+}
+.project-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.project-card .card-title a {
+    text-decoration: none;
+    color: inherit;
+}
+.project-card .card-title a:hover {
+    text-decoration: underline;
+}
+.project-card ul.project-details {
+    font-size: 0.88rem;
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1rem;
+}
+.project-card ul.project-details li {
+    margin-bottom: 0.4rem;
+    color: #495057;
+}
+.project-card ul.project-details strong {
+    display: inline-block;
+    width: 75px;
+    font-weight: 500;
+    color: #6c757d;
+    margin-right: 5px;
+}
+/* 링크 색상 상속 (파란색 제거) */
+.project-card ul.project-details a {
+    color: inherit;
+    text-decoration: none;
+}
+.project-card ul.project-details a:hover {
+    text-decoration: underline;
+}
+
+/* 페이지네이션 */
+.pagination { justify-content: center; }
+.pagination li { margin-right:10px; }
+
+/* 모달 내용에서 c-list04 + tit/txt */
+.c-list04 { list-style:none; margin:0; padding:0; }
+.c-list04 li { margin-bottom:6px; }
+.c-list04 .tit {
+    display:inline-block;
+    min-width:65px;
+    font-weight:bold;
+    margin-right:5px;
+    color:#555;
+}
+.c-list04 .txt {
+    color:#333;
+}
+</style>
+
+<div class="site-content-contain">
+<?php
+$subMenu = 2; 
+include_once("left05.html"); // 왼쪽메뉴
+?>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <div class="container py-4">
+        <div class="row">
+        <?php
+        if ($total_count > 0) {
+            $modal_index = 0;
+            while($row = sql_fetch_array($result)) {
+
+                // 완료현장: home_project 테이블 참고
+                $project = sql_fetch("SELECT * FROM {$none['home_project']} WHERE nw_code = '{$row['nw_code']}'");
+
+                // 썸네일 생성 로직
+                $img_arr = get_editor_image2($project['nh_content'], false);
+                // 첫 번째 이미지 파싱
+                $p = parse_url($img_arr[1][0] ?? '');
+                if(strpos($p['path'], '/'.G5_DATA_DIR.'/') != 0) {
+                    $data_path = preg_replace('/^\/.*\/'.G5_DATA_DIR.'/', '/'.G5_DATA_DIR, $p['path'] ?? '');
+                } else {
+                    $data_path = $p['path'] ?? '';
+                }
+                $srcfile  = G5_PATH . $data_path;
+                $filename = basename($srcfile);
+                $filepath = dirname($srcfile);
+
+                // 썸네일
+                $thumb = '';
+                if(is_file($srcfile)) {
+                    $thumb = thumbnail($filename, $filepath, $filepath, 350, 240, true, true);
+                }
+
+                // board_file 테이블(대표이미지)
+                $file = sql_fetch("SELECT bf_file FROM g5_board_file 
+                                   WHERE bo_table = 'worksite'
+                                     AND wr_id = '{$row['seq']}'
+                                     AND bf_category = 1
+                                   ORDER BY bf_datetime DESC 
+                                   LIMIT 1");
+
+                // 최종 이미지
+                if ($thumb) {
+                    $src = G5_URL.str_replace($filename, $thumb, $data_path);
+                    $img_content = '<img src="'.htmlspecialchars($src).'" alt="완료현장">';
+                } else if (!empty($file['bf_file'])) {
+                    $img_src = NONE_URL . '/_data/worksite/1/' . $file['bf_file'];
+                    $img_content = '<img src="'.htmlspecialchars($img_src).'" alt="완료현장">';
+                } else {
+                    $img_content = '<div class="no_img">준비중</div>';
+                }
+                $img_container = '<div class="card-img-aspect-ratio">'.$img_content.'</div>';
+
+                // 완료보고서 링크 – project 존재 시 seq와 함께 nw_code도 전달, 없으면 alert 창 출력
+                if(!empty($project['seq'])) {
+                    $link = './project_view.html?seq=' . $project['seq'] . '&code=' . htmlspecialchars($row['nw_code'] ?? '');
+                } else {
+                    $link = "javascript:alert('완료보고서가 준비중입니다.')";
+                }
+
+                // 건축사 / 현장소장 정보
+                // 건축사 정보는 file 01과 동일하게 nw_ptype4_1 값이 있을 때만 조회
+                $info = null;
+                if (!empty($row['nw_ptype4_1'])) {
+                    $info_sql = "SELECT * FROM {$none['enterprise_list']} WHERE seq = '" . sql_real_escape_string($row['nw_ptype4_1']) . "'";
+                    $info = sql_fetch($info_sql);
+                }
+                $sojang = get_member($row['nw_ptype1_1'], 'mb_name, mb_memo');
+
+                // 모달 ID
+                $modal_id_suffix = $row['seq'] ?? $modal_index;
+        ?>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm project-card">
+            <?php echo $img_container; ?>
+            <div class="card-body d-flex flex-column">
+              <div class="card-content">
+                <!-- 카드 타이틀: 공사명 클릭 시 완료보고서 링크($link) 적용 -->
+                <h5 class="card-title">
+                  <a href="<?php echo $link; ?>">
+                    <?php echo htmlspecialchars($row['pj_title_kr'] ?? '제목 없음'); ?>
+                  </a>
+                </h5>
+                <ul class="project-details mb-3">
+                  <li>
+                    <strong>건축사</strong>
+                    <?php
+                    if ($info && !empty($info['no_company'])) {
+                        ?>
+                        <a href="#none" data-toggle="modal" data-target="#modalEnterprise<?php echo $modal_id_suffix; ?>">
+                          <?php echo htmlspecialchars($info['no_company']); ?>
+                        </a>
+                        <?php
+                    } else {
+                        echo htmlspecialchars($row['pj_upche'] ?? '-');
+                    }
+                    ?>
+                  </li>
+                  <li>
+                    <strong>현장소장</strong>
+                    <?php
+                    if ($sojang && !empty($sojang['mb_name'])) {
+                        ?>
+                        <a href="#none" data-toggle="modal" data-target="#modalSojang<?php echo $modal_id_suffix; ?>">
+                          <?php echo htmlspecialchars($row['pj_person'] ?? '-'); ?>
+                        </a>
+                        <?php
+                    } else {
+                        echo htmlspecialchars($row['pj_person'] ?? '-');
+                    }
+                    ?>
+                  </li>
+                  <li><strong>지역</strong> <?php echo htmlspecialchars($row['pj_addr'] ?? '-'); ?></li>
+                  <li><strong>용도</strong> <?php echo htmlspecialchars($row['pj_type'] ?? '-'); ?></li>
+                  <li><strong>대지면적</strong> <?php echo (float)$row['nw_area1'] ? (float)$row['nw_area1'] : 0; ?>㎡</li>
+                  <li>
+                    <strong>공사기간</strong>
+                    <?php
+                    $sdate = (!empty($row['nw_sdate'])) ? substr($row['nw_sdate'], 0, 10) : '-';
+                    $edate = (!empty($row['nw_edate'])) ? substr($row['nw_edate'], 0, 10) : '-';
+                    echo $sdate.' ~ '.$edate;
+                    ?>
+                  </li>
+                </ul>
+              </div>
+              <!-- 완료보고서보기 버튼도 동일 링크($link)를 사용 -->
+              <a href="<?php echo $link; ?>"
+                 class="btn btn-sm btn-outline-primary mt-auto align-self-start">
+                 완료보고서보기
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 건축사 정보 모달 -->
+        <div class="modal fade" id="modalEnterprise<?php echo $modal_id_suffix; ?>" tabindex="-1" role="dialog"
+             aria-labelledby="modalEnterpriseLabel<?php echo $modal_id_suffix; ?>" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalEnterpriseLabel<?php echo $modal_id_suffix; ?>" style="font-size:17px">
+                  건축사 정보
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="meta-desc">
+                  <ul class="c-list04">
+                    <li><span class="tit">법인명</span><span class="txt"><?php echo $info['no_company']??''; ?></span></li>
+                    <li><span class="tit">공종</span><span class="txt"><?php echo $info['no_gongjong']??''; ?></span></li>
+                    <li><span class="tit">대표자</span><span class="txt"><?php echo $info['no_bname']??''; ?></span></li>
+                    <li><span class="tit">대표번호</span><span class="txt"><?php echo $info['no_btel']??''; ?></span></li>
+                    <li><span class="tit">팩스번호</span><span class="txt"><?php echo $info['no_bfax']??''; ?></span></li>
+                    <li><span class="tit">주소</span><span class="txt"><?php echo $info['no_baddr']??''; ?></span></li>
+                    <li>
+                      <span class="tit">홈페이지</span>
+                      <span class="txt">
+                        <?php 
+                          if(!empty($info['no_homepage'])) {
+                            echo '<a href="'.htmlspecialchars($info['no_homepage']).'" target="_blank">'
+                                .htmlspecialchars($info['no_homepage']).'</a>';
+                          }
+                        ?>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" style="font-size:13px">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 현장소장 정보 모달 -->
+        <div class="modal fade" id="modalSojang<?php echo $modal_id_suffix; ?>" tabindex="-1" role="dialog"
+             aria-labelledby="modalSojangLabel<?php echo $modal_id_suffix; ?>" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalSojangLabel<?php echo $modal_id_suffix; ?>" style="font-size:17px">
+                  현장소장 정보
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="meta-desc">
+                  <ul class="c-list04">
+                    <li>
+                      <span class="tit" style="width:50px">성명</span>
+                      <span class="txt" style="top:-4px"><?php echo $sojang['mb_name']??''; ?></span>
+                    </li>
+                    <li>
+                      <span class="tit">이력 및 경력</span>
+                      <span class="txt"><?php echo nl2br($sojang['mb_memo']??''); ?></span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" style="font-size:13px">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <?php
+                $modal_index++;
+            } // end while
+        } else {
+            echo '<div class="col-12"><div class="alert alert-info text-center">검색 된 글이 없습니다.</div></div>';
+        }
+        ?>
+        </div><!-- .row -->
+
+        <!-- 페이지네이션 -->
+        <?php if($total_count > 0 && function_exists('get_paging_home')) { ?>
+          <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <?php
+              $qstr = $qstr ?? '';
+              echo get_paging_home(5, $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&page=');
+              ?>
+            </ul>
+          </nav>
+        <?php } ?>
+
+      </div><!-- .container -->
+    </main>
+  </div>
+  <a id="gotoTop" href="#" class="scroll-top-link">
+    <i class="fa fa-angle-up"></i>
+  </a>
+</div><!-- #content -->
+</div><!-- .site-content-contain -->
+
+<?php include "footer.html"; ?>
+
+<!-- 부트스트랩4용 JS (필요시) -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+ integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mONv/1zV6CowfP6h3pcrUhYn9VVncfqeubO9v1lSYpV"
+ crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+ integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQf0hqa9IrnMeDG9G/+6dg"
+ crossorigin="anonymous"></script>

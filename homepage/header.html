@@ -1,0 +1,43 @@
+<?php 
+include_once('../_common.php');
+
+//본사직원일경우 관리자 권한 부여
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) $is_admin = true; 
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Document Title -->
+<title>엔원종합건설</title>
+
+<!-- Metas -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="아름다운 공간 창조, 모던 건축을 지향하는 엔원종합건설">
+<meta property="og:title" content="㈜엔원종합건설">
+<meta property="og:description" content="아름다운 공간 창조, 모던 건축을 지향하는 엔원종합건설">
+<!-- Favicon -->
+<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+<!-- Links -->
+
+<link rel='stylesheet' id='bootstrap-css'  href='assets/lib/bootstrap/css/bootstrap.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='font-awesome-css'  href='assets/css/icons/font-awesome.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='swiper-css' href='assets/lib/swiper/css/swiper.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='cubeportfolio-css'  href='assets/lib/cubeportfolio/css/cubeportfolio.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='main-css'  href='style.css' type='text/css' media='all' />
+
+
+
+ 
+</head>
+<body <?php echo $body_class?>>
+
+<!-- Page Wrapper -->
+<div id="page" class="site">
+  <header id="masthead" class="site-header standard sticky" role="banner">
+   <?php include_once('./inc.menu.php')?>
+  </header>
+  <!-- #masthead -->
+  

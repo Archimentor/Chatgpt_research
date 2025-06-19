@@ -1,0 +1,147 @@
+<? include "header.html"; ?>
+  
+<? 
+$subMenu = 7;
+include "left01.html"; ?>
+<div class="site-content-contain">
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article class="page">
+        <div class="entry-content">
+        <div class="container">
+          <div class="row">
+            <div class="d-none d-lg-block d-xl-block">
+              <div class="empty-space-30"></div>
+            </div>
+          </div>
+          
+      <!--    <div class="row m-t-25">                                    
+                                            <div class="col-sm-3 text-center">
+                                                <div class="content-box-wrap">
+                                                    <div class="single-image m-b-15">
+                                                        <figure class="figure">
+                                                            <img src="assets/images/other/mobile.png" alt="Mobile">                                                
+                                                        </figure>
+                                                    </div>          
+                                                    <div class="content-box text-center">
+                                                        <h6>  1666-4690</h6>                                                             
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 text-center">
+                                                <div class="content-box-wrap">
+                                                    <div class="single-image m-b-15">
+                                                        <figure class="figure">
+                                                            <img src="assets/images/other/graphic.png" alt="fax">                                                
+                                                        </figure>
+                                                    </div>          
+                                                    <div class="content-box text-center">
+                                                        <h6>051-201-3039</h6>                                                             
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 text-center">
+                                                <div class="content-box-wrap">
+                                                    <div class="single-image m-b-15">
+                                                        <figure class="figure">
+                                                            <img src="assets/images/other/envelope.png" alt="Email">                                                
+                                                        </figure>
+                                                    </div>          
+                                                    <div class="content-box">
+                                                        <h6> <a href="mailto:n1none@daum.net"> n1none@daum.net</a></h6>                                                              
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 text-center">
+                                                <div class="content-box-wrap">
+                                                    <div class="single-image m-b-15">
+                                                        <figure class="figure">
+                                                            <img src="assets/images/other/map.png" alt="Address">                                                
+                                                        </figure>
+                                                    </div>          
+                                                    <div class="content-box">
+                                                        <h6> 부산광역시 남구 진남로 206, 3층 <br /> [주차장]부산광역시 남구 진남로 209</h6>                                                              
+                                                    </div>
+                                                </div>
+                                            </div>    
+                                        </div>
+                                        -->
+                                        
+          <div class="row m-b-90">
+            <div class="col-sm-12">
+              <div class="col-md-12 ">
+                <div class="col-md-12 m-t-20">
+                  <div> <span style="font-size:20px;font-weight:400;color:#151515;">부산 본사</span></div>
+                </div>
+                <div class="map-company">
+                  <div class="map_view"> 
+                    <!-- * 카카오맵 - 지도퍼가기 --> 
+                    <!-- 1. 지도 노드 -->
+                    <div id="daumRoughmapContainer1681709153922" class="root_daum_roughmap root_daum_roughmap_landing"></div>
+                    
+                    <!--
+                                2. 설치 스크립트
+                                * 지도 퍼가기 서비스를 2개 이상 넣을 경우, 설치 스크립트는 하나만 삽입합니다.
+                            --> 
+                    <script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"></script> 
+                    
+                    <!-- 3. 실행 스크립트 --> 
+                    <script charset="UTF-8">
+                                new daum.roughmap.Lander({
+                                    "timestamp" : "1681709153922",
+                                    "key" : "2egit",
+                                    "mapWidth" : "1140",
+                                    "mapHeight" : "360"
+                                }).render();
+                            </script> 
+                  </div>
+                </div>
+                <div class="col-md-12 m-t-20">
+                  <div >
+                    <div> <span style="font-size:16px;font-weight:400;color:#151515;">Tel</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size:15px;font-weight:400;color:#5f5f5f;">1666-4690 </span> </div>
+                    <div> <span style="font-size:16px;font-weight:400;color:#151515;">Fax</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size:15px;font-weight:400;color:#5f5f5f;">051-201-3039</span> </div>
+                    <div> <span style="font-size:16px;font-weight:400;color:#151515;">Email</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="mailto:n1none@daum.net" style="font-size:15px;font-weight:400;color:#5f5f5f;">n1none@daum.net</a> </div>
+                    <address>
+                    <span style="font-size:16px;font-weight:400;color:#151515;">Address</span>&nbsp;&nbsp; <span style="font-size:15px;font-weight:400;color:#5f5f5f;">부산광역시 수영구 수영로 521번길 30, 2층 (주차가능)</span>
+                    </address>
+                  </div>
+                </div>
+                <div class="col-md-12 m-t-20">
+                  <div> <span style="font-size:20px;font-weight:400;color:#151515;">서울 지사</span></div>
+                </div>
+                <div class="map-company">
+                  <div class="map_view"> 
+                    <!-- * 카카오맵 - 지도퍼가기 --> 
+                    <!-- 1. 지도 노드 -->
+                    <div id="daumRoughmapContainer1724916986960" class="root_daum_roughmap root_daum_roughmap_landing"></div>
+                    <!-- 3. 실행 스크립트 --> 
+                    <script charset="UTF-8">
+                                new daum.roughmap.Lander({
+                                    "timestamp" : "1724916986960",
+                                    "key" : "2khn9",
+                                    "mapWidth" : "1140",
+                                    "mapHeight" : "360"
+                                }).render();
+                            </script> 
+                  </div>
+                </div>
+                <div class="col-md-12 m-t-20">
+                  <div >
+                    <address>
+                    <span style="font-size:16px;font-weight:400;color:#151515;">Address</span>&nbsp;&nbsp; <span style="font-size:15px;font-weight:400;color:#5f5f5f;">서울특별시 강남구 테헤란로55번길 21, 401호</span>
+                    </address>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+    <!-- #main --> 
+  </div>
+  <!-- #primary --> 
+  
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a> </div>
+<? include "footer.html"; ?>

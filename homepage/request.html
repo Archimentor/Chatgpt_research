@@ -1,0 +1,309 @@
+<?php 
+include_once('../_common.php');
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Document Title -->
+<title>엔원종합건설</title>
+
+<!-- Metas -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+<!-- Links -->
+
+<link rel='stylesheet' id='bootstrap-css'  href='assets/lib/bootstrap/css/bootstrap.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='font-awesome-css'  href='assets/css/icons/font-awesome.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='swiper-css' href='assets/lib/swiper/css/swiper.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='cubeportfolio-css'  href='assets/lib/cubeportfolio/css/cubeportfolio.min.css' type='text/css' media='all' />
+<style>
+.pagination { justify-content:center }
+</style>
+<link rel='stylesheet' id='main-css'  href='style.css' type='text/css' media='all' />
+</head>
+<body>
+
+<!-- Page Wrapper -->
+<div id="page" class="site">
+<header id="masthead" class="site-header standard sticky" role="banner">
+  <?php include_once('./inc.menu.php')?>
+  <!-- .wrap --> 
+</header>
+<!-- #masthead -->
+<div class="site-content-contain">
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+          <div id="Request" style="margin-bottom:60px">
+		  <form name="frm" action="./update/request_update.php" method="post" enctype="multipart/form-data" onsubmit="return chkfrm(this)">
+		  <input type="hidden" name="w" value="">
+          <table >
+						<colgroup>			
+							<col class="titWIDTH">
+							<col class="subWIDTH">
+						</colgroup>
+						<tbody>
+                        <tr>
+							<td class="txtCenter">이름</td>
+							<td class="PL">
+								<input name="wr_name" id="wr_name" class="write_nameBox" value="<?php echo $member['mb_name']?>">
+							</td>
+						</tr>
+						<tr>
+							<td class="txtCenter">연락처</td>
+							<td class="PL">
+								<input name="wr_tel" id="wr_tel" class="write_nameBox" value="<?php echo $member['mb_hp']?>" onKeyup="inputPhoneNumber(this);" maxlength="13">
+							</td>
+						</tr>
+						<tr>
+							<td class="txtCenter">건축지 주소</td>
+							<td class="PL">
+								<input name="wr_addr" id="wr_addr" class="write_titBox">
+							</td>
+						</tr>
+						<tr>
+							<td class="txtCenter">진행상태</td>
+							<td class="PL">
+								
+									<input type="radio" name="wr_state" id="wr_status1" value="준비 기획단계"> 	
+									<span>준비 계획단계</span> &nbsp;
+									<input type="radio" name="wr_state" id="wr_status2" value="설계 진행단계">
+									<span>설계 진행단계</span> &nbsp;
+									<input type="radio" name="wr_state" id="wr_status3" value="설계완료"> 
+									<span>설계완료</span> &nbsp;
+									<input type="radio" name="wr_state" id="wr_status4" value="공사 착공단계"> 
+									<span>공사 착공단계
+									
+							</span></td>
+						</tr>
+						<tr>
+							<td class="txtCenter">설계도서 유무</td>
+							<td class="PL">
+								
+									<input type="radio" name="wr_plan_yn" id="wr_plan_yn1" value="1"> 	
+									<span>있음</span> &nbsp;
+									<input type="radio" name="wr_plan_yn" id="wr_plan_yn2" value="0">
+									<span>없음</span> &nbsp;									
+							</span></td>
+						</tr>
+						<tr>
+							<td class="txtCenter">설계도서 등록</td>
+							<td class="PL">
+								<input type="file" id="wr_plan_file" name="wr_plan_file" style="display:block" class="write_titBox">
+								<span style="font-size:12px">용량이 큰 경우 n1none@daum.net으로 발송 바랍니다.(100MB 이상)</span>
+
+							</td>
+						</tr>
+                         
+                        <tr>
+							<td class="txtCenter">대지면적</td>
+							<td class="PL">
+								
+								<input name="wr_area1" id="wr_area1" class="write_nameBox" placeholder="3.3058" onkeyup="var v = document.getElementById('wr_area1').value; v = v.replace(/,|\s/g,''); v = parseFloat(v) / 3.3058; document.getElementById('wr_area4').value = parseFloat(v.toFixed(4));">&nbsp;&nbsp;㎡  &nbsp;&nbsp; = &nbsp;&nbsp; 
+								<input name="wr_area4" id="wr_area4" class="write_nameBox" placeholder="1" onkeyup="var v = document.getElementById('wr_area4').value; v = v.replace(/,|\s/g,''); v = parseFloat(v) * 3.3058; document.getElementById('wr_area1').value = parseFloat(v.toFixed(4));">&nbsp;&nbsp;평 
+							</td>
+						</tr>
+                        
+						<tr>
+							<td class="txtCenter">건축면적</td>
+							<td class="PL">
+								
+								<input name="wr_area2" id="wr_area2" class="write_nameBox" placeholder="3.3058" onkeyup="var v = document.getElementById('wr_area2').value; v = v.replace(/,|\s/g,''); v = parseFloat(v) / 3.3058; document.getElementById('wr_area5').value = parseFloat(v.toFixed(4));">&nbsp;&nbsp;㎡  &nbsp;&nbsp; = &nbsp;&nbsp; <input name="wr_area5" id="wr_area5" class="write_nameBox" placeholder="1"  onkeyup="var v = document.getElementById('wr_area5').value; v = v.replace(/,|\s/g,''); v = parseFloat(v) * 3.3058; document.getElementById('wr_area2').value = parseFloat(v.toFixed(4));">&nbsp;&nbsp;평 
+							</td>
+						</tr>
+                        
+                        <tr>
+							<td class="txtCenter">연면적</td>
+							<td class="PL">
+								
+								<input name="wr_area3" id="wr_area3" class="write_nameBox" placeholder="3.3058"  onkeyup="var v = document.getElementById('wr_area3').value; v = v.replace(/,|\s/g,''); v = parseFloat(v) / 3.3058; document.getElementById('wr_area6').value = parseFloat(v.toFixed(4));">&nbsp;&nbsp;㎡  &nbsp;&nbsp; = &nbsp;&nbsp; <input name="wr_area6" id="wr_area6" class="write_nameBox" placeholder="1" onkeyup="var v = document.getElementById('wr_area6').value; v = v.replace(/,|\s/g,''); v = parseFloat(v) * 3.3058; document.getElementById('wr_area3').value = parseFloat(v.toFixed(4));">&nbsp;&nbsp;평 
+							</td>
+						</tr>
+                       
+                        <tr>
+							<td class="txtCenter">층수</td>
+							<td class="PL">
+								지상 <input name="wr_floor1" id="wr_floor1" class="write_nameBox"> 층  / 지하 <input name="wr_floor2" id="wr_floor2" class="write_nameBox"> 층
+							</td>
+						</tr>
+						<tr>
+							<td class="txtCenter">용도</td>
+							<td class="PL">
+								<input name="wr_use" id="wr_use" class="write_titBox">
+							</td>
+						</tr>
+                        	<tr>
+							<td class="txtCenter">기타 상담내용</td>
+							<td class="PL">
+								<textarea name="wr_content" placeholder="내용을 입력해주세요"></textarea>
+							</td>
+						</tr>
+						<?php if(!$is_member) {?>
+                        <tr>
+							<td class="txtCenter">비밀번호</td>
+							<td class="PL">
+								<input type="password" name="wr_password" id="wr_password" class="write_nameBox" style="display:inline-block"> <span style="display:inline-block"> * 회원가입을 하시면 확인이 편리합니다.</span>
+							</td>
+						</tr>
+						<?php }?>
+					</tbody>
+                   </table>
+                   
+                   
+                   <p style="text-align:center; margin-top:20px;">
+                   <input type="submit" value="공사의뢰하기" class="kraftcf-form-control kraftcf-submit">
+                   </p>
+				   </form>
+				   
+				   
+				   <?php 
+				
+				$sql_common = " from  {$none['home_request']}  ";
+				$sql_search = " where (1) ";
+
+
+				if (!$sst) {
+					$sst  = "seq";
+					$sod = "desc";
+				}
+				$sql_order = " order by $sst $sod ";
+
+				$sql = " select count(*) as cnt {$sql_common} {$sql_search} {$sql_order} ";
+				$row = sql_fetch($sql);
+				$total_count = $row['cnt'];
+
+				$rows = 10;
+				$total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
+				if ($page < 1) { $page = 1; } // 페이지가 없으면 첫 페이지 (1 페이지)
+				$from_record = ($page - 1) * $rows; // 시작 열을 구함
+
+				$sql = " select * {$sql_common} {$sql_search} {$sql_order} limit {$from_record}, {$rows} ";
+				$result2 = sql_query($sql);
+
+				if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) $is_admin = true; 
+				
+				
+				?>
+				<div class="ingLIST" style="margin-top:40px">
+                    <ul>
+                      <li>
+                        <table>
+                          </colgroup>
+						  <thead style="background:#fbfbfb">
+							<tr>
+							<th>번호</th>
+							<th>제목</th>
+							<th>접수자</th>
+							<th class="mobile_display">접수일</th>
+							</tr>
+						  </thead>
+                          <tbody>
+							<?php 
+							for($i=0; $row=sql_fetch_array($result2); $i++) {
+							
+							$num = $total_count - ($page - 1) * $rows - $i;
+							$name = iconv_substr($row['wr_name'],0,1, 'utf-8')."○".iconv_substr($row['wr_name'],-1, 'utf-8');
+							
+							if($is_admin) {
+								$link = '<a href="./update/chk_request_pass.php?seq='.$row['seq'].'">';
+							} else if($is_member && ($member['mb_id'] == $row['mb_id']) ) {
+								$link = '<a href="./update/chk_request_pass.php?seq='.$row['seq'].'">';
+							} else {
+								$link = '<a href="#none" data-toggle="modal" data-target="#Modal" data-seq="'.$row['seq'].'">';
+							}
+							?>
+							<tr>
+								<td style="padding:0" class="text-center"><?php echo $num?></td>
+								<td><i class="fa fa-lock" aria-hidden="true" style="font-size:13px"></i> <?php echo $link.$name;?>님이 공사를 의뢰하셨습니다.</a></td>
+								<td style="padding:0" class="text-center"><?php echo $name;?></td>
+								<td style="padding:0" class="text-center mobile_display"><?php echo date('Y.m.d', strtotime($row['wr_datetime']))?></td>
+							
+							</tr>
+							<?php }?>
+                          </tbody>
+                        </table>
+                      </li>
+                    </ul>
+                  </div>
+				  <div class="pagination-holder pagination-holder-right  m-t-50   m-b-50">
+				
+             <?php echo get_paging_home(5, $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='); ?>
+            </div>
+               </div>
+				
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- #main --> 
+  </div>
+  <!-- #primary --> 
+  
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a> </div>
+<!-- #content -->
+<style>
+.modal-body .tit, .modal-body .txt { font-size:13px;}
+</style>
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="font-size:17px">비밀번호 입력</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	  <form name="passFrm" action="./update/chk_request_pass.php" method="post">
+      <div class="modal-body">
+        <div class="input-group mb-2">
+        <div class="input-group-prepend">
+          <div class="input-group-text"><i class="fa fa-lock" aria-hidden="true" style="font-size:13px"></i></div>
+        </div>
+		<input type="hidden" name="seq" value="">
+        <input type="password" name="wr_password" class="form-control" id="inlineFormInputGroup" placeholder="작성시 입력한 비밀번호를 입력하세요.">
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" style="font-size:13px">확인</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="font-size:13px">닫기</button>
+     
+      </div>
+	  </form>
+    </div>
+  </div>
+</div>
+
+<? include "footer.html"; ?>
+<script>
+$('#Modal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var seq = button.data('seq') // Extract info from data-* attributes
+  var modal = $(this)
+  modal.find('.modal-body input[name="seq"]').val(seq)
+})
+function chkfrm(f) {
+	
+	if(f.wr_name.value == "") {
+		alert('성함을 입력하세요.');
+		f.wr_name.focus();
+		return false;
+	}
+	if(f.wr_tel.value == "") {
+		alert('연락처를 입력하세요.');
+		f.wr_tel.focus();
+		return false;
+	}
+
+}
+
+function inputPhoneNumber(obj) { var number = obj.value.replace(/[^0-9]/g, ""); var phone = ""; if(number.length < 4) { return number; } else if(number.length < 7) { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3); } else if(number.length < 11) { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3, 3); phone += "-"; phone += number.substr(6); } else { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3, 4); phone += "-"; phone += number.substr(7); } obj.value = phone; }
+
+</script>

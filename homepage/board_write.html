@@ -1,0 +1,211 @@
+<?php include_once("header.html"); 
+
+include_once(G5_EDITOR_LIB);
+
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) $is_admin = true; 
+
+
+
+if($w == 'u') {
+	$row = sql_fetch("select * from  {$none['home_board']} where bo_table= '$bo_table' and seq = '$seq'");
+	
+	if(!$is_admin && ($row['mb_id'] != $member['mb_id'])) { 
+	//관리자가 아닐경우 본인글 아닐시
+		alert('권한이 없습니다.');
+	}
+	
+	
+}
+
+if($bo_table == "board7") {
+	if(!$is_admin && !owner_check($member['mb_id'])) {
+		alert('건축주만 이용가능한 메뉴 입니다.');
+	}
+
+	$owner_num = owner_check($member['mb_id']);
+
+	$chk = sql_fetch("select * from  {$none['worksite']} where nw_status = 0 and (nw_ptype3_1 = '{$owner_num}' or nw_ptype3_2 = '{$owner_num}' or nw_ptype3_3 = '{$owner_num}') and nw_code = '$code' order by nw_code desc");
+
+	if(!$chk) {
+		alert('해당 시공현장의 건축주만 이용가능 합니다.', '/');
+	}
+	
+	if($w == '') 
+		$wr_1 = $code;
+	else
+		$wr_1 = $row['wr_1'];
+}
+//카테고리
+$ca = sql_fetch("select * from {$none['home_board_cate']} where bo_table = '$bo_table'");
+$caArr = explode('@', $ca['nb_category']);							
+?>
+<script type='text/javascript' src='assets/js/vendor/jquery-1.12.4.min.js'></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+.select2 { width:100% !important }
+.select2-container .select2-selection--single {  height:36px }
+.select2-container--default .select2-selection--single { border:1px solid #ced4da; }
+.select2-container--default .select2-selection--single .select2-selection__rendered { line-height:34px }
+.select2-container--default .select2-selection--single .select2-selection__arrow { height:34px }
+</style>
+<div class="site-content-contain">
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article class="page">
+        <div class="entry-content">
+          <div class="container m-b-100">
+            <div class="row">
+              <div class="col-sm-12">
+			  
+				<form action="./update/board_update.php" method="post" enctype="multipart/form-data" onsubmit="return chkfrm(this)">
+				<input type="hidden" name="w" value="<?php echo $w?>">
+				<input type="hidden" name="seq" value="<?php echo $seq?>">
+				<input type="hidden" name="bo_table" value="<?php echo $bo_table?>">
+				<input type="hidden" name="wr_1" value="<?php echo $wr_1?>">
+				<div id="Request">
+				<table>
+						<colgroup>			
+							<col class="titWIDTH">
+							<col class="subWIDTH">
+						</colgroup>
+						<tbody>
+						
+						<?php if($bo_table != "board7") {?>
+                        <tr>
+							<td class="txtCenter">비밀글</td>
+							<td class="PL">
+								<input type="checkbox" name="wr_secret" value="1" <?php echo get_checked($row['wr_secret'], 1)?>>
+							</td>
+						</tr>
+						<?php }?>
+						
+						<?php if($ca['nb_category']) {?>
+                        <tr>
+							<td class="txtCenter">카테고리</td>
+							<td class="PL">
+								<select name="ca_name" id="ca_name" style="padding:4px">
+									<?php 
+									
+									
+									for($i=0; $i<count($caArr); $i++) {
+									
+									?>
+									<option value="<?php echo $caArr[$i]?>" <?php echo get_selected($caArr[$i], $row['ca_name'])?>><?php echo $caArr[$i]?></option>
+									<?php }?>
+								</select>
+							</td>
+						</tr>
+						<?php }?>
+                        <tr>
+							<td class="txtCenter">제목</td>
+							<td class="PL">
+								<input type="text" name="wr_subject" id="strTitle" class="write_nameBox" value="<?php echo $row['wr_subject']?>">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">내용</td>
+							<td class="PL">
+							<?php echo editor_html("wr_content", get_text(html_purifier($row['wr_content']), 0)); ?>
+							</td>
+						</tr>
+						
+                        <tr>
+							<td class="txtCenter">첨부파일1</td>
+							<td class="PL">
+								<input type="file" name="wr_file1" id="strTitle" class="write_nameBox">
+								
+								<?php if($row['wr_file1']) {?>
+								<?php echo $row['wr_file1_name']?> <input type="checkbox" name="wr_file1_del" value="1">파일삭제
+								<?php }?>
+							</td>
+						</tr>
+						
+                        <tr>
+							<td class="txtCenter">첨부파일2</td>
+							<td class="PL">
+								<input type="file" name="wr_file2" id="strTitle" class="write_nameBox">
+								<?php if($row['wr_file2']) {?>
+								<?php echo $row['wr_file2_name']?> <input type="checkbox" name="wr_file2_del" value="1">파일삭제
+								<?php }?>
+							</td>
+						</tr>
+					</tbody>
+                   </table>
+                   
+                   
+                   <p style="text-align:center; margin-top:20px;">
+						<input type="submit" value="확인" class="kraftcf-form-control kraftcf-submit">
+						<input type="button" value="목록" class="kraftcf-form-control kraftcf-submit" style="background:#666" onclick="location.href='./board.html?bo_table=<?php echo $bo_table?>'">
+						
+						<?php if($delete_href) {?>
+						<input type="button" value="삭제" class="kraftcf-form-control kraftcf-submit" style="background:#666" onclick="del(<?php echo $row['seq']?>)">
+						<?php }?>
+					</p>
+               </div>
+			   </form>
+				
+			  </div>
+				</div>
+				
+			  </div>
+			  <!--End container--> 
+			  
+			</div>
+		  </article>
+		</main>
+		<!-- #main --> 
+	  </div>
+	  <!-- #primary --> 
+	  
+	  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700" ><i class="fa fa-angle-up"></i></a> </div>
+
+<? include "footer.html"; ?>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	  <script>
+	  
+	  
+		function del(seq) {
+			
+			if(confirm('정말 삭제하시겠습니까?')) {
+				
+				location.href = './update/project_update.php?w=d&seq='+seq;
+				return false;
+				
+			} else {
+				return false;
+			}
+			
+		}
+		function chkfrm(f) {
+			<?php echo get_editor_js("wr_content"); ?>
+			
+			return true;
+		}
+		
+		$(function() {
+			
+			$('#nw_code').bind('change', function() {
+				
+				$.post('./update/chk.code.php', { nw_code : $(this).val() }, function(data) {
+				
+					if(data) {
+						alert(data);
+						$('#nw_code').val('');
+						return false;
+					}
+					
+				})
+			})
+		 
+			//검색형 셀렉트박스로 변경
+			 $('.select2').select2({
+				  language: {
+					noResults: function (params) {
+					  return "검색 결과가 없습니다.";
+					}
+				  }
+			 });
+		 })
+	  </script>

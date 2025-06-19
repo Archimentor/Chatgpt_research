@@ -1,0 +1,328 @@
+<?php 
+include_once("header.html"); 
+include_once(G5_LIB_PATH.'/thumbnail.lib.php');
+include_once(G5_EDITOR_LIB);
+
+// 관리자 확인
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) $is_admin = true; 
+
+// 글 정보 불러오기
+$row = sql_fetch("select * from {$none['home_board']} where bo_table= '$bo_table' and seq = '$seq'");
+
+// 권한 체크 (비밀글 등)
+if(!$is_admin && ($row['mb_id'] != $member['mb_id'])) { 
+    if($row['wr_secret'] == 1)
+        alert('비밀글입니다.');
+}
+
+// 수정/삭제 권한
+if($is_admin || $member['mb_id'] == $row['mb_id']) {
+    $delete_href = "./update/board_update.php?w=d&bo_table=".$bo_table."&seq=".$seq;
+    $modify_href = "./board_write.html?w=u&bo_table=".$bo_table."&seq=".$seq;
+} else {
+    $delete_href = "";
+    $modify_href = "";
+}
+
+// 조회수 세션 처리
+$ss_name = 'ss_view_'.$bo_table.'_'.$seq;
+if (!get_session($ss_name)) {
+    set_session($ss_name, true);
+    sql_query("update {$none['home_board']} set wr_view = wr_view + 1 where seq = '{$seq}' ");
+}
+?>
+<script type='text/javascript' src='assets/js/vendor/jquery-1.12.4.min.js'></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+.select2 { width:100% !important; }
+.select2-container .select2-selection--single { height:36px; }
+.select2-container--default .select2-selection--single {
+    border:1px solid #ced4da; 
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height:34px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height:34px;
+}
+
+/* 글 상단 */
+.header {
+    border-bottom:1px solid #ddd; 
+    margin-top:40px;
+    padding-bottom: 10px;
+}
+.header h3 { 
+    margin-bottom:5px; 
+    font-size:24px;
+    font-weight: 600;
+}
+.header i { 
+    font-size:13px; 
+}
+.header span { 
+    font-size:13px; 
+    margin-right: 15px; 
+}
+
+/* 본문 내용 */
+.content { 
+    padding:15px 0; 
+    min-height:250px;
+    line-height:1.6; 
+    color:#333; 
+}
+.content p {margin:0px; }
+.content ol, .content ul, .content li, .content dl, 
+.content dt, .content dd {
+    padding: revert; 
+    margin:0px; 
+    list-style:auto; 
+    color:#000;
+}
+
+/* 첨부파일 테이블 */
+.attach-table {
+    margin-top:15px;
+    border-collapse: collapse;
+    width: 100%;
+}
+.attach-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+.attach-table .txtCenter {
+    width: 100px; 
+    background: #f9f9f9; 
+    text-align: center; 
+}
+
+/* 버튼 미니 스타일 */
+.btn {
+    display: inline-block;
+    padding: 6px 15px;
+    margin: 0 3px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+/* 파란 버튼 */
+.btn-blue {
+    background: #007bff;
+}
+.btn-blue:hover {
+    background: #0069d9;
+}
+/* 빨간 버튼 */
+.btn-red {
+    background: #dc3545;
+}
+.btn-red:hover {
+    background: #c82333;
+}
+/* 회색 버튼 */
+.btn-gray {
+    background: #6c757d;
+}
+.btn-gray:hover {
+    background: #5a6268;
+}
+
+/* 목록 버튼 등 */
+.button-area {
+    text-align:center; 
+    margin-top:30px;
+}
+
+/* 반응형 등은 기존 bootstrap이나 선택2 사용 */
+</style>
+
+<div class="site-content-contain">
+<?php include "left06.html"; ?>
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article class="page">
+        <div class="entry-content">
+          <div class="container m-b-100">
+            <div class="row">
+              <div class="col-sm-12">
+                <div id="Request">
+                  
+                  <!-- 상단 헤더 영역 -->
+                  <div class="header">
+                    <?php if($row['ca_name']) { ?>
+                    <span><?php echo $row['ca_name']?></span>
+                    <?php } ?>
+                    <h3><?php echo $row['wr_subject']?></h3>
+                    <span>
+                      <i class="fa fa-user" aria-hidden="true"></i> 
+                      <?php echo $row['wr_name']?>
+                    </span>
+                    <span>
+                      <i class="fa fa-clock" aria-hidden="true"></i> 
+                      <?php echo date('y-m-d H:i', strtotime($row['wr_datetime']))?>
+                    </span>
+                    <span>
+                      <i class="fa fa-eye" aria-hidden="true"></i> 
+                      <?php echo number_format($row['wr_view'])?>
+                    </span>
+                  </div>
+
+                  <!-- 본문 내용 -->
+                  <div class="content">
+                    <?php echo get_view_thumbnail($row['wr_content']); ?>
+                  </div>
+                
+                  <!-- 첨부파일 영역 -->
+                  <?php if($row['wr_file1'] || $row['wr_file2']) { ?>
+                  <table class="attach-table">
+                    <tbody>
+                    <?php if($row['wr_file1']) { ?>
+                    <tr>
+                      <td class="txtCenter">첨부파일1</td>
+                      <td>
+                        <a href="./update/board_file_download.php?seq=<?php echo $row['seq']?>&no=1">
+                          <?php echo $row['wr_file1_name']?>
+                        </a>
+                      </td>
+                    </tr>
+                    <?php } ?>
+                    <?php if($row['wr_file2']) { ?>
+                    <tr>
+                      <td class="txtCenter">첨부파일2</td>
+                      <td>
+                        <a href="./update/board_file_download.php?seq=<?php echo $row['seq']?>&no=2">
+                          <?php echo $row['wr_file2_name']?>
+                        </a>
+                      </td>
+                    </tr>
+                    <?php } ?>
+                    </tbody>
+                  </table>
+                  <?php } else { ?>
+                  <hr style="margin-top:15px;">
+                  <?php } ?>
+                  
+                  <!-- 특정 게시판(board5)에서의 답변 로직 (그대로) -->
+                  <?php if($bo_table == "board5") { ?>
+                    <?php if($is_admin) { ?>
+                    <form action="./update/board_answer.php" method="post" style="margin-top:15px;">
+                      <input type="hidden" name="bo_table" value="<?php echo $bo_table?>">
+                      <input type="hidden" name="seq" value="<?php echo $seq?>">
+                      <table class="attach-table">
+                        <tbody>
+                          <tr>
+                            <td class="txtCenter">답변</td>
+                            <td style="border-right:0">
+                              <textarea name="wr_answer" style="width:100%; height:100px;">
+                                <?php echo $row['wr_answer']?>
+                              </textarea>
+                            </td>
+                            <td style="border-left:0; width:80px; text-align:center;">
+                              <button type="submit" class="btn btn-blue" style="width:100%; height:100%;">
+                                작성완료
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </form>
+                    <?php } else { ?>
+                    <table class="attach-table" style="margin-top:15px;">
+                      <tbody>
+                        <tr>
+                          <td class="txtCenter">답변</td>
+                          <td>
+                            <?php 
+                            if(!$row['wr_answer'])
+                              echo '답변 준비 중입니다.';
+                            else
+                              echo nl2br($row['wr_answer']);
+                            ?>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <?php } ?>
+                  <?php } ?>
+                  
+                  <!-- 하단 버튼 영역 -->
+                  <div class="button-area">
+                    <?php if($modify_href) { ?>
+                    <button class="btn btn-blue" 
+                            onclick="location.href='<?php echo $modify_href?>'">
+                      수정
+                    </button>
+                    <?php } ?>
+
+                    <?php if($delete_href) { ?>
+                    <button class="btn btn-red" 
+                            onclick="del(<?php echo $row['seq']?>)">
+                      삭제
+                    </button>
+                    <?php } ?>
+
+                    <button class="btn btn-gray" 
+                            onclick="location.href='./board.html?bo_table=<?php echo $bo_table?>'">
+                      목록
+                    </button>
+                  </div>
+                  
+                </div><!-- /#Request -->
+              </div>
+            </div>
+          </div><!-- /.container -->
+        </div>
+      </article>
+    </main>
+    <!-- #main -->
+  </div>
+  <!-- #primary -->
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700">
+    <i class="fa fa-angle-up"></i>
+  </a>
+</div><!-- /.site-content -->
+
+<? include "footer.html"; ?>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+function del(seq) {
+    if(confirm('정말 삭제하시겠습니까?')) {
+        location.href = './update/board_update.php?w=d&bo_table=<?php echo $bo_table?>&seq='+seq;
+    } else {
+        return false;
+    }
+}
+
+function chkfrm(f) {
+    <?php echo get_editor_js("wr_content"); ?>
+    return true;
+}
+
+$(function() {
+    $('#nw_code').bind('change', function() {
+        $.post('./update/chk.code.php', { nw_code : $(this).val() }, function(data) {
+            if(data) {
+                alert(data);
+                $('#nw_code').val('');
+                return false;
+            }
+        })
+    });
+    
+    // select2
+    $('.select2').select2({
+        language: {
+            noResults: function (params) {
+                return "검색 결과가 없습니다.";
+            }
+        }
+    });
+});
+</script>

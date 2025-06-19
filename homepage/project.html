@@ -1,0 +1,198 @@
+<?php
+include_once("header.html");
+include_once(G5_LIB_PATH.'/thumbnail.lib.php');
+
+// ★ 건축사 ID 파라미터
+$architect_id = isset($_GET['architect_id']) ? (int)$_GET['architect_id'] : 0;
+
+// 1) 건축사 이름 가져오기(옵션)
+//    - architect_id로 enterprise_list에서 no_company 조회
+$architect_name = '';
+if ($architect_id) {
+    $ar_sql = " SELECT no_company 
+                  FROM {$none['enterprise_list']} 
+                 WHERE seq = '$architect_id'
+                 LIMIT 1 ";
+    $ar_row = sql_fetch($ar_sql);
+    $architect_name = $ar_row['no_company']; // 없으면 ''
+}
+
+// 기본 쿼리 준비
+$sql_common = " FROM {$none['home_project']} hp ";
+$sql_search = " WHERE (1) ";
+
+if (!$sst) {
+    $sst  = "seq";
+    $sod = "desc";
+}
+$sql_order = " ORDER BY $sst $sod ";
+
+// ▼▼▼ 여기서 '건축사 ID' 필터링 ▼▼▼
+if ($architect_id) {
+    $sql_search .= "
+      AND hp.nw_code IN (
+        SELECT w.nw_code
+          FROM {$none['worksite']} w
+         WHERE w.nw_ptype4_1 = '$architect_id'
+      )
+    ";
+}
+
+// 전체 개수
+$sql = " SELECT COUNT(*) AS cnt 
+           {$sql_common} 
+           {$sql_search} 
+           {$sql_order} ";
+$row = sql_fetch($sql);
+$total_count = $row['cnt'];
+
+// 페이징
+$rows = 9;
+$total_page  = ceil($total_count / $rows);
+if ($page < 1) { $page = 1; }
+$from_record = ($page - 1) * $rows;
+
+// 실제 목록
+$sql = " SELECT hp.*
+           {$sql_common}
+           {$sql_search}
+         {$sql_order}
+         LIMIT {$from_record}, {$rows} ";
+$result = sql_query($sql);
+
+// 관리자 여부
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) {
+    $is_admin = true;
+}
+?>
+
+<div class="site-content-contain">
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article class="page">
+        <div class="entry-content">
+          <div class="container m-b-100">
+          
+            <?php
+            // 2) 만약 건축사사무소를 클릭하여 필터된 상태라면, 상단에 이름 + 게시물 수 표시
+            if ($architect_id && $architect_name) {
+            ?>
+            <div style="text-align:center; margin-bottom:30px;">
+              <!-- 건축사 이름은 조금 더 크게 -->
+              <span style="font-size:1.2rem; font-weight:600;">
+                <?php echo $architect_name?>
+              </span>
+              <!-- 게시물 수는 작게 -->
+              <span style="font-size:0.9rem; color:#666;">
+                &nbsp;<?php echo $total_count?> POSTS
+              </span>
+            </div>
+            <?php } ?>
+
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="portfolio-wrap">
+                  <div id="portfolio-container-grid" class="cbp"
+                       data-loadmoreaction="click"
+                       data-loadnoofitems="1"
+                       data-layoutmode="grid"
+                       data-captionanimation="zoom"
+                       data-animationtype="sequentially"
+                       data-gapvertical="30"
+                       data-gaphorizontal="70"
+                       data-displaytype="default"
+                       data-large-desktop="3"
+                       data-tablet-landscape="3"
+                       data-tablet-portrait="2"
+                       data-mobile="1"
+                       data-defaultfilter="*">
+
+<?php
+for($i=0; $row=sql_fetch_array($result); $i++) {
+
+    // worksite + enterprise_list 조인
+    $work_sql = "
+      SELECT w.pj_title_kr,
+             w.pj_title_en,
+             w.pj_year,
+             w.nw_ptype4_1,
+             e.no_company AS enterprise_name
+        FROM {$none['worksite']} w
+        LEFT JOIN {$none['enterprise_list']} e
+               ON w.nw_ptype4_1 = e.seq
+       WHERE w.nw_code = '{$row['nw_code']}'
+       LIMIT 1
+    ";
+    $work = sql_fetch($work_sql);
+
+    // 썸네일 처리
+    $img = get_editor_image2($row['nh_content'], false);
+    $p = parse_url($img[1][0]);
+    if(strpos($p['path'], '/'.G5_DATA_DIR.'/') != 0) {
+        $data_path = preg_replace('/^\/.*\/'.G5_DATA_DIR.'/', '/'.G5_DATA_DIR, $p['path']);
+    } else {
+        $data_path = $p['path'];
+    }
+    $srcfile = G5_PATH.$data_path;
+    $filename = basename($srcfile);
+    $filepath = dirname($srcfile);
+    $thumb = thumbnail($filename, $filepath, $filepath, 350, 233, true, true);
+
+    $ori = G5_URL.$data_path;
+    $src = G5_URL.str_replace($filename, $thumb, $data_path);
+?>
+
+                    <div class="cbp-item">
+                      <a class="cbp-caption page"
+                         href="project_view.html?seq=<?php echo $row['seq']?>">
+                        <div class="cbp-caption">
+                          <div class="cbp-caption-defaultWrap">
+                            <img width="350" height="233"
+                                 src="<?php echo $src;?>"
+                                 alt="" />
+                          </div>
+                        </div>
+
+                        <div class="cbp-l-grid-agency-title text-right">
+                          <?php echo $work['pj_title_kr']?><br />
+                          
+                          <!-- 건축사 이름을 클릭 => architect_id 파라미터 -->
+                          <a href="project.html?architect_id=<?php echo $work['nw_ptype4_1']?>">
+                            <?php echo $work['enterprise_name']?>
+                          </a>, 
+                          <?php echo $work['pj_year']?>
+                        </div>
+                      </a>
+                    </div>
+
+<?php } // end for ?>
+
+                  </div><!-- #portfolio-container-grid -->
+                </div><!-- .portfolio-wrap -->
+              </div><!-- .col-sm-12 -->
+            </div><!-- .row -->
+
+            <div class="pagination-holder pagination-holder-right m-t-50 m-b-50">
+             <?php
+             // 페이징
+             echo get_paging_home(5, $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page=');
+             ?>
+            </div>
+          </div><!-- .container -->
+
+          <?php if($is_admin) { ?>
+            <input type="button" value="작성" class="kraftcf-form-control kraftcf-submit" onclick="location.href='./project_write.html'">
+          <?php } ?>
+
+        </div><!-- .entry-content -->
+      </article>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700">
+    <i class="fa fa-angle-up"></i>
+  </a>
+</div><!-- #content -->
+
+<? include "footer.html"; ?>

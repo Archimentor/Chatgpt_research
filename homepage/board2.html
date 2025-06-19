@@ -1,0 +1,262 @@
+<?php 
+include_once('../_common.php');
+include_once(G5_LIB_PATH.'/thumbnail.lib.php');
+//건축주 협의게시판
+if($is_guest) alert('로그인 후 이용바랍니다.');
+
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) $is_admin = true; 
+
+
+if(!$is_admin && !owner_check($member['mb_id'])) {
+	alert('건축주만 이용가능한 메뉴 입니다.');
+}
+
+$owner_num = owner_check($member['mb_id']);
+
+$chk = sql_fetch("select * from  {$none['worksite']} where nw_status = 0 and (nw_ptype3_1 = '{$owner_num}' or nw_ptype3_2 = '{$owner_num}' or nw_ptype3_3 = '{$owner_num}') and nw_code = '$code' order by nw_code desc");
+
+if(!$is_admin && !$chk) {
+	alert('해당 시공현장의 건축주만 이용가능 합니다.', './construction_view01.html?code='.$code);
+}
+
+
+$sql_common = " from  {$none['home_board']}  ";
+$sql_search = " where bo_table = '$bo_table' and wr_1 = '$code'";
+
+
+if (!$sst) {
+	$sst  = "seq";
+	$sod = "desc";
+}
+$sql_order = " order by $sst $sod ";
+
+$sql = " select count(*) as cnt {$sql_common} {$sql_search} {$sql_order} ";
+$row = sql_fetch($sql);
+$total_count = $row['cnt'];
+
+$rows = 10;
+$total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
+if ($page < 1) { $page = 1; } // 페이지가 없으면 첫 페이지 (1 페이지)
+$from_record = ($page - 1) * $rows; // 시작 열을 구함
+
+$sql = " select * {$sql_common} {$sql_search} {$sql_order} limit {$from_record}, {$rows} ";
+$result = sql_query($sql);
+
+if($member['mb_level2'] == 1 || $member['mb_level2'] == 3) $is_admin = true; 
+
+$qstr .= "&amp;bo_table=$bo_table&amp;code=$code";
+
+
+	//건축주게시판은 직원만 작성가능
+	$write_href = './board_write.html?bo_table='.$bo_table.'&code='.$code;
+	
+
+$ca = sql_fetch("select * from {$none['home_board_cate']} where bo_table = '$bo_table'");
+$caArr = explode('@', $ca['nb_category']);	
+
+$work = sql_fetch("select * from {$none['worksite']} where nw_code = '{$code}'");
+$info = sql_fetch("select * from {$none['enterprise_list']} where seq = '{$work['nw_ptype4_1']}'");
+
+
+$img = get_editor_image2($row['nh_content'], false);
+$txt = urlencode('[(주)엔원종합건설] '.$work['pj_title_en'].'|'.$work['pj_year']);
+$facebook = 'http://facebook.com/sharer.php?u='.urlencode('http://n1con.com/homepage/project_view.html?seq='.$row['seq']);
+$twitter = 'https://twitter.com/intent/tweet?text='.$txt.'&url='.urlencode('http://n1con.com/homepage/project_view.html?seq='.$row['seq']);
+$pinterest = 'https://www.pinterest.co.kr/pin/create/button/?url=http://n1con.com/homepage/project_view.html?seq='.$row['seq'].'&media='.urlencode($img[1][0]).'&description='.urlencode($txt);
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Document Title -->
+<title>엔원종합건설</title>
+
+<!-- Metas -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:url" content="http://n1con.com/homepage/project_view.html?seq=<?php echo $seq?>" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="<?php echo $work['pj_title_en']?> | <?php echo $work['pj_year']?>" />
+<meta property="og:description" content="[(주)엔원종합건설] <?php echo $work['pj_title_kr']?>" />
+<meta property="og:image" content="<?php echo $img[1][0]?>" />
+<meta property="fb:app_id" content="947729072844951" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+<!-- Links -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css" />
+<link rel='stylesheet' id='bootstrap-css'  href='assets/lib/bootstrap/css/bootstrap.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='font-awesome-css'  href='assets/css/icons/font-awesome.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='swiper-css' href='assets/lib/swiper/css/swiper.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='cubeportfolio-css'  href='assets/lib/cubeportfolio/css/cubeportfolio.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='main-css'  href='style.css' type='text/css' media='all' />
+</head>
+<body class="single single-portfolio portfolio-details-left">
+
+<!-- Page Wrapper -->
+<div id="page" class="site">
+<header id="masthead" class="site-header standard sticky" role="banner">
+  <?php include_once('./inc.menu.php')?>
+  <!-- .wrap --> 
+</header>
+<!-- #masthead -->
+
+<div class="site-content-contain">
+  <div id="content" class="site-content">
+    <div id="primary" class="content-area">
+      <main id="main" class="site-main" role="main">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            <article class="portfolio left-sidebar clearfix">
+              <header class="entry-header">
+                <h2 class="entry-title"><?php echo $work['pj_title_kr']?></h2>
+                <div class="description"><?php echo $work['pj_year']?></div>
+                <div class="entry-meta">
+                  <div class="meta-desc">
+                    <ul class="c-list04">
+                      <li><span class="tit">건축사</span><span class="txt"><?php echo $work['pj_upche']?></span></li>
+                      <li><span class="tit">현장소장</span><span class="txt"><?php echo $work['pj_person']?></span></li>
+                      <li><span class="tit">지역</span><span class="txt"><?php echo $work['pj_addr']?></span></li>
+                      <li><span class="tit">용도</span><span class="txt"> <?php echo $work['pj_type']?></span></li>
+                      <li><span class="tit">대지면적</span><span class="txt"><?php echo $work['nw_area1']?>㎡</span></li>
+                      <li><span class="tit">건축면적</span><span class="txt"><?php echo $work['nw_area2']?>㎡</span></li>
+                      <li><span class="tit">연면적</span><span class="txt"><?php echo $work['nw_area3']?>㎡</span></li>
+                      <li><span class="tit">공사기간 </span><span class="txt"><?php echo date('Y.m.d', strtotime($work['nw_sdate']))?>~ <?php echo date('Y.m.d', strtotime($work['nw_edate']))?></span></li>
+                      <li><span class="tit">사진작가 </span><span class="txt"><?php echo $work['pj_photo']?></span></li>
+                    </ul>
+                  </div>
+                  <div class="meta-entries ">
+                    <ul>
+                      <li class="has-children"> <span>건축사</span> <a href="#none" data-toggle="modal" data-target="#Modal"><?php echo $work['pj_upche']?></a></li>
+                      <li class="portfolio-social-share-links"> <span>Share</span> <a href="<?php echo $facebook?>" target="_blank" title="Share portfolio on Facebook"> Facebook </a> <a href="<?php echo $twitter?>"  target="_blank" title="Share portfolio on twitter"> Twitter </a> <a href="<?php echo $pinterest?>" target="_blank" title="Share portfolio on Pinterest">Pinterest </a> </li>
+                     
+					 
+                    </ul>
+                  </div>
+                </div>
+              </header>
+              <!-- .entry-header -->
+              
+              <div class="entry-content">
+              <div class="cbp-wrapper-outer"><div class="cbp-wrapper">
+                <ul class="tabType01">
+                  <li><a href="./construction_view01.html?code=<?php echo $code?>">스마트일보</a></li>
+                  <li  class="tabON"><a href="./board2.html?bo_table=board7&code=<?php echo $code?>">건축주협의게시판</a></li>
+                </ul>
+					<div class="ingLIST" style="margin-top:40px">
+                    <ul>
+                      <li>
+                        <table>
+                          </colgroup>
+						  <thead style="background:#fbfbfb">
+							<tr>
+							<th>번호</th>
+							<?php if($ca['nb_category']) {?>
+							<th>카테고리</th>
+							<?php }?>
+							<th style="width:60%">제목</th>
+							<th>작성자</th>
+							<th class="mobile_display">작성일</th>
+							</tr>
+						  </thead>
+                          <tbody>
+							<?php 
+							for($i=0; $row = sql_fetch_array($result); $i++) {
+							
+							$num = $total_count - ($page - 1) * $rows - $i;
+							
+							
+							
+							?>
+							<tr>
+								<td style="padding:0" class="text-center b-b"><?php echo $num?></td>
+								<?php if($ca['nb_category']) {?>
+								<td style="padding:0" class="text-center b-b"><?php echo $row['ca_name']?></td>
+								<?php }?>
+								<td>
+								
+								<?php if($row['wr_secret'] == 1) {?><i class="fa fa-lock" aria-hidden="true" style="font-size:13px"></i><?php }?>
+								
+								<a href="./board_view2.html?bo_table=<?php echo $bo_table?>&seq=<?php echo $row['seq']?>&code=<?php echo $code?>"><?php echo $row['wr_subject']?></a>
+								
+								
+								</td>
+								<td style="padding:0" class="text-center b-b"><?php echo $row['wr_name'];?></td>
+								<td style="padding:0" class="text-center mobile_display b-b"><?php echo date('Y.m.d', strtotime($row['wr_datetime']))?></td>
+							
+							</tr>
+							<?php }?>
+							<?php if($i == 0) { ?> <tr><td colspan="5">등록 된 글이 없습니다.</td></tr><?php }?>
+                          </tbody>
+						  
+                        </table>
+                      </li>
+                    </ul>
+					<div class="pagination-holder pagination-holder-right  m-t-50   m-b-50">
+				
+						<?php echo get_paging_home(5, $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='); ?>
+						</div>
+					
+					 </div> 
+					<?php if($write_href) {?>
+				  <input type="button" value="작성" class="kraftcf-form-control kraftcf-submit" style="margin-top:10px;float:right" onclick="location.href='<?php echo $write_href?>'">
+				  <div style="clear:both"></div>
+				  <?php }?>
+                  </div>
+				  
+				   
+				 </div>  
+				 </div>
+				 </div>
+				 </div>
+				 </div>
+
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a> </div>
+<!-- #content -->
+
+
+ <footer id="footer" class="site-footer standard" role="contentinfo" style="margin-top:40px">
+      <div class="container">
+        <div class="site-info">
+          <p class="copyright"> copyright © N1 Architecture All Right Reserved. </p>
+        </div>
+        <nav class="footer-socials" role="navigation" aria-label="Footer Social Links Menu">
+          <ul id="social-media-footer" class="social-links-menu">
+            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+  </div>
+  <!-- .site-content-contain --> 
+</div>
+<!-- Page Wrapper Ends --> 
+<!-- Modal -->
+<script>
+$('#Modal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var seq = button.data('seq') // Extract info from data-* attributes
+  var modal = $(this)
+  modal.find('.modal-body input[name="seq"]').val(seq)
+})
+function chkfrm(f) {
+	
+	if(f.wr_name.value == "") {
+		alert('성함을 입력하세요.');
+		f.wr_name.focus();
+		return false;
+	}
+	if(f.wr_tel.value == "") {
+		alert('연락처를 입력하세요.');
+		f.wr_tel.focus();
+		return false;
+	}
+
+}
+
+function inputPhoneNumber(obj) { var number = obj.value.replace(/[^0-9]/g, ""); var phone = ""; if(number.length < 4) { return number; } else if(number.length < 7) { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3); } else if(number.length < 11) { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3, 3); phone += "-"; phone += number.substr(6); } else { phone += number.substr(0, 3); phone += "-"; phone += number.substr(3, 4); phone += "-"; phone += number.substr(7); } obj.value = phone; }
+
+</script>

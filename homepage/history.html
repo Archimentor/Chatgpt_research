@@ -1,0 +1,149 @@
+<? include "header.html"; ?>
+
+<? 
+$subMenu = 6;
+include "left01.html"; 
+?>
+
+<!-- 연도, 본문 가독성용 CSS -->
+<style>
+/* 연도 스타일(크게, 여백) */
+.history-year {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 40px;
+  margin-bottom: 14px;
+  line-height: 1.3;
+}
+
+/* 본문(일반 글씨) */
+.history-details {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  font-weight: 300; /* 굵은 글씨 사용 안 함 */
+  color: #333;
+}
+</style>
+
+<div class="site-content-contain">
+  <div id="content" class="site-content">
+    <div id="primary" class="content-area">
+      <main id="main" class="site-main" role="main">
+        <article class="page">
+          <div class="entry-content">
+            <div class="container">
+              <div class="row">
+                <!-- 상단 여백 -->
+                <div class="d-none d-lg-block d-xl-block">
+                  <div class="empty-space-30"></div>
+                </div>
+              </div>
+
+              <!-- 본문 -->
+              <div class="row m-b-90">
+                <div class="col-sm-12">
+                  <div class="col-md-12">
+                    <div class="row">
+                      <!-- 좌측 타이틀 -->
+                      <div class="col-md-3">
+                        <div class="heading-block text-left">
+                          <h1 class="block-size-4">HISTORY</h1>
+                        </div>
+                      </div>
+
+                      <!-- 우측 연혁 내용 -->
+                      <div class="col-md-9">
+
+                        <!-- 2017 -->
+                        <div class="history-year">2017</div>
+                        <div class="history-details">
+                          엔원건설 설립
+                        </div>
+
+                        <!-- 2018 -->
+                        <div class="history-year">2018</div>
+                        <div class="history-details">
+                          엔원종합건설 설립<br />
+                          건설업 면허 취득
+                        </div>
+
+                        <!-- 2019 -->
+                        <div class="history-year">2019</div>
+                        <div class="history-details">
+                          제13회 경상남도 건축대상제 동상
+                        </div>
+
+                        <!-- 2020 -->
+                        <div class="history-year">2020</div>
+                        <div class="history-details">
+                          BIM 도입, BIM견적시스템 도입<br />
+                          ㈜엔원종합건설 서울지사 설립<br />
+                          2020 건축명장
+                        </div>
+
+                        <!-- 2021 -->
+                        <div class="history-year">2021</div>
+                        <div class="history-details">
+                          BIM 설계시스템 도입<br />
+                          홈페이지 개편, 스마트현장관리·온라인기성청구·전자결재(자체개발)<br />
+                          부산건축상 장려상<br />
+                          경북 건축대전 건축문화상 최우수상<br />
+                          2021 건축명장
+                        </div>
+
+                        <!-- 2022 -->
+                        <div class="history-year">2022</div>
+                        <div class="history-details">
+                          디지털건축기술연구소 설립<br />
+                          경영혁신형 중소기업(Main-Biz) 인증<br />
+                          공사지명원 저작권 획득<br />
+                          한국건설기술인협회 MOU 체결<br />
+                          건설공사 종합관리시스템 특허 출원<br />
+                          2022 건축명장
+                        </div>
+
+                        <!-- 2023 -->
+                        <div class="history-year">2023</div>
+                        <div class="history-details">
+                          ChatGPT AI 시스템 도입(GPT-4)<br />
+                          ISO(9001,14001,45001) 경영시스템 인증<br />
+                          부산다운건축상 은상<br />
+                          다우데이타 MOU 협약 체결<br />
+                          경기도건축문화상 입상<br />
+                          특허 획득(제10-2601586호)<br />
+                          부산광역시 우수 건설기술인 인증<br />
+                          2023 우수신용등급 인증서 취득<br />
+                          2023 건축명장
+                        </div>
+
+                        <!-- 2024 -->
+                        <div class="history-year">2024</div>
+                        <div class="history-details">
+                          상표 획득(제40-2178422호)<br />
+                          실내건축공사업 등록<br />
+                          부천시 건축공간문화상 입상<br />
+                          부산다운건축상 장려상<br />
+                          김해 건축대상제 최우수상 <br />
+                          서울시 "건축사와 함께하는 우리동네 좋은집찾기" 동상 <br />
+                          의료 협력 협약 : 힘내라병원<br />
+                          2024 건축명장
+                        </div>
+
+                      </div><!-- col-md-9 -->
+                    </div><!-- row -->
+                  </div><!-- col-md-12 -->
+                </div><!-- row m-b-90 -->
+              </div><!-- container -->
+            </div><!-- entry-content -->
+          </div><!-- article -->
+        </main><!-- #main -->
+      </div><!-- #primary -->
+    </div><!-- #content -->
+
+    <!-- 맨 위로 올라가기 버튼 -->
+    <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700">
+      <i class="fa fa-angle-up"></i>
+    </a>
+</div><!-- .site-content-contain -->
+
+<? include "footer.html"; ?>

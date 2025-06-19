@@ -1,0 +1,77 @@
+<? include "header.html"; 
+
+if($member['mb_level2'] == 1  || $member['mb_level2'] == 3 ) $is_admin = true; 
+
+$row = sql_fetch("select * from {$none['home_gongsa']} ");
+?>
+  
+<? 
+$subMenu = 4;
+include "left01.html"; ?>
+<div class="site-content-contain">
+              
+
+
+
+
+<div id="content" class="site-content">                    
+                    <div id="primary" class="content-area">
+                        <main id="main" class="site-main" role="main">
+                            <article class="page">                                
+                                <div class="entry-content">
+
+                                    <div class="container">
+                                        <div class="row">                                    
+                                            <div class="d-none d-lg-block d-xl-block">                                                                     
+                                                <div class="empty-space-30"></div>
+                                            </div>                                           
+                                        </div>
+
+                                        <div class="row m-b-90">                                    
+                                                                                                                   
+
+                                            
+                                        <div class="col-sm-12"> 
+                                                <div class="heading-block text-center">
+                                                    <h1 class="block-size-4">
+                                                       공사지명원
+                                                    </h1>
+                                                </div>
+                                                
+											<div class="col-sm-12">                                            
+                                                <div class="single-image" style="text-align:center">
+                                                    <figure class="figure">
+                                                     <img src="<?php echo NONE_URL?>/_data/gongsa/<?php echo $row['main_img']?>">
+                                                    </figure>
+                                                </div>            
+                                            </div>
+											<p style="text-align:center; margin-top:20px;">
+										   <input type="button" onclick="window.open('<?php echo NONE_URL?>/_data/gongsa/<?php echo $row['pdf_file']?>')" value="웹보기" class="kraftcf-form-control kraftcf-submit">
+										   <input type="button" onclick="location.href='./update/gongsa_down.php'" value="다운로드" class="kraftcf-form-control kraftcf-submit">
+										   </p>
+										   
+										   <?php if($is_admin) {?>
+											<p style="text-align:center; margin-top:20px;">
+										   <input type="button" value="업로드" class="kraftcf-form-control kraftcf-submit" onclick="location.href='./gongsa_write.html'">
+										 
+										   </p>
+										   <?php }?>
+                                             </div>
+										</div>
+
+                                </div>
+                            </article>        
+                        </main><!-- #main -->
+                    </div><!-- #primary -->                                
+
+                    <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a>
+
+                </div>
+
+
+
+
+
+
+
+           <? include "footer.html"; ?>

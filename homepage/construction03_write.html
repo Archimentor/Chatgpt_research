@@ -1,0 +1,228 @@
+<?php include_once("header.html"); 
+
+include_once(G5_EDITOR_LIB);
+
+
+if($is_guest) alert('로그인 후 이용바랍니다.');
+
+
+//
+if(!$is_admin && !owner_check($member['mb_id'])) {
+
+	alert('건축주만 이용가능한 메뉴 입니다.');
+}
+
+$owner_num = owner_check($member['mb_id']);
+
+
+
+if($w == 'u') {
+	$row = sql_fetch("select * from  {$none['home_project']} where  seq = '$seq'");
+
+}
+
+?>
+<script type='text/javascript' src='assets/js/vendor/jquery-1.12.4.min.js'></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+.select2 { width:100% !important }
+.select2-container .select2-selection--single {  height:36px }
+.select2-container--default .select2-selection--single { border:1px solid #ced4da; }
+.select2-container--default .select2-selection--single .select2-selection__rendered { line-height:34px }
+.select2-container--default .select2-selection--single .select2-selection__arrow { height:34px }
+</style>
+<div class="site-content-contain">
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article class="page">
+        <div class="entry-content">
+          <div class="container m-b-100">
+            <div class="row">
+              <div class="col-sm-12">
+			  
+				<form action="./update/repair_update.php" method="post" enctype="multipart/form-data" onsubmit="return chkfrm(this)" >
+				<input type="hidden" name="w" value="<?php echo $w?>">
+				<input type="hidden" name="seq" value="<?php echo $seq?>">
+				<div id="Request">
+				<table>
+						<colgroup>			
+							<col class="titWIDTH">
+							<col class="subWIDTH" style="width:33%">
+							<col class="titWIDTH">
+							<col class="subWIDTH" style="width:33%">
+						</colgroup>
+						<tbody>
+                        <tr>
+							<td class="txtCenter">현장선택</td>
+							<td class="PL" colspan="3">
+								<select name="nw_code" id="nw_code" class="select2" required >
+									<option value="">선택하세요</option>
+									<?php 
+								
+								
+									$sql = "select * from  {$none['worksite']} where nw_status = 1 and (nw_ptype3_1 = '{$owner_num}' or nw_ptype3_2 = '{$owner_num}' or nw_ptype3_3 = '{$owner_num}') order by nw_code desc";
+									
+									$rst = sql_query($sql);
+									while($work=sql_fetch_array($rst)) {
+									
+									?>
+									<option value="<?php echo $work['nw_code']?>" <?php echo get_selected($row['nw_code'], $work['nw_code'])?> >[<?php echo $work['nw_code']?>] <?php echo $work['pj_title_kr']?> | <?php echo $work['pj_title_en']?></option>
+									<?php }?>
+								
+								</select>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">건축주</td>
+							<td class="PL" >
+							<input type="text" name="nr_name" value="<?php echo $member['mb_name']?>" style="border:0" readonly>
+							</td>
+							<td class="txtCenter">연락처</td>
+							<td class="PL" >
+							<input type="text" name="nr_tel" value="<?php echo $member['mb_hp']?>"  style="border:0" readonly>
+							</td>
+						</tr>
+						<tr>
+							
+						</tr>
+                        <tr>
+							<td class="txtCenter">접수자
+							<br><label style="font-size:12px;font-weight:normal"><input type="checkbox" id="same">건축주 동일</label>
+							</td>
+							<td class="PL" >
+							
+							<input type="text" name="nr_name2" value="" required style="border:0">
+							</td>
+							<td class="txtCenter">연락처</td>
+							<td class="PL" >
+							<input type="text" name="nr_tel2" value="" required style="border:0">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">하자내용</td>
+							<td class="PL" colspan="3">
+							<span>최대한 상세히 육하원칙에 근거하여 작성 바랍니다.</span>
+							<?php echo editor_html("nr_content", get_text(html_purifier($row['nr_content']), 0)); ?>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">원거리1</td>
+							<td class="PL" colspan="3">
+							<input type="file" name="nr_file1">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">원거리2</td>
+							<td class="PL" colspan="3">
+							<input type="file" name="nr_file2">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">근거리1</td>
+							<td class="PL" colspan="3">
+							<input type="file" name="nr_file3">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">근거리2</td>
+							<td class="PL" colspan="3">
+							<input type="file" name="nr_file4">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">접사1</td>
+							<td class="PL" colspan="3">
+							<input type="file" name="nr_file5">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">접사2</td>
+							<td class="PL" colspan="3">
+							<input type="file" name="nr_file6">
+							</td>
+						</tr>
+						
+					</tbody>
+                   </table>
+                   
+                   
+                   <p style="text-align:center; margin-top:20px;">
+						<input type="submit" value="확인" class="kraftcf-form-control kraftcf-submit">
+						<input type="button" value="목록" class="kraftcf-form-control kraftcf-submit" style="background:#666" onclick="location.href='./construction03.html'">
+						
+						<?php if($w == 'u') {?>
+						<input type="button" value="삭제" class="kraftcf-form-control kraftcf-submit" style="background:#666" onclick="del(<?php echo $row['seq']?>)">
+						<?php }?>
+					</p>
+               </div>
+			   </form>
+				
+			  </div>
+				</div>
+				
+			  </div>
+			  <!--End container--> 
+			  
+			</div>
+		  </article>
+		</main>
+		<!-- #main --> 
+	  </div>
+	  <!-- #primary --> 
+	  
+	  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700" ><i class="fa fa-angle-up"></i></a> </div>
+
+<? include "footer.html"; ?>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	  <script>
+	  
+	  
+		function del(seq) {
+			
+			if(confirm('정말 삭제하시겠습니까?')) {
+				
+				location.href = './update/project_update.php?w=d&seq='+seq;
+				return false;
+				
+			} else {
+				return false;
+			}
+			
+		}
+		function chkfrm(f) {
+			<?php echo get_editor_js("nr_content"); ?>
+			
+			return true;
+		}
+		
+		$(function() {
+			$('#same').bind('click', function() {
+				
+				var state = $(this).is(":checked");
+				var name = $("input[name=nr_name]").val();
+				var tel = $("input[name=nr_tel]").val();
+				
+				
+				if(state == true) {
+					$("input[name=nr_name2]").val(name);
+					$("input[name=nr_tel2]").val(tel);
+				} else {
+					$("input[name=nr_name2]").val('');
+					$("input[name=nr_tel2]").val('');
+				}
+			
+			})
+			
+		 
+			//검색형 셀렉트박스로 변경
+			 $('.select2').select2({
+				  language: {
+					noResults: function (params) {
+					  return "검색 결과가 없습니다.";
+					}
+				  }
+			 });
+		 })
+	  </script>

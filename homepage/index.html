@@ -1,0 +1,65 @@
+<? include "header.html"; ?>
+            <div class="site-content-contain">
+                <div id="content" class="site-content">                    
+                    <div id="primary" class="content-area">
+                        <main id="main" class="site-main" role="main">
+                            <article class="page">                                
+                                <div class="entry-content">
+                                   <div class="container m-b-100"> 
+                                        <div class="row"> 
+                                            <div class="col-sm-12">
+                                                <div class="portfolio-wrap">                                                   
+                                                    <div id="portfolio-container-grid" class="cbp cbp-caption-ribbon cbp-ribbon-alignCenter" 
+                                                         data-loadmoreaction="click" data-loadnoofitems="1" data-layoutmode="grid" data-captionanimation="zoom" data-captionanimation="fadeIn" data-animationtype="fadeOut" 
+                                                         data-gaphorizontal="50" data-gapvertical="60" data-displaytype="scroll-fadeInUp" data-large-desktop="2" data-tablet-landscape="2" data-tablet-portrait="1" data-mobile="1" 
+                                                         data-defaultfilter="*" >
+
+
+
+														<?php 
+														$sql = "select * from  {$none['home_project']} order by seq desc";
+														$rst = sql_query($sql);
+														while($row=sql_fetch_array($rst)) {
+														
+															$work = sql_fetch("select pj_title_kr, pj_year from {$none['worksite']} where nw_code = '{$row['nw_code']}'");
+														?>
+														<div class="cbp-item">                                                            
+                                                            <a class="cbp-caption" data-title="" href="./project_view.html?seq=<?php echo $row['seq']?>">
+                                                                <div class="cbp-caption-defaultWrap">							
+                                                                    <img src="<?php echo NONE_URL?>/_data/project/<?php echo $row['nh_main_img']?>" class="portfolio-thumbnail" alt="" >
+                                                                </div>
+                                                                <div class="cbp-l-grid-agency-title alignCenter"><?php echo $work['pj_title_kr']?> | <?php echo $work['pj_year']?></div>
+                                                                <div class="cbp-caption-activeWrap">
+                                                                    <div class="cbp-l-caption-alignCenter">
+                                                                        <div class="cbp-l-caption-body">
+                                                                        	
+                                                                            
+                                                                            <div class="cbp-l-caption-desc">N1 ARCHITECTURE</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </a>                                                            
+                                                        </div>
+														<?php }?>
+
+
+                                                      
+                                                 
+
+                                                    </div><!--End #grid-container-->
+                                                    
+                                                </div>                                               
+                                            </div>
+                                        </div>
+                                    </div><!--container-->
+
+                                </div>
+                            </article>     
+                        </main><!-- #main -->
+                    </div><!-- #primary -->
+                    
+                    <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700" ><i class="fa fa-angle-up"></i></a>
+                    
+                </div><!-- #content -->                
+
+          <? include "footer.html"; ?>

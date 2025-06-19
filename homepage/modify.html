@@ -1,0 +1,204 @@
+<?php
+include_once("header.html"); 
+
+if (isset($_POST['birth'])) {
+	$member['mb_birth'] = $_POST['birth'];
+}
+if (isset($_POST['sex'])) {
+	$member['mb_sex']   = $_POST['sex'];
+}
+if (isset($_POST['mb_name'])) {
+	$member['mb_name']  = $_POST['mb_name'];
+}
+
+// 이미 로그인 중이라면
+if (!$is_member) {
+        goto_url('http://n1con.com/homepage/login.html?url='.urlencode('/homepage/modify.html'));
+}
+
+if(!$url)
+	$url = 'http://n1con.com/homepage/';
+
+$login_url        = login_url($url);
+$register_action_url = G5_HTTPS_BBS_URL.'/register_form_update.php';
+
+?>
+<script>
+// 자바스크립트에서 사용하는 전역변수 선언
+var g5_url       = "<?php echo G5_URL ?>";
+var g5_bbs_url   = "<?php echo G5_BBS_URL ?>";
+var g5_is_member = "<?php echo isset($is_member)?$is_member:''; ?>";
+var g5_is_admin  = "<?php echo isset($is_admin)?$is_admin:''; ?>";
+var g5_is_mobile = "<?php echo G5_IS_MOBILE ?>";
+var g5_bo_table  = "<?php echo isset($bo_table)?$bo_table:''; ?>";
+var g5_sca       = "<?php echo isset($sca)?$sca:''; ?>";
+var g5_editor    = "<?php echo ($config['cf_editor'] && $board['bo_use_dhtml_editor'])?$config['cf_editor']:''; ?>";
+var g5_cookie_domain = "<?php echo G5_COOKIE_DOMAIN ?>";
+<?php if(defined('G5_IS_ADMIN')) { ?>
+var g5_admin_url = "<?php echo G5_ADMIN_URL; ?>";
+<?php } ?>
+</script>
+<link rel="stylesheet" href="<?php echo G5_JS_URL?>/font-awesome/css/font-awesome.min.css">
+<script src="<?php echo G5_JS_URL ?>/jquery.register_form.js"></script>
+<style>
+.policy_table td { padding:10px 0 }
+.form-control { padding-left:20px }
+.form-control { padding-left:40px !important }
+#fregisterform div { position:relative }
+#fregisterform div i { position:absolute; top:12px; left:10px; width:20px; text-align:center}
+</style>
+<div class="site-content-contain">
+<div id="content" class="site-content">                    
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+			<article class="page">                                
+				<div class="entry-content">
+
+					<div class="container">
+						<div class="row">                                    
+							<div class="d-none d-lg-block d-xl-block">                                                                     
+								<div class="empty-space-30"></div>
+							</div>                                           
+						</div>
+
+						<div class="row m-b-90">                    
+						<div class="col-sm-6" style="margin:0px auto"> 
+							 <div class="panel panel-success">
+							 <div class="heading-block text-center">
+									<h1 class="block-size-4">
+									   M O D I F Y
+									</h1>
+								</div>
+							<div class="panel-body">
+								<form class="form-auth-small" id="fregisterform" name="fregisterform" action="<?php echo $register_action_url?>" onsubmit="return fregisterform_submit(this);" method="post" enctype="multipart/form-data" autocomplete="off">
+								<input type="hidden" name="w" value="u">
+								<input type="hidden" name="url" value="<?php echo $urlencode ?>">
+								<input type="hidden" name="agree" value="<?php echo $agree ?>">
+								<input type="hidden" name="agree2" value="<?php echo $agree2 ?>">
+								<input type="hidden" name="cert_type" value="<?php echo $member['mb_certify']; ?>">
+								<input type="hidden" name="cert_no" value="">
+								
+									<div style="margin-bottom:8px">
+										<i class="fa fa-id-card-o" aria-hidden="true"></i>
+
+										<input type="text" class="form-control required" name="mb_id" id="reg_mb_id" placeholder="아이디를 입력하세요."  readonly value="<?php echo $member['mb_id']?>">
+									</div>
+									<div style="margin-bottom:8px">
+									<i class="fa fa-lock" aria-hidden="true"></i>
+
+										<input type="password" class="form-control required" name="mb_password" id="reg_mb_password" placeholder="비밀번호를 입력하세요.">
+									</div>
+									<div style="margin-bottom:15px">
+									<i class="fa fa-lock" aria-hidden="true"></i>
+
+										<input type="password" class="form-control required" name="mb_password_re" id="reg_mb_password_re" placeholder="비밀번호를 다시 입력하세요.">
+									</div>
+									<div style="margin-bottom:8px">
+										<i class="fa fa-user" aria-hidden="true"></i>
+										<input type="text" class="form-control required" name="mb_name" id="reg_mb_name" placeholder="성함을 입력하세요" value="<?php echo $member['mb_name']?>">
+									</div>
+									<div style="margin-bottom:8px">
+										<i class="fa fa-phone" aria-hidden="true"></i>
+										<input type="text" class="form-control required" name="mb_hp" id="reg_mb_hp" placeholder="연락처를 입력하세요" value="<?php echo $member['mb_hp']?>">
+									</div>
+									<div style="margin-bottom:8px">
+										<i class="fa fa-envelope" aria-hidden="true"></i>
+										<input type="hidden" name="old_email" value="<?php echo $member['mb_email'] ?>">
+										<input type="text" class="form-control required email" name="mb_email" id="reg_mb_email" placeholder="이메일 주소를 입력하세요" value="<?php echo $member['mb_email']?>">
+									</div>
+									
+									<div>
+										<button type="submit" class="form-control btn btn-dark" id="btn_submit" style="width:48.5%;margin-right:2%;padding-left:0 !important">정보수정</button>
+										
+										<a href="http://n1con.com/" class="form-control btn btn-secondary" id=""  style="width:48.5%;;padding-left:0 !important">취소</a>
+									</div>
+								</form>
+							</div>
+						</div>
+						   
+						 
+							 </div>
+						</div>
+
+				</div>
+			</article>        
+		</main><!-- #main -->
+	</div><!-- #primary -->                                
+
+	<a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a>
+
+</div>
+	
+<? include "footer.html"; ?>
+<script src="http://gw.n1con.com/core/js/common.js"></script>
+<script>
+
+// submit 최종 폼체크
+function fregisterform_submit(f)
+{
+	
+	
+	
+    if (f.w.value == "") {
+        if (f.mb_password.value.length < 6) {
+            alert("비밀번호를 6글자 이상 입력하십시오.");
+            f.mb_password.focus();
+            return false;
+        }
+    }
+
+    if (f.mb_password.value != f.mb_password_re.value) {
+        alert("비밀번호가 같지 않습니다.");
+        f.mb_password_re.focus();
+        return false;
+    }
+
+    if (f.mb_password.value.length > 0) {
+        if (f.mb_password_re.value.length < 6) {
+            alert("비밀번호를 6글자 이상 입력하십시오.");
+            f.mb_password_re.focus();
+            return false;
+        }
+    }
+
+    // 이름 검사
+    if (f.w.value=="") {
+        if (f.mb_name.value.length < 1) {
+            alert("이름을 입력하십시오.");
+            f.mb_name.focus();
+            return false;
+        }
+
+        /*
+        var pattern = /([^가-힣\x20])/i;
+        if (pattern.test(f.mb_name.value)) {
+            alert("이름은 한글로 입력하십시오.");
+            f.mb_name.select();
+            return false;
+        }
+        */
+    }
+	
+    // 휴대폰번호 체크
+    var msg = reg_mb_hp_check();
+    if (msg) {
+        alert(msg);
+        f.reg_mb_hp.select();
+        return false;
+    }
+	
+    // E-mail 검사
+    if ((f.w.value == "") || (f.w.value == "u" && f.mb_email.defaultValue != f.mb_email.value)) {
+        var msg = reg_mb_email_check();
+        if (msg) {
+            alert(msg);
+            f.reg_mb_email.select();
+            return false;
+        }
+    }
+
+    document.getElementById("btn_submit").disabled = "disabled";
+
+    return true;
+}
+</script>

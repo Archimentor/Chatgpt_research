@@ -1,0 +1,88 @@
+<?php
+include_once("header.html"); 
+
+
+// 이미 로그인 중이라면
+if ($is_member) {
+    if ($url)
+        goto_url($url);
+    else
+        goto_url('http://n1con.com/homepage/');
+}
+
+if(!$url)
+	$url = 'http://n1con.com/homepage/';
+
+$login_url        = login_url($url);
+$login_action_url = G5_HTTPS_BBS_URL."/login_check.php";
+
+?>
+  
+<div class="site-content-contain">
+              
+
+
+
+
+<div id="content" class="site-content">                    
+                    <div id="primary" class="content-area">
+                        <main id="main" class="site-main" role="main">
+                            <article class="page">                                
+                                <div class="entry-content">
+
+                                    <div class="container">
+                                        <div class="row">                                    
+                                            <div class="d-none d-lg-block d-xl-block">                                                                     
+                                                <div class="empty-space-30"></div>
+                                            </div>                                           
+                                        </div>
+
+                                        <div class="row m-b-90">                    
+                                        <div class="col-sm-6" style="margin:0px auto"> 
+                                             <div class="panel panel-success">
+											 <div class="heading-block text-center">
+                                                    <h1 class="block-size-4">
+                                                       L O G I N
+                                                    </h1>
+                                                </div>
+											<div class="panel-body">
+												 <form class="form-auth-small" action="<?php echo $login_action_url?>" method="post">
+												<input type="hidden" name="url" value="<?php echo $login_url ?>">
+													<div style="margin-bottom:8px">
+														<input type="text" class="form-control" name="mb_id" placeholder="ID" autofocus>
+													</div>
+													<div style="margin-bottom:8px">
+														<input type="password" class="form-control" name="mb_password" placeholder="Password">
+													</div>
+													<div  style="margin-bottom:5px">
+														<button type="submit" class="form-control btn kraftcf-submit" style="background:#000;color:#fff">로그인</button>
+													</div>
+													<div>
+														<a href="http://n1con.com/core/bbs/password_lost.php" class="form-control btn btn-secondary" id="login_password_lost" target="_blank" style="width:48.5%;margin-right:2%">정보찾기</a>
+														<button type="button" onclick="location.href='register.html'" class="form-control btn btn-dark" style="width:48.5%">회원가입</button>
+													</div>
+												</form>
+											</div>
+										</div>
+										   
+										 
+                                             </div>
+										</div>
+
+                                </div>
+                            </article>        
+                        </main><!-- #main -->
+                    </div><!-- #primary -->                                
+
+                    <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a>
+
+                </div>
+
+
+
+
+
+			
+           <? include "footer.html"; ?>
+		   
+<script src="http://gw.n1con.com/core/js/common.js"></script>

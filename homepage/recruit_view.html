@@ -1,0 +1,249 @@
+<?php 
+include_once('../_common.php');
+
+$row = sql_fetch("select * from {$none['home_recruit']} where seq = '$seq'");
+$ss_name = "ss1_veiw_".$row['seq']; 
+
+if($member['mb_level2'] == 1  || $member['mb_level2'] == 3 ) $is_admin = true; 
+
+if(!$is_admin) {
+	if(!get_session($ss_name))
+		alert('정상적인 접근이 아닙니다.', './request.html');
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Document Title -->
+<title>엔원종합건설</title>
+
+<!-- Metas -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+<!-- Links -->
+
+<link rel='stylesheet' id='bootstrap-css'  href='assets/lib/bootstrap/css/bootstrap.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='font-awesome-css'  href='assets/css/icons/font-awesome.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='swiper-css' href='assets/lib/swiper/css/swiper.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='cubeportfolio-css'  href='assets/lib/cubeportfolio/css/cubeportfolio.min.css' type='text/css' media='all' />
+<link rel='stylesheet' id='main-css'  href='style.css' type='text/css' media='all' />
+</head>
+<body>
+
+<!-- Page Wrapper -->
+<div id="page" class="site">
+<header id="masthead" class="site-header standard sticky" role="banner">
+ <?php include_once('./inc.menu.php')?>
+  <!-- .wrap --> 
+</header>
+<!-- #masthead -->
+<div class="site-content-contain">
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+          <div id="Request">
+		  <form name="frm" action="./update/recruit_update.php" method="post" enctype="multipart/form-data" onsubmit="return chkfrm(this)">
+		  <input type="hidden" name="w" value="u">
+		  <input type="hidden" name="seq" value="<?php echo $seq?>">
+		  <h6 style="margin-top:25px">입사지원서</h6>
+          <table >
+						<colgroup>			
+							<col class="titWIDTH">
+							<col style="width:30%">
+							<col class="titWIDTH">
+							<col  style="width:30%">
+							
+						</colgroup>
+						<tbody>
+                        <tr>
+							<td class="txtCenter">제목</td>
+							<td class="PL"  colspan="3">
+								<input name="wr_subject" id="wr_subject" class="write_titBox" value="<?php echo $row['wr_subject']?>">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">성명</td>
+							<td class="PL" colspan="3">
+								<input name="wr_name" id="wr_name" class="write_nameBox" value="<?php echo $row['wr_name']?>">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">생년월일</td>
+							<td class="PL">
+								<select name="wr_birth[]" style="padding:2px 10px">
+									<?php 
+									$wr_birth = explode('-', $row['wr_birth']);
+									for($i=1920; $i<=2022; $i++) {
+										echo '<option value="'.$i.'" '.get_selected($wr_birth[0], $i).'>'.$i.'년</option>';
+									}?>
+								</select>
+								<select name="wr_birth[]" style="padding:2px 10px">
+									<?php for($i=1; $i<=12; $i++) {
+										echo '<option value="'.$i.'" '.get_selected($wr_birth[1], $i).'>'.$i.'월</option>';
+									}?>
+								</select>
+								<select name="wr_birth[]" style="padding:2px 10px">
+									<?php for($i=1; $i<=31; $i++) {
+										echo '<option value="'.$i.'" '.get_selected($wr_birth[2], $i).'>'.$i.'일</option>';
+									}?>
+								</select>
+							</td>
+							<td class="txtCenter">나이</td>
+							<td class="PL"><input name="wr_age" id="wr_age" class="write_nameBox" value="<?php echo $row['wr_age']?>">세</td>
+						</tr>
+						
+                        <tr>
+							<td class="txtCenter">휴대전화</td>
+							<td class="PL">
+								<input name="wr_tel" id="wr_tel" class="write_titBox" placeholder="- 없이 숫자만" value="<?php echo str_replace('-', '', $row['wr_tel'])?>">
+							</td>
+							<td class="txtCenter">통화가능시간</td>
+							<td class="PL">
+								<?php $wr_time = explode('~', $row['wr_time']); ?>
+								<input name="wr_time[]" id="wr_time1" class="write_nameBox" placeholder="" value="<?php echo $wr_time[0]?>">시~
+								<input name="wr_time[]" id="wr_time2" class="write_nameBox" placeholder="" value="<?php echo $wr_time[1]?>">시
+								
+								<label style="display:inline-block;padding-left:10px;margin:0;font-weight:normal;font-size:14px;color:#858585"><input name="wr_time_aways" type="checkbox" value="1" <?php echo get_checked($row['wr_time_aways'], '1')?>>언제나</label>
+							</td>
+						</tr>
+						
+						
+                        <tr>
+							<td class="txtCenter">이메일</td>
+							<td class="PL" colspan="3">
+								<input name="wr_email" id="wr_email" class="write_nameBox" value="<?php echo $row['wr_email']?>" style="width:36%">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">주소</td>
+							<td class="PL" colspan="3">
+								<input name="wr_addr" id="wr_addr" class="write_nameBox" value="<?php echo $row['wr_addr']?>" style="width:36%">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">희망연봉</td>
+							<td class="PL" colspan="3">
+								<?php $wr_pay = explode('~', $row['wr_pay']); ?>
+								<input name="wr_pay[]" id="wr_pay1" class="write_nameBox" placeholder="" style="width:62px" value="<?php echo $wr_pay[0]?>">만원~
+								<input name="wr_pay[]" id="wr_pay2" class="write_nameBox" placeholder="" style="width:62px" value="<?php echo $wr_pay[1]?>">만원
+								
+								<label style="display:inline-block;padding-left:10px;margin:0;font-weight:normal;font-size:14px;color:#858585"><input name="wr_pay_option" type="checkbox" value="1"  <?php echo get_checked($row['wr_pay_option'], '1')?>>회사내규에 따름</label>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">희망근무지</td>
+							<td class="PL" colspan="3">
+								<label style="display:inline-block;padding-left:10px;margin:0;font-weight:normal;font-size:14px;color:#858585"><input name="wr_area" type="radio" value="서울" <?php echo get_checked($row['wr_area'], '서울')?>>서울지사(경기도권)</label>
+								<label style="display:inline-block;padding-left:10px;margin:0;font-weight:normal;font-size:14px;color:#858585"><input name="wr_area" type="radio" value="부산" <?php echo get_checked($row['wr_area'], '부산')?>>부산지사(경상권)</label>
+								<label style="display:inline-block;padding-left:10px;margin:0;font-weight:normal;font-size:14px;color:#858585"><input name="wr_area" type="radio" value="전국" <?php echo get_checked($row['wr_area'], '전국')?>>전국가능</label>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">이력서</td>
+							<td class="PL" colspan="3">
+								<input type="file" name="wr_file1" style="height:auto">
+								
+								<?php if($row['wr_file1']) {?>
+								<a href="./update/recruit_download.php?seq=<?php echo $row['seq']?>&sort=1"><?php echo $row['wr_file1_name']?></a>
+								<?php }?>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">경력증명서</td>
+							<td class="PL" colspan="3">
+								<input type="file" name="wr_file2" style="height:auto">
+								<?php if($row['wr_file1']) {?>
+								<a href="./update/recruit_download.php?seq=<?php echo $row['seq']?>&sort=2"><?php echo $row['wr_file2_name']?></a>
+								<?php }?>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">기타1</td>
+							<td class="PL" colspan="3">
+								<input type="file" name="wr_file3" style="height:auto">
+								<?php if($row['wr_file3']) {?>
+								<a href="./update/recruit_download.php?seq=<?php echo $row['seq']?>&sort=3"><?php echo $row['wr_file3_name']?></a>
+								<?php }?>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">기타2</td>
+							<td class="PL" colspan="3">
+								<input type="file" name="wr_file4" style="height:auto">
+								<?php if($row['wr_file4']) {?>
+								<a href="./update/recruit_download.php?seq=<?php echo $row['seq']?>&sort=4"><?php echo $row['wr_file4_name']?></a>
+								<?php }?>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">기타3</td>
+							<td class="PL" colspan="3">
+								<input type="file" name="wr_file5" style="height:auto">
+								<?php if($row['wr_file1']) {?>
+								<a href="./update/recruit_download.php?seq=<?php echo $row['seq']?>&sort=5"><?php echo $row['wr_file5_name']?></a>
+								<?php }?>
+							</td>
+						</tr>
+					</tbody>
+                   </table>
+                   
+                   
+                   <p style="text-align:center; margin-top:20px;">
+                   <input type="submit" value="수정" class="kraftcf-form-control kraftcf-submit" >
+                   <input type="button" value="목록으로" class="kraftcf-form-control kraftcf-submit" onclick="location.href='./recruit.html'">
+                   
+                   </p>
+				 
+				   </form>
+                   
+                   
+               </div>
+				
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- #main --> 
+  </div>
+  <!-- #primary --> 
+  
+  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700"><i class="fa fa-angle-up"></i></a> </div>
+<!-- #content -->
+<script>
+function del(seq) {
+			
+	if(confirm('정말 삭제하시겠습니까?\n삭제 후 복구는 불가능합니다.')) {
+		
+		location.href = './update/recruit_update.php?w=d&seq='+seq;
+		return false;
+		
+	} else {
+		return false;
+	}
+	
+}
+</script>
+<script>
+function del_file(seq) {
+			
+	if(confirm('정말 설계도서 첨부파일을 삭제하시겠습니까?\n삭제 후 복구는 불가능합니다.')) {
+		
+		location.href = './update/recruit_update.php?w=f&seq='+seq;
+		return false;
+		
+	} else {
+		return false;
+	}
+	
+}
+</script>
+
+<? include "footer.html"; ?>

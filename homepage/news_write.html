@@ -1,0 +1,119 @@
+<?php include_once("header.html"); 
+
+include_once(G5_EDITOR_LIB);
+
+if(!$is_admin) alert('접근 권한이 없습니다.');
+
+if($w == 'u') {
+	$row = sql_fetch("select * from  {$none['home_news']} where  seq = '$seq'");
+
+}
+?>
+<script type='text/javascript' src='assets/js/vendor/jquery-1.12.4.min.js'></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+.select2 { width:100% !important }
+.select2-container .select2-selection--single {  height:36px }
+.select2-container--default .select2-selection--single { border:1px solid #ced4da; }
+.select2-container--default .select2-selection--single .select2-selection__rendered { line-height:34px }
+.select2-container--default .select2-selection--single .select2-selection__arrow { height:34px }
+</style>
+<div class="site-content-contain">
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article class="page">
+        <div class="entry-content">
+          <div class="container m-b-100">
+            <div class="row">
+              <div class="col-sm-12">
+			  
+				<form action="./update/news_update.php" method="post" enctype="multipart/form-data" onsubmit="return chkfrm(this)">
+				<input type="hidden" name="w" value="<?php echo $w?>">
+				<input type="hidden" name="seq" value="<?php echo $seq?>">
+				<div id="Request">
+				<table>
+						<colgroup>			
+							<col class="titWIDTH">
+							<col class="subWIDTH">
+						</colgroup>
+						<tbody>
+                        <tr>
+							<td class="txtCenter">썸네일</td>
+							<td class="PL">
+								<input type="file" name="wr_img">
+								<?php if($w == 'u' && $row['wr_img']) {?>
+								 <img src="<?php echo NONE_URL.'/_data/news/'.$row['wr_img'];?>" alt="" style="width:30px;height:30px">
+								<input type="checkbox" name="wr_img_del" value="1">삭제
+								<?php }?>
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">제목</td>
+							<td class="PL">
+								<input type="text" name="wr_subject" id="strTitle" class="write_nameBox" value="<?php echo $row['wr_subject']?>">
+							</td>
+						</tr>
+                        <tr>
+							<td class="txtCenter">내용</td>
+							<td class="PL">
+							<?php echo editor_html("wr_content", get_text(html_purifier($row['wr_content']), 0)); ?>
+							</td>
+						</tr>
+						
+					</tbody>
+                   </table>
+                   
+                   
+                   <p style="text-align:center; margin-top:20px;">
+						<input type="submit" value="확인" class="kraftcf-form-control kraftcf-submit">
+						<input type="button" value="목록" class="kraftcf-form-control kraftcf-submit" style="background:#666" onclick="location.href='./news.html'">
+						
+						<?php if($w == 'u') {?>
+						<input type="button" value="삭제" class="kraftcf-form-control kraftcf-submit" style="background:#666" onclick="del(<?php echo $row['seq']?>)">
+						<?php }?>
+					</p>
+               </div>
+			   </form>
+				
+			  </div>
+				</div>
+				
+			  </div>
+			  <!--End container--> 
+			  
+			</div>
+		  </article>
+		</main>
+		<!-- #main --> 
+	  </div>
+	  <!-- #primary --> 
+	  
+	  <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700" ><i class="fa fa-angle-up"></i></a> </div>
+
+<? include "footer.html"; ?>
+
+	  <script>
+	  
+	  
+		function del(seq) {
+			
+			if(confirm('정말 삭제하시겠습니까?')) {
+				
+				location.href = './update/news_update.php?w=d&seq='+seq;
+				return false;
+				
+			} else {
+				return false;
+			}
+			
+		}
+		function chkfrm(f) {
+			<?php echo get_editor_js("wr_content"); ?>
+			
+			return true;
+		}
+		
+		
+	  </script>

@@ -1,0 +1,170 @@
+<?php
+// architect.html
+include_once("header.html");
+
+// --------------------
+// (A) 완료공사 현장에서 사진이 있는 건축사 출력
+$sql = "
+SELECT e.seq,
+       e.no_company,
+       COUNT(DISTINCT hp.seq) AS project_count
+  FROM {$none['enterprise_list']} e
+  LEFT JOIN {$none['worksite']} w
+         ON w.nw_ptype4_1 = e.seq
+  LEFT JOIN {$none['home_project']} hp
+         ON hp.nw_code = w.nw_code
+ WHERE e.no_category = '건축사사무소'
+ GROUP BY e.seq
+ HAVING project_count > 0
+ ORDER BY e.no_company ASC
+";
+$result = sql_query($sql);
+?>
+<!-- 추가 CSS(카드 hover 효과) -->
+<style>
+.arch-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.arch-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.section-title {
+  margin: 50px 0 30px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+</style>
+
+<div class="site-content-contain">
+  <div id="content" class="site-content">
+    <div id="primary" class="content-area">
+      <main id="main" class="site-main" role="main">
+        <article class="page">
+          <div class="entry-content">
+            <div class="container m-b-100">
+              <!-- (A) 완료공사 현장에서 사진이 있는 건축사 섹션 -->
+              <div class="row">
+                <?php
+                while($row = sql_fetch_array($result)) {
+                  $arch_id    = $row['seq'];
+                  $arch_name  = $row['no_company'];
+                  $post_count = $row['project_count'];
+                ?>
+                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                  <div class="card arch-card h-100">
+                    <div class="card-body d-flex flex-column">
+                      <!-- 업체명 (클릭 시 project01.html로 이동) -->
+                      <h5 class="card-title text-center" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem;">
+                        <a href="project01.html?architect_id=<?php echo $arch_id?>">
+                          <?php echo $arch_name?>
+                        </a>
+                      </h5>
+                      <!-- 프로젝트 수 표시 -->
+                      <p class="text-center mb-2" style="font-size:0.85rem; color:#888;">
+                        <?php echo $post_count?> Projects
+                      </p>
+                      <div class="mt-auto"></div>
+                    </div>
+                  </div><!-- .card -->
+                </div><!-- .col -->
+                <?php } ?>
+              </div><!-- .row -->
+            </div><!-- .container -->
+
+            <!-- (B) [엔원의 파트너 건축사] 섹션 -->
+            <div class="container">
+              <h3 class="section-title">엔원과 함께한 건축사</h3>
+              <div class="row">
+                <?php
+                // menu1.list에 포함된 프로젝트 정보를 기준으로 모든 참여 건축사 출력
+                // 건축사 정보의 세부 필드를 포함하도록 쿼리를 수정합니다.
+                $sql_partner = "
+                SELECT DISTINCT e.seq, 
+                                e.no_company, 
+                                e.no_gongjong, 
+                                e.no_bname, 
+                                e.no_btel, 
+                                e.no_bfax, 
+                                e.no_baddr, 
+                                e.no_homepage
+                  FROM {$none['enterprise_list']} e
+                  JOIN {$none['worksite']} w ON w.nw_ptype4_1 = e.seq
+                 WHERE e.no_category = '건축사사무소'
+                 ORDER BY e.no_company ASC
+                ";
+                $result_partner = sql_query($sql_partner);
+                while($row_partner = sql_fetch_array($result_partner)) {
+                  $partner_id = $row_partner['seq'];
+                  $partner_name = $row_partner['no_company'];
+                ?>
+                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                  <div class="card arch-card h-100">
+                    <div class="card-body d-flex flex-column">
+                      <!-- 건축사명 클릭 시 모달 오픈 -->
+                      <h5 class="card-title text-center" style="font-size:1rem; font-weight:600; margin-bottom:0.5rem;">
+                        <a href="#none" data-toggle="modal" data-target="#modalPartner<?php echo $partner_id?>">
+                          <?php echo $partner_name?>
+                        </a>
+                      </h5>
+                      <div class="mt-auto"></div>
+                    </div>
+                  </div><!-- .card -->
+                </div><!-- .col -->
+                
+                <!-- [엔원의 파트너 건축사] 모달 -->
+                <div class="modal fade" id="modalPartner<?php echo $partner_id?>" tabindex="-1" role="dialog" aria-labelledby="modalPartnerLabel<?php echo $partner_id?>" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="modalPartnerLabel<?php echo $partner_id?>" style="font-size:17px">건축사 정보</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <ul class="c-list04">
+                          <li><span class="tit">법인명</span><span class="txt"><?php echo $partner_name?></span></li>
+                          <li><span class="tit">공종</span><span class="txt"><?php echo $row_partner['no_gongjong']?></span></li>
+                          <li><span class="tit">대표자</span><span class="txt"><?php echo $row_partner['no_bname']?></span></li>
+                          <li><span class="tit">대표번호</span><span class="txt"><?php echo $row_partner['no_btel']?></span></li>
+                          <li><span class="tit">팩스번호</span><span class="txt"><?php echo $row_partner['no_bfax']?></span></li>
+                          <li><span class="tit">주소</span><span class="txt"><?php echo $row_partner['no_baddr']?></span></li>
+                          <li>
+                            <span class="tit">홈페이지</span>
+                            <span class="txt">
+                              <?php 
+                              if(!empty($row_partner['no_homepage'])) {
+                                  echo '<a href="'.htmlspecialchars($row_partner['no_homepage']).'" target="_blank">'
+                                       .htmlspecialchars($row_partner['no_homepage']).'</a>';
+                              }
+                              ?>
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" style="font-size:13px">
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <?php } ?>
+              </div><!-- .row -->
+            </div><!-- .container -->
+            
+          </div><!-- .entry-content -->
+        </article>
+      </main>
+    </div>
+    <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700">
+      <i class="fa fa-angle-up"></i>
+    </a>
+  </div>
+</div>
+
+<?php include "footer.html"; ?>

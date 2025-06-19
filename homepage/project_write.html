@@ -1,0 +1,211 @@
+<?php 
+include_once("header.html"); 
+include_once(G5_EDITOR_LIB);
+
+if(!$is_admin) alert('접근 권한이 없습니다.');
+
+if($w == 'u') {
+    $row = sql_fetch("select * from  {$none['home_project']} where  seq = '$seq'");
+}
+?>
+<script type='text/javascript' src='assets/js/vendor/jquery-1.12.4.min.js'></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+/* select2 기본 스타일 보완 */
+.select2 { 
+  width: 100% !important; 
+}
+.select2-container .select2-selection--single {
+  height: 36px;
+}
+.select2-container--default .select2-selection--single {
+  border: 1px solid #ced4da;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height:34px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height:34px;
+}
+
+/* 에디터 넓이/높이 강제 적용 */
+#nh_content_editor .cke_contents {
+  width: 100% !important;
+  min-height: 900px !important;
+}
+
+/* --------------------------------------
+   버튼 스타일 (.mybtn)
+   -------------------------------------- */
+.mybtn {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  color: #fff;
+  background-color: #007bff; /* 기본 파랑 */
+  font-size: 14px;
+}
+.mybtn:hover {
+  background-color: #0056b3; 
+}
+
+.mybtn-secondary {
+  background-color: #6c757d; /* 회색 */
+}
+.mybtn-secondary:hover {
+  background-color: #545b62;
+}
+
+.mybtn-danger {
+  background-color: #dc3545; /* 빨강 */
+}
+.mybtn-danger:hover {
+  background-color: #c82333;
+}
+</style>
+
+<div class="site-content-contain">
+  <div id="content" class="site-content">
+    <div id="primary" class="content-area">
+      <main id="main" class="site-main" role="main">
+        <article class="page">
+          <div class="entry-content">
+            <div class="container m-b-100">
+              <div class="row">
+                <div class="col-sm-12">
+                  <form action="./update/project_update.php" method="post" enctype="multipart/form-data" onsubmit="return chkfrm(this)">
+                    <input type="hidden" name="w" value="<?php echo $w; ?>">
+                    <input type="hidden" name="seq" value="<?php echo $seq; ?>">
+
+                    <div id="Request">
+                      <table>
+                        <colgroup>
+                          <col class="titWIDTH">
+                          <col class="subWIDTH">
+                        </colgroup>
+                        <tbody>
+                          <tr>
+                            <td class="txtCenter">현장선택</td>
+                            <td class="PL">
+                              <select name="nw_code" id="nw_code" class="select2" required>
+                                <option value="">선택하세요</option>
+                                <?php 
+                                $sql = "select * from  {$none['worksite']} order by nw_code desc";
+                                $rst = sql_query($sql);
+                                while($work = sql_fetch_array($rst)) {
+                                  $chk = sql_fetch("select nw_code from  {$none['home_project']} where nw_code = '{$work['nw_code']}'");
+                                  $chkMsg = $chk ? "등록됨" : "미등록";
+                                ?>
+                                <option value="<?php echo $work['nw_code']?>"
+                                  <?php echo get_selected($row['nw_code'], $work['nw_code'])?>>
+                                  [<?php echo $chkMsg?>] [<?php echo $work['nw_code']?>] 
+                                  <?php echo $work['pj_title_kr']?> | <?php echo $work['pj_title_en']?>
+                                </option>
+                                <?php } ?>
+                              </select>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="txtCenter">메인사진</td>
+                            <td class="PL">
+                              <input type="file" name="nh_main_img" id="strTitle" class="write_nameBox">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="txtCenter">내용</td>
+                            <td class="PL">
+                              <?php
+                              // 에디터 호출
+                              echo editor_html(
+                                "nh_content",
+                                get_text(html_purifier($row['nh_content']), 0),
+                                1,
+                                '100%',
+                                '900px'
+                              );
+                              ?>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                      <p style="text-align:center; margin-top:20px;">
+                        <!-- 확인 버튼 (.mybtn) -->
+                        <input type="submit" value="확인" class="mybtn">
+
+                        <!-- 목록 (.mybtn-secondary) -->
+                        <input type="button" value="목록" 
+                               class="mybtn mybtn-secondary"
+                               onclick="location.href='./project.html'">
+
+                        <!-- 삭제 (.mybtn-danger) -->
+                        <?php if($w == 'u') { ?>
+                          <input type="button" value="삭제" 
+                                 class="mybtn mybtn-danger"
+                                 onclick="del(<?php echo $row['seq']?>)">
+                        <?php } ?>
+                      </p>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!--End container--> 
+          </div>
+        </article>
+      </main>
+      <!-- #main --> 
+    </div>
+    <!-- #primary --> 
+
+    <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700">
+      <i class="fa fa-angle-up"></i>
+    </a>
+  </div>
+</div>
+
+<?php include "footer.html"; ?>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  function del(seq) {
+    if(confirm('정말 삭제하시겠습니까?')) {
+      location.href = './update/project_update.php?w=d&seq=' + seq;
+      return false;
+    } else {
+      return false;
+    }
+  }
+
+  function chkfrm(f) {
+    <?php echo get_editor_js("nh_content"); ?>
+    return true;
+  }
+
+  $(function() {
+    $('#nw_code').bind('change', function() {
+      $.post('./update/chk.code.php', { nw_code: $(this).val() }, function(data) {
+        if(data) {
+          alert(data);
+          $('#nw_code').val('');
+          return false;
+        }
+      });
+    });
+
+    // 검색형 셀렉트박스로 변경
+    $('.select2').select2({
+      language: {
+        noResults: function (params) {
+          return "검색 결과가 없습니다.";
+        }
+      }
+    });
+  });
+</script>
