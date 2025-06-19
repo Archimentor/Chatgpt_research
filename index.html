@@ -1,0 +1,333 @@
+<?php
+include_once('./_common.php');
+// 호스트 검사 (개발 환경 등 고려하여 필요시 조건 수정)
+// if($_SERVER['HTTP_HOST'] != "gw.n1con.com") {
+//     goto_url('/homepage/');
+// }
+
+include_once(NONE_PATH . '/header.php'); // 실제 header 경로 확인
+include_once(G5_LIB_PATH . '/latest.lib.php'); // latest 라이브러리 경로 확인
+
+// ---------------------
+// 총 현장소장 인원 집계 (공사부 + 실행부)
+// 기존 직원관리 코드에 적용된 조건: mb_level = 10, mb_id != 'admin', mb_level2 != 4, 그리고 부서(mb_2)가 공사부(1) 또는 실행부(10)
+// ---------------------
+$sql_site_manager = "SELECT COUNT(*) as cnt FROM {$g5['member_table']} 
+    WHERE mb_level = 10 
+      AND mb_id != 'admin' 
+      AND mb_level2 != 4 
+      AND (mb_2 = '1' OR mb_2 = '10')";
+$row_site_manager = sql_fetch_array(sql_query($sql_site_manager));
+$site_manager_count = isset($row_site_manager['cnt']) ? $row_site_manager['cnt'] : 0;
+
+// ---------------------
+// GET 파라미터 'date'가 없으면 현재 연도로 설정
+// ---------------------
+if (!isset($_GET['date']) || empty($_GET['date'])) {
+    $date = date('Y');
+} else {
+    $date = $_GET['date'];
+}
+
+// ---------------------
+// 차트 데이터 생성: 2017년부터 선택된 연도까지 각 연도의 총 공사금액(공사금액+VAT)을 DB에서 가져옴
+// ---------------------
+$sql_chart = "
+    SELECT 
+        LEFT(nw_sdate, 4) AS y, 
+        SUM(nw_total_price + nw_vat) AS total 
+    FROM {$none['worksite']}
+    WHERE LEFT(nw_sdate,4) BETWEEN '2017' AND '{$date}'
+    GROUP BY LEFT(nw_sdate,4)
+    ORDER BY y ASC
+";
+$res_chart = sql_query($sql_chart);
+$chart_data = array();
+while ($row_chart = sql_fetch_array($res_chart)) {
+    $chart_data[] = $row_chart;
+}
+?>
+
+<div id="main-content">
+  <div class="container-fluid">
+    <div class="block-header">
+      <div class="row">
+        <div class="col-lg-5 col-md-8 col-sm-12">
+          <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/"><i class="icon-home"></i></a></li>
+            <li class="breadcrumb-item active">Home</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <!-- 첫 번째 카드: 현재 진행중인 현장 -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card overflowhidden">
+          <div class="body">
+            <h3><?php echo function_exists('get_worksite_count') ? get_worksite_count(0) : 'N/A'; ?> <i class="fa fa-building-o float-right"></i></h3>
+            <span>현재 진행중인 현장</span>
+          </div>
+          <div class="progress progress-xs progress-transparent custom-color-blue m-b-0">
+            <div class="progress-bar" data-transitiongoal="64" aria-valuenow="64" style="width: 64%;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 두 번째 카드: 총 현장소장 (조건 적용 후 집계한 인원) -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card overflowhidden">
+          <div class="body">
+            <h3><?php echo number_format($site_manager_count); ?> <i class="icon-user-follow float-right"></i></h3>
+            <span>총 현장소장</span>
+          </div>
+          <div class="progress progress-xs progress-transparent custom-color-purple m-b-0">
+            <div class="progress-bar" data-transitiongoal="67" aria-valuenow="67" style="width: 67%;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 세 번째 카드: 총 실제투입소장 (기존 그대로) -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card overflowhidden">
+          <div class="body">
+            <h3>0 <i class="icon-user float-right"></i></h3>
+            <span>총 실제투입소장</span>
+          </div>
+          <div class="progress progress-xs progress-transparent custom-color-green m-b-0">
+            <div class="progress-bar" data-transitiongoal="68" aria-valuenow="68" style="width: 68%;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 네 번째 카드: 올해 수주금액 -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card overflowhidden">
+          <?php  
+          // 올해(선택된 연도)의 수주 총액을 가져오기 (수주금액 = 공사금액 + VAT)
+          $sql_current = "
+              SELECT SUM(nw_total_price + nw_vat) AS total 
+              FROM {$none['worksite']}
+              WHERE LEFT(nw_sdate,4) = '{$date}'
+          ";
+          $res_current = sql_query($sql_current);
+          $row_current = sql_fetch_array($res_current);
+          $current_total = isset($row_current['total']) ? $row_current['total'] : 0;
+          ?>
+          <div class="body">
+            <h3><?php echo number_format($current_total); ?><i class="fa fa-won float-right"></i></h3>
+            <span>올해 수주금액</span>
+          </div>
+          <div class="progress progress-xs progress-transparent custom-color-yellow m-b-0">
+            <div class="progress-bar" data-transitiongoal="89" aria-valuenow="89" style="width: 89%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 차트 섹션: 2017년부터 선택된 연도까지 DB의 값을 가져와 출력 -->
+    <div class="row clearfix">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="header">
+            <h2>연도별 수주현황</h2>
+          </div>
+          <div class="body">
+            <!-- 차트 컨테이너: 화면 폭에 맞춰 반응형, 높이 400px -->
+            <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+              <canvas id="chartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 이하 진행 현장 리스트 및 기타 섹션은 그대로 유지 -->
+    <div class="row clearfix">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="header">
+            <h2>현재 진행 현장</h2>
+          </div>
+          <div class="body">
+            <div class="table-responsive">
+              <table class="table table-hover m-b-0">
+                <thead class="thead-dark">
+                  <tr>
+                    <th>현장코드</th>
+                    <th>현장명</th>
+                    <th>현장소장</th>
+                    <th>실제투입소장</th>
+                    <th>품질관리자</th>
+                    <th>계약기간</th>
+                    <th>총 공사금액</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+                  $worksite_table = isset($none['worksite']) ? $none['worksite'] : 'your_worksite_table_name';
+                  $sql_common = " from {$worksite_table} ";
+                  $sql_search = " where nw_status = '0' ";
+                  $sst  = "nw_code";
+                  $sod  = "desc";
+                  $sql_order = " order by {$sst} {$sod} ";
+                  $sql = " select * {$sql_common} {$sql_search} {$sql_order} ";
+                  $result = sql_query($sql);
+                  
+                  for($i = 0; $row = sql_fetch_array($result); $i++) {
+                      $manager1_name = function_exists('get_manager_txt') ? get_manager_txt($row['nw_ptype1_1'] ?? '') : ($row['nw_ptype1_1'] ?? 'N/A');
+                      $manager2_name = function_exists('get_manager_txt') ? get_manager_txt($row['nw_ptype2_1'] ?? '') : ($row['nw_ptype2_1'] ?? 'N/A');
+                      $admin_name    = function_exists('get_admin_txt')   ? get_admin_txt($row['nw_ptype5_1'] ?? '') : ($row['nw_ptype5_1'] ?? 'N/A');
+                  ?>
+                  <tr>
+                    <td><a href="/_worksite/write/menu1_write.php?w=u&seq=<?php echo $row['seq']; ?>"><?php echo htmlspecialchars($row['nw_code'] ?? ''); ?></a></td>
+                    <td><?php echo htmlspecialchars($row['nw_subject'] ?? ''); ?></td>
+                    <td><?php echo htmlspecialchars($manager1_name); ?></td>
+                    <td><?php echo htmlspecialchars($manager2_name); ?></td>
+                    <td><?php echo htmlspecialchars($admin_name); ?></td>
+                    <td><?php echo htmlspecialchars($row['nw_sdate'] ?? ''); ?> ~ <?php echo htmlspecialchars($row['nw_edate'] ?? ''); ?></td>
+                    <td class="text-right"><?php echo number_format((int)($row['nw_total_price'] ?? 0)); ?></td>
+                  </tr>
+                  <?php
+                  }
+                  if ($i == 0) {
+                      echo '<tr><td colspan="7" class="text-center">진행중인 현장이 없습니다.</td></tr>';
+                  }
+                  ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- (공지사항, 사내자료실, 견적문의 섹션은 그대로 유지) -->
+    <div class="row clearfix">
+      <div class="col-lg-4 col-md-12">
+        <div class="card">
+          <div class="header">
+            <h2>공지사항</h2>
+          </div>
+          <div class="body">
+            <ul class="list-unstyled feeds_widget">
+              <?php echo latest('basic', 'notice', 7, 25); ?>
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-lg-4 col-md-12">
+        <div class="card">
+          <div class="header">
+            <h2>사내자료실</h2>
+          </div>
+          <div class="body">
+            <ul class="list-unstyled feeds_widget">
+              <?php echo latest('basic', 'pds', 7, 25); ?>
+            </ul>
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-lg-4 col-md-12">
+        <div class="card">
+          <div class="header">
+            <h2>견적문의</h2>
+          </div>
+          <div class="body">
+            <?php
+            $request_table = isset($none['home_request']) ? $none['home_request'] : 'your_request_table_name';
+            $sql_common  = " from {$request_table} ";
+            $sql_search  = " where (1) ";
+            $sst         = "seq";
+            $sod         = "desc";
+            $sql_order   = " order by {$sst} {$sod} ";
+            $sql         = " select * {$sql_common} {$sql_search} {$sql_order} limit 0, 3 ";
+            $result      = sql_query($sql);
+    
+            for($i = 0; $row = sql_fetch_array($result); $i++) {
+              $addr = explode(' ', $row['wr_addr'] ?? '');
+            ?>
+            <a href="http://www.n1con.com/homepage/request_view.html?seq=<?php echo $row['seq']; ?>" style="color:#444" target="_blank">
+              <div class="timeline-item green" date-is="<?php echo htmlspecialchars(substr($row['wr_datetime'] ?? '', 0, 10)); ?>">
+                <h5><?php echo htmlspecialchars($row['wr_name'] ?? ''); ?>님이 견적의뢰를 남기셨습니다.</h5>
+                <span><?php echo htmlspecialchars($addr[0] ?? ''); ?> <?php echo htmlspecialchars($addr[1] ?? ''); ?></span>
+              </div>
+            </a>
+            <?php }
+            if ($i == 0) {
+                echo '<p class="text-center">최근 견적문의가 없습니다.</p>';
+            }
+            ?>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- Chart.js 라이브러리 로드 및 차트 생성 스크립트 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  (function() {
+    var ctx = document.getElementById('chartCanvas').getContext('2d');
+    
+    // PHP의 차트 데이터를 JavaScript 배열로 변환
+    var chartLabels = [
+        <?php 
+        foreach($chart_data as $cd) {
+            echo "'".$cd['y']."',";
+        }
+        ?>
+    ];
+    var chartValues = [
+        <?php 
+        foreach($chart_data as $cd) {
+            echo $cd['total'].",";
+        }
+        ?>
+    ];
+  
+  new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: chartLabels,
+          datasets: [{
+              label: '연도별 수주금액 (2017 - <?php echo $date; ?>)',
+              data: chartValues,
+              borderWidth: 1,
+              fill: false,
+              borderColor: 'rgba(75, 192, 192, 1)'
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  ticks: {
+                      // ---------------------------
+                      // 여기에 callback을 추가
+                      // ---------------------------
+                      callback: function(value, index, ticks) {
+                          // 백만 단위로 나눈 뒤, 1.0 고정 소수점 + "M" 붙이기
+                          // ex) 1,234,567 -> 1.2M
+                          var million = 100000000;
+                          if (value === 0) {
+                              return 0; // 0은 그냥 0으로 표시
+                          } else {
+                              return (value / million).toFixed(0) + ' 만';
+                          }
+                      }
+                  }
+              }
+          }
+      }
+  });
+})();
+</script>
+
+<?php include_once(NONE_PATH . '/footer.php'); ?>

@@ -1,0 +1,67 @@
+<? exit;
+include "header.html"; ?>
+
+
+<!-- 메일 -->
+<link rel="stylesheet" href="common/n1/summernote/dist/summernote.css"/>
+<link rel="stylesheet" href="assets/css/inbox.css">
+
+   <div id="main-content">
+        <div class="container-fluid">
+            <div class="block-header">
+                <div class="row">
+                    <div class="col-lg-5 col-md-8 col-sm-12">                        
+                        <h2><a href="javascript:void(0);" class="btn btn-xs btn-link btn-toggle-fullwidth"><i class="fa fa-arrow-left"></i></a> 메일쓰기</h2>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="icon-home"></i></a></li>                            
+                            <li class="breadcrumb-item"><a href="mail.html">메일</a></li>
+                            <li class="breadcrumb-item active">메일쓰기</li>
+                        </ul>
+                    </div>            
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="body">
+                            <form>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="받는사람">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="참조">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="제목">
+                                </div>
+                            </form>
+                            <hr>
+                            <div class="summernote">
+                                메일을 보냅니다
+                                <br/>
+                                <p>안녕하세요</p>
+                            </div>
+                            <div class="m-t-30">
+                                <button type="button" class="btn btn-success">보내기</button>
+                                <button type="button" class="btn btn-secondary">임시저장</button>
+                                <a href="mail.html" class="btn btn-outline-secondary">취소</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<!-- Javascript --> 
+<script src="assets/bundles/libscripts.bundle.js"></script> 
+<script src="assets/bundles/vendorscripts.bundle.js"></script> 
+
+<script src="assets/bundles/mainscripts.bundle.js"></script> 
+<script src="common/n1/summernote/dist/summernote.js"></script>
+
+</body>
+</html>

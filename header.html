@@ -1,0 +1,139 @@
+<?php 
+include_once('../core/common.php');
+
+if($is_guest) {
+	alert('로그인 후 이용 가능합니다.', '/member/login.php');
+}
+?>
+<!doctype html>
+<html lang="ko">
+<head>
+<title>㈜엔원종합건설</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="description" content="아름다운 공간 창조, 모던 건축을 지향하는 엔원종합건설">
+<meta property="og:title" content="㈜엔원종합건설">
+<meta property="og:description" content="아름다운 공간 창조, 모던 건축을 지향하는 엔원종합건설">
+<link rel="shortcut icon" href="common/images/favicon.ico">
+
+<!-- COMMON CSS -->
+<link rel="stylesheet" href="common/n1/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="common/n1/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="common/n1/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css">
+<link rel="stylesheet" href="common/n1/jvectormap/jquery-jvectormap-2.0.3.min.css"/>
+<link rel="stylesheet" href="common/n1/morrisjs/morris.min.css" />
+<link rel="stylesheet" href="common/n1/nestable/jquery-nestable.css"/>
+
+<!-- MAIN CSS -->
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/color_skins.css">
+</head>
+<body class="theme-blue">
+<div id="wrapper">
+<nav class="navbar navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-btn">
+      <button type="button" class="btn-toggle-offcanvas"><i class="lnr lnr-menu fa fa-bars"></i></button>
+    </div>
+    <div class="navbar-brand"> <a href="http://n1con.com"><img src="common/images/logo.png" alt="Logo" class="img-responsive logo"></a> </div>
+    <div class="navbar-right">
+      <div id="navbar-menu">
+        <ul class="nav navbar-nav">
+          <li> <a href="#" class="icon-menu d-none d-sm-block d-md-none d-lg-block"><i class="icon-home"></i></a> </li>
+          <li> <a href="#" class="icon-menu d-none d-sm-block"><i class="icon-bubbles"></i></a> </li>
+          <li> <a href="#" class="icon-menu d-none d-sm-block"><i class="icon-envelope"></i><span class="notification-dot"></span></a> </li>
+          <li> <a href="#" class="icon-menu"><i class="icon-login"></i></a> </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+<div id="left-sidebar" class="sidebar">
+  <div class="sidebar-scroll">
+    <div class="user-account"> <img src="common/images/user.png" class="rounded-circle user-photo" alt="User Profile Picture">
+      <div class="dropdown"> <span>Welcome,</span> <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>홍길동</strong></a>
+        <ul class="dropdown-menu dropdown-menu-right account">
+          <li><a href="#"><i class="icon-user"></i>프로필</a></li>
+          <li><a href="#"><i class="icon-envelope-open"></i>메세지</a></li>
+          <li><a href="javascript:void(0);"><i class="icon-settings"></i>설정</a></li>
+          <li class="divider"></li>
+          <li><a href="page-login.html"><i class="icon-power"></i>로그아웃</a></li>
+        </ul>
+      </div>
+      <hr>
+    </div>
+    <div class="p-l-0 p-r-0">
+      <div id="menu">
+        <nav id="left-sidebar-nav" class="sidebar-nav">
+          <ul id="main-menu" class="metismenu">
+            <li><!--<li class="active">--> 
+              <a href="#" class="has-arrow"><i class="icon-home"></i> <span>현장관리</span></a>
+              <ul>
+                <li><a href="#">시공현장</a></li>
+                <li><a href="#">스마트일보</a></li>
+                <li><a href="#">현장현황</a></li>
+                <li><a href="#">공정별 현장사진</a></li>
+                <li><a href="#">건축주협의게시판</a></li>
+                <li><a href="#">하자보수</a></li>
+              </ul>
+            </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-docs"></i> <span>문서관리</span></a>
+              <ul>  
+                <li><a href="#">도급계약총괄표</a></li>
+                <li><a href="#">하도급계약총괄표</a></li>
+                <li><a href="#">하도급계약서류</a></li> 
+              </ul>
+            </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-pencil"></i> <span>전자결재</span></a>
+              <ul>
+                <li><a href="#">전체문서관리</a></li>
+                <li><a href="#">진행중인문서</a></li>
+                <li><a href="#">반려문서</a></li>
+                <li><a href="#">완료문서</a></li>
+                <li><a href="#">참조문서</a></li>
+                <li><a href="#">문서양식관리</a></li>
+              </ul>
+            </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-tag"></i> <span>기성청구서</span></a>
+              <ul>
+                <li><a href="#">기성청구서</a></li>
+                <li><a href="#">청구현황</a></li>
+              </ul>
+            </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-bar-chart"></i> <span>통계</span></a>
+              <ul>
+                <li><a href="#">수주현황</a></li>
+                <li><a href="#">매출현황</a></li>
+                <li><a href="#">현장진행총괄표</a></li>
+                <li><a href="#">현장별기성집계표</a></li>
+                <li><a href="#">기타경비총괄표</a></li>
+                <li><a href="#">매출현황등록</a></li>
+                <li><a href="#">현장소장현황</a></li>
+                
+              </ul>
+            </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-lock"></i> <span>회사관리</span></a>
+              <ul>
+                <li><a href="#">직원관리</a></li>
+                <li><a href="#">지사관리</a></li>
+                <li><a href="#">부서관리</a></li>
+                <li><a href="#">직급관리</a></li>
+              </ul>
+            </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-globe"></i> <span>건축주</span></a> </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-diamond"></i> <span>업체관리</span></a> </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-grid"></i> <span>홈페이지관리</span></a>
+              <ul>
+                <li><a href="#">회원관리</a></li>
+                <li><a href="#">일별 방문자 수 및 통계</a></li>
+              </ul>
+            </li>
+            <li> <a href="#" class="has-arrow"><i class="icon-envelope"></i> <span>메일관리</span></a> </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
