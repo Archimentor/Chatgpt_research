@@ -246,7 +246,7 @@ function file_upload() {
 	}
 	
 	
-	formData.append("uid", "<?php echo $seq?><?php echo str_replace($date)?>"); //유니크ID
+        formData.append("uid", "<?php echo $seq?><?php echo str_replace('-', '', $date)?>"); //유니크ID
 	
 	formData.append("bo_table", "est_<?php echo $index?>"); 
 	formData.append("date", "<?php echo $date?>"); 
@@ -302,7 +302,7 @@ $("#fileInput").on('change', addFiles);
 function file_list() {
 	
 	
-	var id = "<?php echo $seq?><?php echo str_replace($date)?>";
+        var id = "<?php echo $seq?><?php echo str_replace('-', '', $date)?>";
 
 	
 	$.post('/_ajax/file_listup_est.php', { id : id, w : '<?php echo $w?>', date : "<?php echo $date?>", bo_table  : "est_<?php echo $index?>" }, function(data) {

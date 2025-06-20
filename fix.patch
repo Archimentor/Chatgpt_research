@@ -1,38 +1,77 @@
 diff --git a/_establishment/list/data_delete.php b/_establishment/list/data_delete.php
-new file mode 100644
-index 0000000000000000000000000000000000000000..db4e03b5da6f06434a701bfc381434f896755364
---- /dev/null
+index db4e03b5da6f06434a701bfc381434f896755364..e9eb6ee873bbce32d676a8581da1cd430f5215ae 100644
+--- a/_establishment/list/data_delete.php
 +++ b/_establishment/list/data_delete.php
-@@ -0,0 +1,24 @@
-+<?php
-+include_once('../../_common.php');
+@@ -1,24 +1,64 @@
+ <?php
+ include_once('../../_common.php');
+ 
+ if($is_guest) alert('로그인 후 이용바랍니다.');
+ 
+ $seq = isset($_GET['seq']) ? preg_replace('/[^0-9]/', '', $_GET['seq']) : '';
+ $date = isset($_GET['date']) ? preg_replace('/[^0-9-]/', '', $_GET['date']) : '';
+ 
+ if(!$seq || !$date) {
+     alert('잘못된 접근입니다.');
+ }
+ 
+ $uid = $seq . str_replace('-', '', $date);
+ 
++// 현장 코드 조회
++$work = sql_fetch("select nw_code from {$none['worksite']} where seq = '{$seq}'");
++$nw_code = $work['nw_code'];
 +
-+if($is_guest) alert('로그인 후 이용바랍니다.');
-+
-+$seq = isset($_GET['seq']) ? preg_replace('/[^0-9]/', '', $_GET['seq']) : '';
-+$date = isset($_GET['date']) ? preg_replace('/[^0-9-]/', '', $_GET['date']) : '';
-+
-+if(!$seq || !$date) {
-+    alert('잘못된 접근입니다.');
+ $sql = "SELECT * FROM {$g5['board_file_table']} WHERE bo_table LIKE 'est_%' AND (wr_id = '{$uid}' OR bf_change_id = '{$uid}') AND bf_est_date = '{$date}'";
+ $result = sql_query($sql);
+ while($row = sql_fetch_array($result)) {
+     $filepath = NONE_PATH.'/_data/est/'.$row['bo_table'].'/'.$row['bf_file'];
+     if(file_exists($filepath)) @unlink($filepath);
+     sql_query("DELETE FROM {$g5['board_file_table']} WHERE seq = '{$row['seq']}'");
+ }
+ 
++// 노임 인부정보 첨부파일 삭제
++$sql = "select ne_file1, ne_file2, ne_file3 from {$none['est_noim']} where nw_code = '{$nw_code}' and ne_date = '{$date}' and ne_type = '1'";
++$rst = sql_query($sql);
++while($row = sql_fetch_array($rst)) {
++    foreach(array('ne_file1','ne_file2','ne_file3') as $f) {
++        if($row[$f]) {
++            $fp = NONE_PATH."/_data/noim/{$nw_code}/".$row[$f];
++            if(file_exists($fp)) @unlink($fp);
++        }
++    }
 +}
++sql_query("update {$none['est_noim']} set ne_file1='', ne_file2='', ne_file3='' where nw_code = '{$nw_code}' and ne_date = '{$date}' and ne_type='1'");
 +
-+$uid = $seq . str_replace('-', '', $date);
-+
-+$sql = "SELECT * FROM {$g5['board_file_table']} WHERE bo_table LIKE 'est_%' AND (wr_id = '{$uid}' OR bf_change_id = '{$uid}') AND bf_est_date = '{$date}'";
-+$result = sql_query($sql);
-+while($row = sql_fetch_array($result)) {
-+    $filepath = NONE_PATH.'/_data/est/'.$row['bo_table'].'/'.$row['bf_file'];
-+    if(file_exists($filepath)) @unlink($filepath);
-+    sql_query("DELETE FROM {$g5['board_file_table']} WHERE seq = '{$row['seq']}'");
++// 노임 용역회사 첨부파일 삭제
++$sql = "select seq, ne_file1, ne_file2 from {$none['est_noim']} where nw_code = '{$nw_code}' and ne_date = '{$date}' and ne_type = '2'";
++$rst = sql_query($sql);
++while($row = sql_fetch_array($rst)) {
++    foreach(array('ne_file1','ne_file2') as $f) {
++        if($row[$f]) {
++            $fp = NONE_PATH."/_data/noim2/{$nw_code}/".$row[$f];
++            if(file_exists($fp)) @unlink($fp);
++        }
++    }
++    $file = sql_fetch("select ne_file3, ne_file4 from none_est_noim_file where noim_seq = '{$row['seq']}' and ne_date = '{$date}'");
++    if($file) {
++        foreach(array('ne_file3','ne_file4') as $f) {
++            if($file[$f]) {
++                $fp = NONE_PATH."/_data/noim2/{$nw_code}/".$file[$f];
++                if(file_exists($fp)) @unlink($fp);
++            }
++        }
++        sql_query("delete from none_est_noim_file where noim_seq = '{$row['seq']}' and ne_date = '{$date}'");
++    }
 +}
++sql_query("update {$none['est_noim']} set ne_file1='', ne_file2='' where nw_code = '{$nw_code}' and ne_date = '{$date}' and ne_type='2'");
 +
-+alert('첨부파일이 모두 삭제되었습니다.', './menu1_list.php?date=' . urlencode($date));
-+?>
+ alert('첨부파일이 모두 삭제되었습니다.', './menu1_list.php?date=' . urlencode($date));
+ ?>
 diff --git a/_establishment/list/menu1_list.php b/_establishment/list/menu1_list.php
-index c172e6818d3ca3919f75f3834f50307d745ea626..11f2caa5102195f88e0efd2b5e7125092bc8b95e 100644
+index 04782e7f0348c920715b7c0b4e2eb6c581774c3c..fbc7b6185a9a04d92ac8e74d4766e8726e18d270 100644
 --- a/_establishment/list/menu1_list.php
 +++ b/_establishment/list/menu1_list.php
-@@ -238,81 +238,89 @@ $qstr .= "&status=$status&date=$date";
+@@ -238,51 +238,51 @@ $qstr .= "&status=$status&date=$date";
  										<tr>
  											<td class="text-center"><?php echo date('m', strtotime($date))?>월</td>
  											<td class="text-center">
@@ -58,8 +97,8 @@ index c172e6818d3ca3919f75f3834f50307d745ea626..11f2caa5102195f88e0efd2b5e712509
  												<?php echo $status?>
  											</td>
  											<td class="text-center">
--												<a href="javascript:del_(<?php echo $row['seq']?>)" title="일괄삭제"  style="color:#444"><span class="glyphicon fa fa-trash-o"></span></a>
-+                                                                                <a href="javascript:data_delete(<?php echo $row['seq']?>)" title="일괄삭제"  style="color:#444"><span class="glyphicon fa fa-trash-o"></span></a>
+-                                                                                <a href="javascript:data_delete(<?php echo $row['seq']?>)" title="일괄삭제"  style="color:#444"><span class="glyphicon fa fa-trash-o">일괄삭제</span></a>
++        <a href="javascript:data_delete(<?php echo $row['seq']?>)" title="일괄삭제"  style="color:red"><span class="glyphicon fa fa-trash-o"></span></a>
  											</td>
  										</tr>
  										<?php } ?>
@@ -85,48 +124,112 @@ index c172e6818d3ca3919f75f3834f50307d745ea626..11f2caa5102195f88e0efd2b5e712509
      
  </div>
  
+diff --git a/_establishment/write/menu1_write.php b/_establishment/write/menu1_write.php
+index e41f21b6264d1111c8f9b23f453e5a9329f8a9ae..5d799dfa7ed26e07c2e1f6c42c28931200276804 100644
+--- a/_establishment/write/menu1_write.php
++++ b/_establishment/write/menu1_write.php
+@@ -224,51 +224,51 @@ $(function() {
+                 baseUrl += '&selected_user=<?php echo urlencode($selected_user_param); ?>';
+ <?php } ?>
+                 location.href = baseUrl + '&index=' + index;
+ 	})
+ 	
+ 	
+ 	//$(".write2_table").resizableColumns();
+ })
  
- <?php include_once(NONE_PATH.'/footer.php');?>
  
- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+ </script>
  <script>
- function chkfrm(f) {
- 	if(confirm('카테고리를 변경하시겠습니까?')) {
- 		f.submit();
+ 
+ //파일배열
+ var filesTempArr = [];
+ 
+ //파일 업로드 처리
+ function file_upload() {
+ 	var formData = new FormData();
+ 	
+ 	for(var i=0, filesTempArrLen = filesTempArr.length; i<filesTempArrLen; i++) {
+ 	   formData.append("files[]", filesTempArr[i]);
+ 	}
+ 	
+ 	
+-	formData.append("uid", "<?php echo $seq?><?php echo str_replace($date)?>"); //유니크ID
++        formData.append("uid", "<?php echo $seq?><?php echo str_replace('-', '', $date)?>"); //유니크ID
+ 	
+ 	formData.append("bo_table", "est_<?php echo $index?>"); 
+ 	formData.append("date", "<?php echo $date?>"); 
+ 	
+ 	$('#file_upload_btn').html('업로드 처리중..');
+ 	
+ 	$.ajax({
+ 		type : "POST",
+ 		url : "/_ajax/file_upload_est.php",
+ 		data : formData,
+ 		processData: false,
+ 		contentType: false,
+ 		success : function(data) {
+ 			//파일업로드 완료 처리 로직
+ 			if(data == "no") {
+ 				alert('업로드에 실패하였습니다.\n파일이 없거나 업로드가 불가능한 확장자 또는 용량입니다.');
+ 			} else {
+ 				$('#userfile').val('');
+ 				//다시 빈배열로
+ 				filesTempArr = [];
+ 				file_list(); // 업로드 된 파일목록 리스팅
+ 			}
+ 
+ 			$('#file_upload_btn').html('업로드');			
+ 		},
+@@ -280,49 +280,49 @@ function file_upload() {
+ 	
+ }
+ 
+ // 파일을 배열에 추가
+ function addFiles(e) {
+     var files = e.target.files;
+     var filesArr = Array.prototype.slice.call(files);
+     var filesArrLen = filesArr.length;
+     var filesTempArrLen = filesTempArr.length;
+     for( var i=0; i<filesArrLen; i++ ) {
+         filesTempArr.push(filesArr[i]);
+         //$("#fileList").append("<div>" + filesArr[i].name + "<img src=\"/images/deleteImage.png\" onclick=\"deleteFile(event, " + (filesTempArrLen+i)+ ");\"></div>");
+     }
+ 	$('#userfile').val(filesArrLen+'개 파일 첨부됨');
+ 	
+     $(this).val('');
+ }
+ 
+ //파일첨부시 파일추가 함수 실행.
+ $("#fileInput").on('change', addFiles);
+ 	
+ //업로드 파일목록
+ function file_list() {
+ 	
+ 	
+-	var id = "<?php echo $seq?><?php echo str_replace($date)?>";
++        var id = "<?php echo $seq?><?php echo str_replace('-', '', $date)?>";
+ 
+ 	
+ 	$.post('/_ajax/file_listup_est.php', { id : id, w : '<?php echo $w?>', date : "<?php echo $date?>", bo_table  : "est_<?php echo $index?>" }, function(data) {
+ 		$('#file_list').html(data);
+ 	});
+ 	
+ }
+ 
+ file_list();
+ 
+ //파일삭제 
+ function file_del(seq) {
+ 	
+ 	if(confirm('정말 삭제하시겠습니까?\n삭제 된 파일은 복구가 불가능합니다.')) {
+ 		location.href = '/_ajax/file_delete_est.php?w=d&seq='+seq;
  	} else {
  		return false;
  	}
+ 	
  }
- 
--function del_(seq) {
--	if(confirm('정말 시공현황 정보를 삭제하시겠습니까?\n\n연동 된 정보가 있다면 모두 해제 됩니다.')) {
--		location.href = '/_worksite/write/menu1_update.php?w=d&seq='+seq;
--	} else {
--		return false;
--	}
--}
-+function del_(seq) {
-+        if(confirm('정말 시공현황 정보를 삭제하시겠습니까?\n\n연동 된 정보가 있다면 모두 해제 됩니다.')) {
-+                location.href = '/_worksite/write/menu1_update.php?w=d&seq='+seq;
-+        } else {
-+                return false;
-+        }
-+}
-+
-+function data_delete(seq) {
-+        if(confirm('정말 업로드된 데이터를 모두 삭제하시겠습니까?\n삭제된 파일은 복구할 수 없습니다.')) {
-+                location.href = './data_delete.php?seq=' + seq + '&date=<?php echo $date?>';
-+        } else {
-+                return false;
-+        }
-+}
- 
- //검색형 셀렉트박스로 변경
- $('.select2').select2({
-   language: {
- 	noResults: function (params) {
- 	  return "검색 결과가 없습니다.";
- 	}
-   }
- });
  </script>
+ 
+ <script src="./include/js/es_<?php echo $index?>.js?ver=220523"></script>
+\ No newline at end of file
