@@ -315,6 +315,8 @@ $new_hires            = [];
 while ($row = sql_fetch_array($result)) {
     // mb_position 값이 없을 경우 대비
     $row['pos_name'] = isset($row['mb_position']) ? get_mposition_name($row['mb_position']) : '';
+    // 근속년수 미리 계산하여 배열에 포함 (정렬용)
+    $row['seniority_years'] = get_seniority_years($row['mb_in_date']);
     $employee_list_data[] = $row;
 
     // 생일 집계 (생년월일 형식 'YYYY-MM-DD' 또는 'MM-DD' 가정)
@@ -334,8 +336,8 @@ while ($row = sql_fetch_array($result)) {
     }
 
     if ($birth_month == $month && $birth_day !== null) {
-         $yrs = get_seniority_years($row['mb_in_date']);
-         $label = $row['mb_name'].' ('.$yrs.'년) | '.$row['mb_hp']; // 근속년수 대신 직급 표시 등 필요에 따라 수정 가능
+         $yrs = $row['seniority_years'];
+         $label = $row['mb_name'].' '.$row['pos_name'].' ('.$yrs.'년) | '.$row['mb_hp'];
          if (!isset($birthdays_this_month[$birth_day])) {
              $birthdays_this_month[$birth_day] = [];
          }
@@ -347,6 +349,14 @@ while ($row = sql_fetch_array($result)) {
         $new_hires[] = $row;
     }
 }
+
+// 근속년수(내림차순) 및 이름(오름차순)으로 직원 목록 정렬
+usort($employee_list_data, function($a, $b){
+    if ($a['seniority_years'] == $b['seniority_years']) {
+        return strcmp($a['mb_name'], $b['mb_name']);
+    }
+    return $b['seniority_years'] <=> $a['seniority_years'];
+});
 
 // 6) 달력용 변수 계산
 $first_day_timestamp = mktime(0,0,0,$month,1,$year);
@@ -535,7 +545,7 @@ $week_days           = ['일','월','화','수','목','금','토'];
       <div class="col-lg-12">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">직원 목록 (이름순)</h3>
+            <h3 class="card-title">직원 목록 (근속년수, 이름순)</h3>
           </div>
           <div class="card-body">
             <div class="table-responsive">
@@ -556,7 +566,7 @@ $week_days           = ['일','월','화','수','목','금','토'];
                     $employee_count=0;
                     foreach($employee_list_data as $row){
                       $employee_count++;
-                      $seniority_years = get_seniority_years($row['mb_in_date']);
+                      $seniority_years = $row['seniority_years'];
                       $name_label = htmlspecialchars($row['mb_name'].' '.$row['pos_name']);
                       // 신규 입사자 뱃지 추가
                       if(is_new_hire($row['mb_in_date'])){
