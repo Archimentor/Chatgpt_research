@@ -96,10 +96,12 @@ function total_calc(){
      return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
  }
 
- function uncomma(str) {
-     str = String(str);
-     return str.replace(/[^\d]+/g, '');
- }
+function uncomma(str) {
+    str = String(str).trim();
+    var neg = str.charAt(0) === '-' ? '-' : '';
+    str = str.replace(/[^\d]/g, '');
+    return neg + str;
+}
  
  function delete_row(seq) {
     if (confirm('즉시 삭제되며 복구하실 수 없습니다.\n\n삭제 후 페이지가 새로고침 됩니다.')) {
@@ -216,9 +218,11 @@ function total_calc(){
       return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
  }
 
- function uncomma(str) {
-      str = String(str);
-      return str.replace(/[^\d]+/g, '');
+function uncomma(str) {
+     str = String(str).trim();
+     var neg = str.charAt(0) === '-' ? '-' : '';
+     str = str.replace(/[^\d]/g, '');
+     return neg + str;
  }
 
  // number_format 함수 (PHP의 number_format과 유사, 필요 시 추가)

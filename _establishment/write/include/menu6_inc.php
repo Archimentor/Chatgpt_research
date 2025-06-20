@@ -168,7 +168,12 @@ if (!empty($selected_user_id) && !empty($current_nw_code)) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <script>
 // 콤마 관련 함수
 function comma(str) { str = String(str); return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'); }
-function uncomma(str) { str = String(str); return str.replace(/[^\d]+/g, ''); }
+function uncomma(str) {
+    str = String(str).trim();
+    var neg = str.charAt(0) === '-' ? '-' : '';
+    str = str.replace(/[^\d]/g, '');
+    return neg + str;
+}
 function number_format(number, decimals, dec_point, thousands_sep) { number = (number + '').replace(/[^0-9+\-Ee.]/g, ''); var n = !isFinite(+number) ? 0 : +number, prec = !isFinite(+decimals) ? 0 : Math.abs(decimals), sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep, dec = (typeof dec_point === 'undefined') ? '.' : dec_point, s = '', toFixedFix = function(n, prec) { var k = Math.pow(10, prec); return '' + Math.round(n * k) / k; }; s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.'); if (s[0].length > 3) { s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep); } if ((s[1] || '').length < prec) { s[1] = s[1] || ''; s[1] += new Array(prec - s[1].length + 1).join('0'); } return s.join(dec); }
 
 // 행 추가/삭제 관련 함수
