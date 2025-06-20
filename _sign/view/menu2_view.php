@@ -265,10 +265,12 @@ if(!$row) alert('잘못 된 접근입니다.');
 															<td rowspan="2">세액</td>
 															<td rowspan="2">총액</td>
 															<td colspan="3">계좌정보</td>
-															<td rowspan="2">대표전화</td>
-															<td rowspan="2">담당자</td>
-															<td rowspan="2">비고</td>
-															<?php if($member['mb_2'] == 3) {?><td rowspan="2">체크</td><?php }?>
+                                                                               <td rowspan="2">대표전화</td>
+                                                                               <td rowspan="2">담당자</td>
+                                                                               <td rowspan="2">사업자<br>등록증</td>
+                                                                               <td rowspan="2">통장</td>
+                                                                               <td rowspan="2">비고</td>
+                                                                               <?php if($member['mb_2'] == 3) {?><td rowspan="2">체크</td><?php }?>
 														</tr>
 														<tr>
 															<td >은행명</td>
@@ -285,11 +287,16 @@ if(!$row) alert('잘못 된 접근입니다.');
 															
 															for($i=0; $i<count($ns_company); $i++) {
 																
-																$ns_company_arr = explode('^', $ns_company[$i]);
-																
-																$chk = sql_fetch("select * from none_sign_draft2_chk  where seq = '$seq'");
-																
-																$num = $i + 1;
+                                                                               $ns_company_arr = explode('^', $ns_company[$i]);
+
+                                                                               $chk = sql_fetch("select * from none_sign_draft2_chk  where seq = '$seq'");
+
+                                                                               $num = $i + 1;
+
+                                                                               $enter = sql_fetch("select seq from {$none['enterprise_list']} where no_company = '{$ns_company_arr[0]}'");
+                                                                               $file_list = $enter['seq'] ? get_file('enterprise', $enter['seq']) : array();
+                                                                               $biz_key = array_search(1, array_column($file_list, 'bf_category'));
+                                                                               $bank_key = array_search(2, array_column($file_list, 'bf_category'));
 														?>
 															<tr id="chk_<?php echo $i?>_tr" class="chk_tr" <?php if ($chk['ns_chk'.$num] == 1 && $member['mb_2'] == 3) echo 'style="background:#5252ab;color:#fff"'; ?>>
 																<td><?php echo $ns_company_arr[0]?></td>
@@ -300,9 +307,11 @@ if(!$row) alert('잘못 된 접근입니다.');
 																<td><?php echo $ns_company_arr[5]?></td>
 																<td><?php echo $ns_company_arr[6]?></td>
 																
-																<td><?php echo $ns_company_arr[7]?></td>
-																<td><?php echo $ns_company_arr[8]?></td>
-																<td><?php echo $ns_company_arr[9]?></td>
+                                                                               <td><?php echo $ns_company_arr[7]?></td>
+                                                                               <td><?php echo $ns_company_arr[8]?></td>
+                                                                               <td class="text-center"><?php if($biz_key !== false) { echo '<a href="'.$file_list[$biz_key]['href2'].'" target="_blank"><span class="glyphicon fa fa-download"></span></a>'; } else { echo '<span class="no_file">미등록</span>'; }?></td>
+                                                                               <td class="text-center"><?php if($bank_key !== false) { echo '<a href="'.$file_list[$bank_key]['href2'].'" target="_blank"><span class="glyphicon fa fa-download"></span></a>'; } else { echo '<span class="no_file">미등록</span>'; }?></td>
+                                                                               <td><?php echo $ns_company_arr[9]?></td>
 																
 																<?php if($member['mb_2'] == 3) {?>
 																<td><input type="checkbox" data="<?php echo $num?>" class="chk_tr_input" value="<?php echo $i?>"
@@ -323,7 +332,7 @@ if(!$row) alert('잘못 된 접근입니다.');
 														</td>
 														<td id="stotal2" class="text-right"><?php echo number_format($row['ns_total_price2'])?></td>
 														<td id="stotal3" class="text-right"><?php echo number_format($row['ns_total_price3'])?></td>
-														<td colspan="7">
+                                                                               <td colspan="9">
 														<input type="hidden" name="stotal1_input" id="stotal1_input" value="<?php echo $row['ns_total_price1']?>">
 														<input type="hidden" name="stotal2_input" id="stotal2_input" value="<?php echo $row['ns_total_price2']?>">
 														<input type="hidden" name="stotal3_input" id="stotal3_input" value="<?php echo $row['ns_total_price3']?>"></td>
