@@ -1,8 +1,8 @@
 diff --git a/_establishment/list/data_delete.php b/_establishment/list/data_delete.php
-index b7ca6cc631c9cccc8bef2b2f6b912ce39cc25ce1..e807c4f6cdc5b49ea45f4ddecf931f12d5244677 100644
+index b7ca6cc631c9cccc8bef2b2f6b912ce39cc25ce1..06fde2adf94329d2f94771a78303681427cc167b 100644
 --- a/_establishment/list/data_delete.php
 +++ b/_establishment/list/data_delete.php
-@@ -16,78 +16,86 @@ $seq  = isset($_GET['seq'])  ? preg_replace('/[^0-9]/','',$_GET['seq'])  : '';
+@@ -16,86 +16,94 @@ $seq  = isset($_GET['seq'])  ? preg_replace('/[^0-9]/','',$_GET['seq'])  : '';
  $date = isset($_GET['date']) ? preg_replace('/[^0-9-]/','',$_GET['date']) : '';
  if(!$seq || !$date) alert('잘못된 접근입니다.');
  
@@ -35,7 +35,8 @@ index b7ca6cc631c9cccc8bef2b2f6b912ce39cc25ce1..e807c4f6cdc5b49ea45f4ddecf931f12
  
      // file 컬럼 찾기
      $col_rs = sql_query("SHOW COLUMNS FROM {$table} LIKE '%file%'");
-     $file_cols = [];
+-    $file_cols = [];
++    $file_cols = array();
      while($col = sql_fetch_row($col_rs)){
          $file_cols[] = $col[0];
      }
@@ -46,7 +47,8 @@ index b7ca6cc631c9cccc8bef2b2f6b912ce39cc25ce1..e807c4f6cdc5b49ea45f4ddecf931f12
      // 컬럼 ne_date 존재 여부 확인
      $has_date = sql_fetch("SHOW COLUMNS FROM {$table} LIKE 'ne_date'") ? true : false;
      $has_nw   = sql_fetch("SHOW COLUMNS FROM {$table} LIKE 'nw_code'") ? true : false;
-     $where = [];
+-    $where = [];
++    $where = array();
      if($has_nw)   $where[] = "nw_code='{$nw_code}'";
      if($has_date) $where[] = "ne_date='{$date}'";
      if(!count($where)) continue;
@@ -89,7 +91,16 @@ index b7ca6cc631c9cccc8bef2b2f6b912ce39cc25ce1..e807c4f6cdc5b49ea45f4ddecf931f12
           WHERE noim_seq='{$row['seq']}' AND ne_date='{$date}'");
      if(!$files) continue;
  
-     foreach(['ne_file3','ne_file4'] as $f){
+-    foreach(['ne_file3','ne_file4'] as $f){
++    foreach(array('ne_file3','ne_file4') as $f){
          if(!$files[$f]) continue;
          $p = NONE_PATH."/_data/noim2/{$nw_code}/".$files[$f];
          if(file_exists($p) && @unlink($p)) $deleted++;
+     }
+     sql_query("DELETE FROM none_est_noim_file
+                WHERE noim_seq='{$row['seq']}' AND ne_date='{$date}'");
+ }
+ 
+ // ───── 결과 ─────
+ alert("총 {$deleted}개 파일을 삭제했습니다.", './menu1_list.php?date='.urlencode($date));
+ ?>
