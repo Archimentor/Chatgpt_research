@@ -172,6 +172,9 @@ $write_pages = str_replace(array('열린','페이지','처음','이전','다음'
                                 <option value="2" <?php echo get_selected($type, 2); ?>>
                                     소장별 보기
                                 </option>
+                                <option value="3" <?php echo get_selected($type, 3); ?>>
+                                    소장별 보기(퇴사)
+                                </option>
                             </select>
                         </div>
                     </form>
@@ -265,7 +268,77 @@ $sql_man = "
     select mb_id, mb_name, mb_3
       from {$g5['member_table']}
      where mb_level >= 2 and mb_level <= 10
+       and mb_level2 != 4
        and (mb_leave_date = '' OR mb_leave_date IS NULL OR mb_leave_date > CURDATE())
+     order by mb_name asc
+";
+$rst = sql_query($sql_man);
+$manager_data = array();
+$found_data   = false;
+
+while($row_manager = sql_fetch_array($rst)) {
+    $manager_data[] = $row_manager;
+}
+
+foreach($manager_data as $v) {
+    $mb_id   = $v['mb_id'];
+    $mb_name = $v['mb_name'];
+
+    $sql_worksite = "
+      select nw_code, nw_subject, nw_sdate, nw_edate
+        from {$none['worksite']}
+       where nw_ptype1_1 = '".sql_real_escape_string($mb_id)."'
+          or nw_ptype1_2 = '".sql_real_escape_string($mb_id)."'
+          or nw_ptype1_3 = '".sql_real_escape_string($mb_id)."'
+          or nw_ptype2_1 = '".sql_real_escape_string($mb_id)."'
+          or nw_ptype2_2 = '".sql_real_escape_string($mb_id)."'
+          or nw_ptype2_3 = '".sql_real_escape_string($mb_id)."'
+       order by nw_sdate desc
+    ";
+    $rst_worksite   = sql_query($sql_worksite);
+    $worksite_count = sql_num_rows($rst_worksite);
+
+    if($worksite_count == 0) continue;
+
+    $found_data = true;
+    $first_row  = true;
+
+    while($row_work = sql_fetch_array($rst_worksite)) {
+        echo '<tr>';
+        if ($first_row) {
+            echo '<td rowspan="'.$worksite_count.'" class="text-center" style="vertical-align: middle;">'
+                 .htmlspecialchars($mb_name).'</td>';
+            $first_row = false;
+        }
+        echo '<td style="text-align:left; white-space:normal;">['.$row_work['nw_code'].'] '.$row_work['nw_subject'].'</td>';
+        echo '<td class="text-center">'.$row_work['nw_sdate'].' - '.$row_work['nw_edate'].'</td>';
+        echo '</tr>';
+    }
+}
+
+if(!$found_data) {
+    echo '<tr><td colspan="3" class="text-center">데이터가 없습니다.</td></tr>';
+}
+?>
+    </tbody>
+</table>
+<?php } else if($type == 3) { ?>
+<!-- ============================== 소장별 보기(퇴사) ============================== -->
+<table class="table table-hover">
+    <thead class="thead-light">
+        <tr>
+            <th class="text-center" style="width:15%;">현장소장명</th>
+            <th style="text-align:left;">현장코드 및 현장명</th>
+            <th class="text-center" style="width:25%;">공사기간</th>
+        </tr>
+    </thead>
+    <tbody>
+<?php
+$sql_man = "
+    select mb_id, mb_name, mb_3
+      from {$g5['member_table']}
+     where mb_level >= 2 and mb_level <= 10
+       and mb_level2 = 4
      order by mb_name asc
 ";
 $rst = sql_query($sql_man);
