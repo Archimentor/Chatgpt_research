@@ -34,7 +34,20 @@ $sql_search = " WHERE (1) "; // 기본 WHERE 절 (검색 제거됨)
 
 // 현장소장 권한 필터링 (필요시 유지)
 if(isset($member['mb_level2']) && $member['mb_level2'] == 2) {
-    $sql_search .= " AND ( nw_ptype1_1 = '{$member['mb_id']}' OR nw_ptype1_2 = '{$member['mb_id']}' OR nw_ptype1_3 = '{$member['mb_id']}' OR nw_ptype2_1 = '{$member['mb_id']}' OR nw_ptype2_2 = '{$member['mb_id']}' OR nw_ptype2_3 = '{$member['mb_id']}' ) ";
+    $sql_search .= " AND (
+        nw_ptype1_1 = '{$member['mb_id']}' OR
+        nw_ptype1_2 = '{$member['mb_id']}' OR
+        nw_ptype1_3 = '{$member['mb_id']}' OR
+        nw_ptype1_4 = '{$member['mb_id']}' OR
+        nw_ptype1_5 = '{$member['mb_id']}' OR
+        nw_ptype1_6 = '{$member['mb_id']}' OR
+        nw_ptype2_1 = '{$member['mb_id']}' OR
+        nw_ptype2_2 = '{$member['mb_id']}' OR
+        nw_ptype2_3 = '{$member['mb_id']}' OR
+        nw_ptype2_4 = '{$member['mb_id']}' OR
+        nw_ptype2_5 = '{$member['mb_id']}' OR
+        nw_ptype2_6 = '{$member['mb_id']}'
+    ) ";
 }
 
 // 정렬 설정

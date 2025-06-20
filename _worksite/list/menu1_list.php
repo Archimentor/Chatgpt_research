@@ -12,9 +12,15 @@ if($member['mb_level2'] == 2) {
         nw_ptype1_1 = '{$member['mb_id']}' OR
         nw_ptype1_2 = '{$member['mb_id']}' OR
         nw_ptype1_3 = '{$member['mb_id']}' OR
+        nw_ptype1_4 = '{$member['mb_id']}' OR
+        nw_ptype1_5 = '{$member['mb_id']}' OR
+        nw_ptype1_6 = '{$member['mb_id']}' OR
         nw_ptype2_1 = '{$member['mb_id']}' OR
         nw_ptype2_2 = '{$member['mb_id']}' OR
-        nw_ptype2_3 = '{$member['mb_id']}'
+        nw_ptype2_3 = '{$member['mb_id']}' OR
+        nw_ptype2_4 = '{$member['mb_id']}' OR
+        nw_ptype2_5 = '{$member['mb_id']}' OR
+        nw_ptype2_6 = '{$member['mb_id']}'
     ) ";
 }
 
