@@ -260,7 +260,7 @@ $qstr .= "&status=$status&date=$date";
 												<?php echo $status?>
 											</td>
 											<td class="text-center">
-                                                                                <a href="javascript:data_delete(<?php echo $row['seq']?>)" title="일괄삭제"  style="color:#444"><span class="glyphicon fa fa-trash-o"></span></a>
+                                                                                <a href="javascript:data_delete(<?php echo $row['seq']?>)" title="일괄삭제"  style="color:#444"><span class="glyphicon fa fa-trash-o">일괄삭제</span></a>
 											</td>
 										</tr>
 										<?php } ?>
