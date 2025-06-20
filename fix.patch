@@ -1,170 +1,31 @@
-diff --git a/_worksite/list/menu11_list.php b/_worksite/list/menu11_list.php
-index dff580845e30e0170612ad063d8dccba0838c317..6972af15ac90302d3fb11df2fefce3cf4d2dfe91 100644
---- a/_worksite/list/menu11_list.php
-+++ b/_worksite/list/menu11_list.php
-@@ -1,44 +1,50 @@
+diff --git a/_establishment/list/menu1_list.php b/_establishment/list/menu1_list.php
+index 34cf828bd1b382ca6c53ece8abe0301bc17853e5..172e905ee7625ad2f26b598016e9f2c6cb28b315 100644
+--- a/_establishment/list/menu1_list.php
++++ b/_establishment/list/menu1_list.php
+@@ -1,51 +1,77 @@
  <?php 
  include_once('../../_common.php');
- define('menu_worksite', true);
+ define('menu_establishment', true);
  include_once(NONE_PATH.'/header.php'); 
  
- $sql_common = " FROM {$none['worksite']} ";
- $sql_search = " WHERE (1) ";
+ if(!$_GET['date']) {
+ 	$date = date('Y-m');
+ }
+ $preDate = date('Y-m', strtotime($date." -1 Month"));
+ $nxtDate = date('Y-m', strtotime($date." +1 Month"));
  
- // 현장소장 권한일 경우 본인 현장만 나오도록 필터링
--if($member['mb_level2'] == 2) {
--    $sql_search .= " AND (
--        nw_ptype1_1 = '{$member['mb_id']}' OR
--        nw_ptype1_2 = '{$member['mb_id']}' OR
--        nw_ptype1_3 = '{$member['mb_id']}' OR
--        nw_ptype2_1 = '{$member['mb_id']}' OR
--        nw_ptype2_2 = '{$member['mb_id']}' OR
--        nw_ptype2_3 = '{$member['mb_id']}'
--    ) ";
+ $searchDate = date('Y-m-t', strtotime($date));
+ 
+ $sql_common = " from  {$none['worksite']}  ";
+ //22.03.10 진행중, 완료로만 표시하도록 변경 수정  nw_sdate >= '".$date."-01'
+ $sql_search = " where (1) "; 
+ 
+ //22.08.31 실행부 소속일 경우 본인이 소장으로 있는 현장만 출력
+-if($member['mb_2'] == 10) {
+-	$sql_search .= " and (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_2 = '{$member['mb_id']}' or nw_ptype2_3 = '{$member['mb_id']}') ";
 -}
-+if($member['mb_level2'] == 2) {
-+    $sql_search .= " AND (
-+        nw_ptype1_1 = '{$member['mb_id']}' OR
-+        nw_ptype1_2 = '{$member['mb_id']}' OR
-+        nw_ptype1_3 = '{$member['mb_id']}' OR
-+        nw_ptype1_4 = '{$member['mb_id']}' OR
-+        nw_ptype1_5 = '{$member['mb_id']}' OR
-+        nw_ptype1_6 = '{$member['mb_id']}' OR
-+        nw_ptype2_1 = '{$member['mb_id']}' OR
-+        nw_ptype2_2 = '{$member['mb_id']}' OR
-+        nw_ptype2_3 = '{$member['mb_id']}' OR
-+        nw_ptype2_4 = '{$member['mb_id']}' OR
-+        nw_ptype2_5 = '{$member['mb_id']}' OR
-+        nw_ptype2_6 = '{$member['mb_id']}'
-+    ) ";
-+}
- 
- if ($stx) {
-     $sql_search .= " AND ( ";
-     switch ($sfl) {
-         case "bo_table" :
-             $sql_search .= " ($sfl LIKE '$stx%') ";
-             break;
-         case "a.gr_id" :
-             $sql_search .= " ($sfl = '$stx') ";
-             break;
-         default :
-             $sql_search .= " (nw_subject LIKE '%$stx%' OR nw_code LIKE '%$stx%') ";
-     }
-     $sql_search .= " ) ";
- }
- 
- if (!$sst) {
-     $sst = "nw_code";
-     $sod = "desc";
- }
- $sql_order = " ORDER BY $sst $sod ";
- 
- $sql = "SELECT COUNT(*) AS cnt {$sql_common} {$sql_search} {$sql_order}";
- $row = sql_fetch($sql);
- $total_count = $row['cnt'];
-diff --git a/_worksite/list/menu1_list.php b/_worksite/list/menu1_list.php
-index dff580845e30e0170612ad063d8dccba0838c317..6972af15ac90302d3fb11df2fefce3cf4d2dfe91 100644
---- a/_worksite/list/menu1_list.php
-+++ b/_worksite/list/menu1_list.php
-@@ -1,44 +1,50 @@
- <?php 
- include_once('../../_common.php');
- define('menu_worksite', true);
- include_once(NONE_PATH.'/header.php'); 
- 
- $sql_common = " FROM {$none['worksite']} ";
- $sql_search = " WHERE (1) ";
- 
- // 현장소장 권한일 경우 본인 현장만 나오도록 필터링
--if($member['mb_level2'] == 2) {
--    $sql_search .= " AND (
--        nw_ptype1_1 = '{$member['mb_id']}' OR
--        nw_ptype1_2 = '{$member['mb_id']}' OR
--        nw_ptype1_3 = '{$member['mb_id']}' OR
--        nw_ptype2_1 = '{$member['mb_id']}' OR
--        nw_ptype2_2 = '{$member['mb_id']}' OR
--        nw_ptype2_3 = '{$member['mb_id']}'
--    ) ";
--}
-+if($member['mb_level2'] == 2) {
-+    $sql_search .= " AND (
-+        nw_ptype1_1 = '{$member['mb_id']}' OR
-+        nw_ptype1_2 = '{$member['mb_id']}' OR
-+        nw_ptype1_3 = '{$member['mb_id']}' OR
-+        nw_ptype1_4 = '{$member['mb_id']}' OR
-+        nw_ptype1_5 = '{$member['mb_id']}' OR
-+        nw_ptype1_6 = '{$member['mb_id']}' OR
-+        nw_ptype2_1 = '{$member['mb_id']}' OR
-+        nw_ptype2_2 = '{$member['mb_id']}' OR
-+        nw_ptype2_3 = '{$member['mb_id']}' OR
-+        nw_ptype2_4 = '{$member['mb_id']}' OR
-+        nw_ptype2_5 = '{$member['mb_id']}' OR
-+        nw_ptype2_6 = '{$member['mb_id']}'
-+    ) ";
-+}
- 
- if ($stx) {
-     $sql_search .= " AND ( ";
-     switch ($sfl) {
-         case "bo_table" :
-             $sql_search .= " ($sfl LIKE '$stx%') ";
-             break;
-         case "a.gr_id" :
-             $sql_search .= " ($sfl = '$stx') ";
-             break;
-         default :
-             $sql_search .= " (nw_subject LIKE '%$stx%' OR nw_code LIKE '%$stx%') ";
-     }
-     $sql_search .= " ) ";
- }
- 
- if (!$sst) {
-     $sst = "nw_code";
-     $sod = "desc";
- }
- $sql_order = " ORDER BY $sst $sod ";
- 
- $sql = "SELECT COUNT(*) AS cnt {$sql_common} {$sql_search} {$sql_order}";
- $row = sql_fetch($sql);
- $total_count = $row['cnt'];
-diff --git a/_worksite/list/menu3_list.php b/_worksite/list/menu3_list.php
-index 93fedf22345138aed0f4c8916573473bae541783..729a07550ace05fc47d91fc3db966f683389578e 100644
---- a/_worksite/list/menu3_list.php
-+++ b/_worksite/list/menu3_list.php
-@@ -50,55 +50,68 @@ $sql_common = " from  {$none['smart_list']} a left join {$none['worksite']} b ON
- 
- 
- if($date == '2021-07-07') {
-     $start_date = $date;
-     $end_date = date('Y-m-d');
- }
- else {
-     $start_date = $date;
-     $end_date = $date;
- }
- 
- $sql_search = " where (1) and ns_date >= '$start_date' and ns_date <= '$end_date'";
- 
- if($date == '2021-07-07') {
-     $sst = 'ns_date';
-     $sod = 'desc';
- }
- 
- 
- if($work_id) {
- 	$sql_search .= " AND work_id = '$work_id' ";
- }
- 
- 
- //23.07.14 현장소장 권한일경우 본인 현장 나오도록 
--if($member['mb_level2'] == 2) {
--	$sql_search .= "and (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_2 = '{$member['mb_id']}' or nw_ptype2_3 = '{$member['mb_id']}') ";
--	
--
--}
-+if($member['mb_level2'] == 2) {
-+        $sql_search .= "and (
++if($member['mb_2'] == 10) {
++        $sql_search .= " and (
 +            nw_ptype1_1 = '{$member['mb_id']}' or
 +            nw_ptype1_2 = '{$member['mb_id']}' or
 +            nw_ptype1_3 = '{$member['mb_id']}' or
@@ -178,280 +39,11 @@ index 93fedf22345138aed0f4c8916573473bae541783..729a07550ace05fc47d91fc3db966f68
 +            nw_ptype2_5 = '{$member['mb_id']}' or
 +            nw_ptype2_6 = '{$member['mb_id']}'
 +        ) ";
-+
-+
 +}
- 
- if ($stx) {
-     $sql_search .= " and ( ";
-     switch ($sfl) {
-         case "bo_table" :
-             $sql_search .= " ($sfl like '$stx%') ";
-             break;
-         case "a.gr_id" :
-             $sql_search .= " ($sfl = '$stx') ";
-             break;
-         default :
-             $sql_search .= " (nw_subject like '%$stx%') ";
-             break;
-     }
-     $sql_search .= " ) ";
- }
- 
- if (!$sst) {
-     $sst  = "work_id";
-     $sod = "desc";
- }
- $sql_order = " order by $sst $sod ";
- 
- $sql = " select count(*) as cnt {$sql_common} {$sql_search} {$sql_order} ";
- $row = sql_fetch($sql);
-@@ -161,55 +174,68 @@ echo $sql;
- 							  <button type="button" class="btn btn-secondary" id="datePicker"><?php echo $date?></button>
- 							  <button type="button" class="btn btn-secondary"  onclick="location.href='?date=<?php echo $nxtDate?>'">></button>
- 							</div>
- 							<?php if($work_id) {?>
- 							<a class="btn btn-primary float-right" href="../write/menu3_write.php?work_id=<?php echo $work_id?>&date=<?php echo $date?>" role="button">스마트일보 등록</a> 
- 							<?php }?>
- 							<form class="float-right" style="margin-right:5px">
- 								<div class="input-group">
- 									
- 										<select name="status" id="inputState" class="form-control" onchange="location.href='?date=<?php echo $date?>&status='+this.value">
- 											<option value="0" <?php echo get_selected($_GET['status'], 0)?>>진행중</option>
- 											<option value="1" <?php echo get_selected($_GET['status'], 1)?>>완료</option>
- 										
- 										</select>
- 										<select name="work_id" id="inputState" class="form-control" onchange="location.href='?date=<?php echo $date?>&status=<?php echo $status?>&work_id='+this.value">
- 											<option value="">선택하세요</option>
- 											<?php 
- 											if($_GET['status'] == 0)
- 												$status = 0;
- 											else 
- 												$status = 1;
- 												
- 											$workSql = "select seq, nw_code, nw_subject  from {$none['worksite']} where nw_status  = '$status' and nw_code != '210707' "; 
- 											
- 											//23.07.14 현장소장 권한일경우 본인 현장 나오도록 
--											if($member['mb_level2'] == 2) {
--												$workSql .= "and (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_2 = '{$member['mb_id']}' or nw_ptype2_3 = '{$member['mb_id']}') ";
--												
--											
--											}
-+if($member['mb_level2'] == 2) {
-+                                                                               $workSql .= "and (
-+                                                                               nw_ptype1_1 = '{$member['mb_id']}' or
-+                                                                               nw_ptype1_2 = '{$member['mb_id']}' or
-+                                                                               nw_ptype1_3 = '{$member['mb_id']}' or
-+                                                                               nw_ptype1_4 = '{$member['mb_id']}' or
-+                                                                               nw_ptype1_5 = '{$member['mb_id']}' or
-+                                                                               nw_ptype1_6 = '{$member['mb_id']}' or
-+                                                                               nw_ptype2_1 = '{$member['mb_id']}' or
-+                                                                               nw_ptype2_2 = '{$member['mb_id']}' or
-+                                                                               nw_ptype2_3 = '{$member['mb_id']}' or
-+                                                                               nw_ptype2_4 = '{$member['mb_id']}' or
-+                                                                               nw_ptype2_5 = '{$member['mb_id']}' or
-+                                                                               nw_ptype2_6 = '{$member['mb_id']}'
-+                                                                               ) ";
-+
-+
-+                                                                               }
- 											$workSql .= "order by nw_code desc";
- 											$workRst = sql_query($workSql);
- 											while($work = sql_fetch_array($workRst)) {
- 											
- 											?>
- 											<option value="<?php echo $work['nw_code']?>" <?php echo get_selected($work['nw_code'], $work_id)?>>[<?php echo $work['nw_code']?>] <?php echo $work['nw_subject']?></option>
- 											<?php }?>											
- 										</select>
- 
- 										<select class="form-select" aria-label="Date select" onchange="location.href = '?date=' + this.value +'&status=<?php echo $status?>&work_id=<?php echo $work_id?>'">
- 											<option value="">일보전체보기</option>
- 											<option value="">오늘</option>
- 											<option value="all">전체</option>
- 										</select>
- 								</div>
- 
- 
- 							</form>
-                         </div>	
- 						
- 					
- 						
-                         <div class="body project_report">
- 							
-                             <div class="table-responsive">
-diff --git a/_worksite/list/menu4_list.php b/_worksite/list/menu4_list.php
-index d799c37ab8826760f804c2a4767d73c01e7c50db..c117d125364f0b6ecf415a9e2dc893103591f0e6 100644
---- a/_worksite/list/menu4_list.php
-+++ b/_worksite/list/menu4_list.php
-@@ -12,51 +12,64 @@ if (!function_exists('_safe_value')) {
-     }
- }
- 
- // --- 텍스트 변환 함수 (menu1_list.php 참고 - 실제 함수 구현 필요) ---
- if (!function_exists('get_manager_txt')) {
-     function get_manager_txt($manager_id) {
-         return htmlspecialchars($manager_id); // 임시: ID 반환
-     }
- }
- if (!function_exists('get_enterprise_txt')) {
-     function get_enterprise_txt($enterprise_id) {
-         return htmlspecialchars($enterprise_id); // 임시: ID 반환
-     }
- }
- 
- // --- 메뉴 정의 및 헤더 ---
- define('menu_worksite', true); // 또는 define('menu_project_info', true);
- include_once(NONE_PATH.'/header.php'); // 실제 헤더 파일 경로
- 
- // --- SQL 쿼리 설정 ---
- $sql_common = " FROM {$none['worksite']} "; // 사용할 테이블
- $sql_search = " WHERE (1) "; // 기본 WHERE 절 (검색 제거됨)
- 
- // 현장소장 권한 필터링 (필요시 유지)
- if(isset($member['mb_level2']) && $member['mb_level2'] == 2) {
--    $sql_search .= " AND ( nw_ptype1_1 = '{$member['mb_id']}' OR nw_ptype1_2 = '{$member['mb_id']}' OR nw_ptype1_3 = '{$member['mb_id']}' OR nw_ptype2_1 = '{$member['mb_id']}' OR nw_ptype2_2 = '{$member['mb_id']}' OR nw_ptype2_3 = '{$member['mb_id']}' ) ";
-+    $sql_search .= " AND (
-+        nw_ptype1_1 = '{$member['mb_id']}' OR
-+        nw_ptype1_2 = '{$member['mb_id']}' OR
-+        nw_ptype1_3 = '{$member['mb_id']}' OR
-+        nw_ptype1_4 = '{$member['mb_id']}' OR
-+        nw_ptype1_5 = '{$member['mb_id']}' OR
-+        nw_ptype1_6 = '{$member['mb_id']}' OR
-+        nw_ptype2_1 = '{$member['mb_id']}' OR
-+        nw_ptype2_2 = '{$member['mb_id']}' OR
-+        nw_ptype2_3 = '{$member['mb_id']}' OR
-+        nw_ptype2_4 = '{$member['mb_id']}' OR
-+        nw_ptype2_5 = '{$member['mb_id']}' OR
-+        nw_ptype2_6 = '{$member['mb_id']}'
-+    ) ";
- }
- 
- // 정렬 설정
- $sst = isset($_GET['sst']) ? trim($_GET['sst']) : 'nw_code';
- $sod = isset($_GET['sod']) ? trim($_GET['sod']) : 'desc';
- $allowed_sort_fields = ['nw_code', 'nw_subject', 'pj_year', 'pj_title_kr'];
- if (!in_array($sst, $allowed_sort_fields)) $sst = 'nw_code';
- if (!in_array(strtolower($sod), ['asc', 'desc'])) $sod = 'desc';
- $sql_order = " ORDER BY {$sst} {$sod} ";
- 
- // 전체 레코드 수 계산
- $sql_count = "SELECT COUNT(*) AS cnt {$sql_common} {$sql_search}";
- $row_cnt = sql_fetch($sql_count);
- $total_count = $row_cnt['cnt'] ?? 0;
- 
- // 페이징 설정
- $rows = $config['cf_page_rows'] ?? 15;
- $total_page = ceil($total_count / $rows);
- $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
- if ($page < 1) $page = 1;
- $from_record = ($page - 1) * $rows;
- 
- // 데이터 조회 쿼리 (pj_upche 필드 제외)
- $sql_select = "SELECT seq, nw_code, nw_subject, nw_addr, nw_ptype1_1, nw_ptype4_1, pj_title_kr, pj_title_en, pj_person, pj_addr AS pj_addr_d, pj_type, pj_photo, pj_year
-         {$sql_common} {$sql_search} {$sql_order} LIMIT {$from_record}, {$rows}";
-diff --git a/_worksite/list/menu5_list.php b/_worksite/list/menu5_list.php
-index 5674a5e38480b7c160468cf220509c4dea70b242..a3bf8960857f412012f4ebbba31e83b109c30bea 100644
---- a/_worksite/list/menu5_list.php
-+++ b/_worksite/list/menu5_list.php
-@@ -6,74 +6,78 @@ include_once(G5_LIB_PATH.'/thumbnail.lib.php');
- define('menu_worksite', true);
- include_once(NONE_PATH.'/header.php');
- 
- // --- 날짜 처리 및 필터 로직 ---
- $today_date = date('Y-m-d');
- $filter_by_specific_date = false;
- $date = $today_date;
- $other_filters_applied = (isset($_GET['filter_category']) && $_GET['filter_category'] != '') || (isset($_GET['filter_status']) && (int)$_GET['filter_status'] != 0) || (isset($_GET['filter_worksite']) && $_GET['filter_worksite'] != '');
- if (isset($_GET['date'])) {
-     if ($_GET['date'] == 'all') { $filter_by_specific_date = false; }
-     elseif (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $_GET['date'])) { $date = $_GET['date']; $filter_by_specific_date = true; }
-     else { $date = $today_date; $filter_by_specific_date = !$other_filters_applied; }
- } else { $date = $today_date; $filter_by_specific_date = !$other_filters_applied; }
- if ($other_filters_applied && !$filter_by_specific_date && (!isset($_GET['date']) || $_GET['date'] != 'all')) { $filter_by_specific_date = false; }
- $preDate = date('Y-m-d', strtotime($date." -1 day")); $nxtDate = date('Y-m-d', strtotime($date." +1 day")); $view_all_dates = !$filter_by_specific_date;
- 
- // --- 필터 변수 ---
- $filter_category = isset($_GET['filter_category']) ? trim($_GET['filter_category']) : '';
- $filter_status   = isset($_GET['filter_status']) ? (int)$_GET['filter_status'] : 0;
- $filter_worksite = isset($_GET['filter_worksite']) ? trim($_GET['filter_worksite']) : '';
- $page            = isset($_GET['page']) ? (int)$_GET['page'] : 1;
- 
- // --- SQL 생성 ---
- $sql_common = " FROM {$g5['board_file_table']} AS f LEFT JOIN {$none['smart_list']} AS s ON f.wr_id = s.seq LEFT JOIN {$none['worksite']} AS w ON s.work_id = w.nw_code ";
- $sql_search = " WHERE f.bo_table = 'smart' AND f.bf_content = '' ";
--if(isset($member['mb_level2']) && $member['mb_level2'] == 2) { $sql_search .= " AND ( w.nw_ptype1_1 = '{$member['mb_id']}' OR w.nw_ptype1_2 = '{$member['mb_id']}' OR w.nw_ptype1_3 = '{$member['mb_id']}' OR w.nw_ptype2_1 = '{$member['mb_id']}' OR w.nw_ptype2_2 = '{$member['mb_id']}' OR w.nw_ptype2_3 = '{$member['mb_id']}' ) "; }
-+if(isset($member['mb_level2']) && $member['mb_level2'] == 2) {
-+    $sql_search .= " AND ( w.nw_ptype1_1 = '{$member['mb_id']}' OR w.nw_ptype1_2 = '{$member['mb_id']}' OR w.nw_ptype1_3 = '{$member['mb_id']}' OR w.nw_ptype1_4 = '{$member['mb_id']}' OR w.nw_ptype1_5 = '{$member['mb_id']}' OR w.nw_ptype1_6 = '{$member['mb_id']}' OR w.nw_ptype2_1 = '{$member['mb_id']}' OR w.nw_ptype2_2 = '{$member['mb_id']}' OR w.nw_ptype2_3 = '{$member['mb_id']}' OR w.nw_ptype2_4 = '{$member['mb_id']}' OR w.nw_ptype2_5 = '{$member['mb_id']}' OR w.nw_ptype2_6 = '{$member['mb_id']}' ) ";
-+}
- if ($filter_category) { $sql_search .= " AND f.bf_category = '".sql_real_escape_string($filter_category)."' "; }
- if ($filter_status == 0 || $filter_status == 1) { $sql_search .= " AND w.nw_status = '".sql_real_escape_string($filter_status)."' "; }
- if ($filter_worksite) { $sql_search .= " AND s.work_id = '".sql_real_escape_string($filter_worksite)."' "; }
- if ($filter_by_specific_date) { $sql_search .= " AND s.ns_date = '".sql_real_escape_string($date)."' "; }
- $sql_order = " ORDER BY s.work_id DESC, s.ns_date DESC, f.bf_category ASC, f.seq ASC ";
- $sql = " SELECT f.seq, f.bf_source, f.bf_file, f.bf_category, s.seq AS smart_seq, s.ns_date, s.work_id, w.nw_subject, w.nw_status {$sql_common} {$sql_search} {$sql_order} ";
- $result = sql_query($sql);
- 
- // --- PHP 데이터 그룹핑 ---
- $grouped_photos = [];
- while ($row = sql_fetch_array($result)) {
-     $group_key = $row['work_id'] . '||' . ($view_all_dates ? $row['ns_date'] : $date);
-     $category = $row['bf_category'] ?: '미분류';
-     if (!isset($grouped_photos[$group_key])) { $grouped_photos[$group_key] = [ 'ns_date' => $row['ns_date'], 'work_id' => $row['work_id'], 'nw_subject' => $row['nw_subject'], 'nw_status' => $row['nw_status'], 'categories' => [] ]; }
-     if (!isset($grouped_photos[$group_key]['categories'][$category])) { $grouped_photos[$group_key]['categories'][$category] = []; }
-     $grouped_photos[$group_key]['categories'][$category][] = $row;
- }
- 
- // --- 필터용 데이터 조회 ---
- $category_sql = "SELECT DISTINCT bf_category FROM {$g5['board_file_table']} WHERE bo_table = 'smart' AND bf_category != '' ORDER BY bf_category ASC";
- $category_result = sql_query($category_sql);
- $worksite_filter_sql = "SELECT nw_code, nw_subject FROM {$none['worksite']} WHERE 1=1 ";
--if(isset($member['mb_level2']) && $member['mb_level2'] == 2) { $worksite_filter_sql .= " AND ( nw_ptype1_1 = '{$member['mb_id']}' OR nw_ptype1_2 = '{$member['mb_id']}' OR nw_ptype1_3 = '{$member['mb_id']}' OR w.nw_ptype2_1 = '{$member['mb_id']}' OR w.nw_ptype2_2 = '{$member['mb_id']}' OR w.nw_ptype2_3 = '{$member['mb_id']}' ) "; }
-+if(isset($member['mb_level2']) && $member['mb_level2'] == 2) {
-+    $worksite_filter_sql .= " AND ( nw_ptype1_1 = '{$member['mb_id']}' OR nw_ptype1_2 = '{$member['mb_id']}' OR nw_ptype1_3 = '{$member['mb_id']}' OR nw_ptype1_4 = '{$member['mb_id']}' OR nw_ptype1_5 = '{$member['mb_id']}' OR nw_ptype1_6 = '{$member['mb_id']}' OR w.nw_ptype2_1 = '{$member['mb_id']}' OR w.nw_ptype2_2 = '{$member['mb_id']}' OR w.nw_ptype2_3 = '{$member['mb_id']}' OR w.nw_ptype2_4 = '{$member['mb_id']}' OR w.nw_ptype2_5 = '{$member['mb_id']}' OR w.nw_ptype2_6 = '{$member['mb_id']}' ) ";
-+}
- if ($filter_status == 0 || $filter_status == 1) { $worksite_filter_sql .= " AND nw_status = '".sql_real_escape_string($filter_status)."' "; }
- $worksite_filter_sql .= " ORDER BY nw_code DESC ";
- $worksite_filter_result = sql_query($worksite_filter_sql);
- 
- // --- 쿼리스트링 생성 ---
- $qstr_arr = [];
- foreach ($_GET as $key => $value) { if ($key != 'page' && $key != 'date') { $qstr_arr[$key] = $value; } }
- $qstr = http_build_query($qstr_arr);
- $base_link_date = $_SERVER['SCRIPT_NAME'] . '?' . $qstr;
- 
- ?>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
- <link rel="stylesheet" href="https://unpkg.com/smartphoto@1.1.0/css/smartphoto.min.css">
- <style>
-     /* 컬럼 폭 조정 및 사진 그룹 스타일 */
-     .photo-list-table th, .photo-list-table td { vertical-align: middle; text-align: center; padding: 0.5rem; }
-     .photo-list-table .thumb { max-width: 80px; max-height: 80px; cursor: pointer; border: 1px solid #ddd; padding: 2px; object-fit: cover; margin: 2px; }
-     .photo-list-table .text-left { text-align: left; }
-     .filter-section .form-control, .filter-section .btn { height: calc(1.5em + .75rem + 2px); padding: .375rem .75rem; font-size: .9rem; }
-     .smartphoto-caption { font-size: 1rem; padding-top: 10px; }
-     .filter-controls > * { margin-right: 0.5rem; margin-bottom: 0.5rem; }
-     .filter-section { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-     .date-controls { display: flex; align-items: center; }
-     .filter-controls { display: flex; align-items: center; }
-     /* .photo-list-table .col-date { width: 10%; } -- 날짜 컬럼 제거됨 */
-diff --git a/_worksite/list/menu6_list.php b/_worksite/list/menu6_list.php
-index 05f7a522d4c4396011613f8d5022c469a08d5f91..51d1fe67c9c016b79e5481a8e5f89cc997034ec9 100644
---- a/_worksite/list/menu6_list.php
-+++ b/_worksite/list/menu6_list.php
-@@ -1,38 +1,51 @@
- <?php 
- include_once('../../_common.php');
- define('menu_worksite', true);
- include_once(NONE_PATH.'/header.php'); 
- 
- $sql_common = " from  {$none['home_board']} a LEFT JOIN {$none['worksite']} b ON a.wr_1 = b.nw_code ";
- $sql_search = " where  a.bo_table = 'board7' ";
  
  //23.07.14 현장소장 권한일경우 본인 현장 나오도록 
 -if($member['mb_level2'] == 2) {
 -	$sql_search .= " and (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_2 = '{$member['mb_id']}' or nw_ptype2_3 = '{$member['mb_id']}') ";
--	
 -}
 +if($member['mb_level2'] == 2) {
 +        $sql_search .= " and (
@@ -468,28 +60,27 @@ index 05f7a522d4c4396011613f8d5022c469a08d5f91..51d1fe67c9c016b79e5481a8e5f89cc9
 +            nw_ptype2_5 = '{$member['mb_id']}' or
 +            nw_ptype2_6 = '{$member['mb_id']}'
 +        ) ";
-+
 +}
  
- if ($stx) {
-     $sql_search .= " and ( ";
-     switch ($sfl) {
-         case "bo_table" :
-             $sql_search .= " ($sfl like '$stx%') ";
-             break;
-         case "a.gr_id" :
-             $sql_search .= " ($sfl = '$stx') ";
-             break;
-         default :
-             $sql_search .= " (nw_subject like '%$stx%') ";
-             break;
-     }
-     $sql_search .= " ) ";
+ if(!$status) $status = 1;
+ 
+ if($status == 1) {
+ 	$sql_search .= " and  nw_status = 0 "; 
+ } else if($status == 2) {
+ 	$sql_search .= " and  nw_status = 1 "; 
+ } else if($status == 3) {
+ 	$sql_search .= " "; 
+ } else {
+ 	$sql_search .= " and  nw_status = 0 "; 
+ }
+ 
+ if($stx) {
+ 	$sql_search .= " and  (nw_subject LIKE '%$stx%' OR nw_code LIKE '%$stx%') "; 
  }
  
  if (!$sst) {
-     $sst  = "a.seq";
-     $sod = "desc";
+ 	$sst  = "nw_code";
+ 	$sod = "desc";
  }
  $sql_order = " order by $sst $sod ";
  

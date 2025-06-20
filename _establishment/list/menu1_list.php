@@ -17,12 +17,38 @@ $sql_search = " where (1) ";
 
 //22.08.31 실행부 소속일 경우 본인이 소장으로 있는 현장만 출력
 if($member['mb_2'] == 10) {
-	$sql_search .= " and (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_2 = '{$member['mb_id']}' or nw_ptype2_3 = '{$member['mb_id']}') ";
+        $sql_search .= " and (
+            nw_ptype1_1 = '{$member['mb_id']}' or
+            nw_ptype1_2 = '{$member['mb_id']}' or
+            nw_ptype1_3 = '{$member['mb_id']}' or
+            nw_ptype1_4 = '{$member['mb_id']}' or
+            nw_ptype1_5 = '{$member['mb_id']}' or
+            nw_ptype1_6 = '{$member['mb_id']}' or
+            nw_ptype2_1 = '{$member['mb_id']}' or
+            nw_ptype2_2 = '{$member['mb_id']}' or
+            nw_ptype2_3 = '{$member['mb_id']}' or
+            nw_ptype2_4 = '{$member['mb_id']}' or
+            nw_ptype2_5 = '{$member['mb_id']}' or
+            nw_ptype2_6 = '{$member['mb_id']}'
+        ) ";
 }
 
 //23.07.14 현장소장 권한일경우 본인 현장 나오도록 
 if($member['mb_level2'] == 2) {
-	$sql_search .= " and (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_2 = '{$member['mb_id']}' or nw_ptype2_3 = '{$member['mb_id']}') ";
+        $sql_search .= " and (
+            nw_ptype1_1 = '{$member['mb_id']}' or
+            nw_ptype1_2 = '{$member['mb_id']}' or
+            nw_ptype1_3 = '{$member['mb_id']}' or
+            nw_ptype1_4 = '{$member['mb_id']}' or
+            nw_ptype1_5 = '{$member['mb_id']}' or
+            nw_ptype1_6 = '{$member['mb_id']}' or
+            nw_ptype2_1 = '{$member['mb_id']}' or
+            nw_ptype2_2 = '{$member['mb_id']}' or
+            nw_ptype2_3 = '{$member['mb_id']}' or
+            nw_ptype2_4 = '{$member['mb_id']}' or
+            nw_ptype2_5 = '{$member['mb_id']}' or
+            nw_ptype2_6 = '{$member['mb_id']}'
+        ) ";
 }
 
 if(!$status) $status = 1;
