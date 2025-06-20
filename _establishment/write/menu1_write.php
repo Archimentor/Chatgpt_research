@@ -30,6 +30,9 @@ if(!$_GET['date']) {
 $preDate = date('Y-m', strtotime($date." -1 Month"));
 $nxtDate = date('Y-m', strtotime($date." +1 Month"));
 
+// 메뉴6 전도금 정산서 등에서 담당자 선택 값 유지용
+$selected_user_param = isset($_GET['selected_user']) ? $_GET['selected_user'] : '';
+
 
 //if($index != 14 && $index >= 7) exit;
 ?>
@@ -86,9 +89,9 @@ $nxtDate = date('Y-m', strtotime($date." +1 Month"));
 					
                             <?php include_once('./include/menu'.$index.'_inc.php')?>
 							<div class="btn-group" role="group" aria-label="Basic example">
-							  <button type="button" class="btn btn-secondary" onclick="location.href='?seq=<?php echo $seq?>&index=<?php echo $index?>&date=<?php echo $preDate?>'"><</button>
+                                                          <button type="button" class="btn btn-secondary" onclick="location.href='?seq=<?php echo $seq?>&index=<?php echo $index?>&date=<?php echo $preDate?><?php echo $selected_user_param ? '&selected_user=' . urlencode($selected_user_param) : ''; ?>'"><</button>
 							  <button type="button" class="btn btn-secondary" id="datePicker"><?php echo $date?></button>
-							  <button type="button" class="btn btn-secondary"  onclick="location.href='?seq=<?php echo $seq?>&index=<?php echo $index?>&date=<?php echo $nxtDate?>'">></button>
+                                                          <button type="button" class="btn btn-secondary"  onclick="location.href='?seq=<?php echo $seq?>&index=<?php echo $index?>&date=<?php echo $nxtDate?><?php echo $selected_user_param ? '&selected_user=' . urlencode($selected_user_param) : ''; ?>'">></button>
 							</div>
                         </div>
                     </div>
@@ -216,7 +219,11 @@ $(function() {
 	$('.nav-link').bind('click', function(){ 
 		var index = $(this).attr('data');
 		
-		location.href = '?w=<?php echo $w?>&seq=<?php echo $seq?>&date=<?php echo $date?>&index='+index;
+                var baseUrl = '?w=<?php echo $w?>&seq=<?php echo $seq?>&date=<?php echo $date?>';
+<?php if($selected_user_param) { ?>
+                baseUrl += '&selected_user=<?php echo urlencode($selected_user_param); ?>';
+<?php } ?>
+                location.href = baseUrl + '&index=' + index;
 	})
 	
 	

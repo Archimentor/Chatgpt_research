@@ -49,7 +49,9 @@ if (!empty($selected_user_id) && !empty($current_nw_code)) {
     $chk = sql_fetch($chk_sql);
     $prev_date_ym = date('Y-m', strtotime($current_date . " -1 month"));
     $prev_where_sql = " WHERE nw_code = '" . sql_real_escape_string($current_nw_code) . "' AND ne_date LIKE '" . sql_real_escape_string($prev_date_ym) . "%'";
-    $prev_sql = "SELECT ne_balance FROM {$imprest_table} " . $prev_where_sql . $user_where_sql . " ORDER BY ne_date DESC, seq DESC LIMIT 1";
+    // 전월 잔액 조회 시에는 담당자 조건을 제거하여 현장 전체의 마지막 잔액을 확인한다
+    // 선택된 담당자의 전월 데이터가 없더라도 직전 달의 잔액이 표시되도록 한다.
+    $prev_sql = "SELECT ne_balance FROM {$imprest_table} " . $prev_where_sql . " ORDER BY ne_date DESC, seq DESC LIMIT 1";
     $prev = sql_fetch($prev_sql);
     $prev_balance = isset($prev['ne_balance']) ? $prev['ne_balance'] : 0;
 }
