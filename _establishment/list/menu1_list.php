@@ -260,7 +260,7 @@ $qstr .= "&status=$status&date=$date";
 												<?php echo $status?>
 											</td>
 											<td class="text-center">
-												<a href="javascript:del_(<?php echo $row['seq']?>)" title="일괄삭제"  style="color:#444"><span class="glyphicon fa fa-trash-o"></span></a>
+                                                                                <a href="javascript:data_delete(<?php echo $row['seq']?>)" title="일괄삭제"  style="color:#444"><span class="glyphicon fa fa-trash-o"></span></a>
 											</td>
 										</tr>
 										<?php } ?>
@@ -300,11 +300,19 @@ function chkfrm(f) {
 }
 
 function del_(seq) {
-	if(confirm('정말 시공현황 정보를 삭제하시겠습니까?\n\n연동 된 정보가 있다면 모두 해제 됩니다.')) {
-		location.href = '/_worksite/write/menu1_update.php?w=d&seq='+seq;
-	} else {
-		return false;
-	}
+        if(confirm('정말 시공현황 정보를 삭제하시겠습니까?\n\n연동 된 정보가 있다면 모두 해제 됩니다.')) {
+                location.href = '/_worksite/write/menu1_update.php?w=d&seq='+seq;
+        } else {
+                return false;
+        }
+}
+
+function data_delete(seq) {
+        if(confirm('정말 업로드된 데이터를 모두 삭제하시겠습니까?\n삭제된 파일은 복구할 수 없습니다.')) {
+                location.href = './data_delete.php?seq=' + seq + '&date=<?php echo $date?>';
+        } else {
+                return false;
+        }
 }
 
 //검색형 셀렉트박스로 변경
