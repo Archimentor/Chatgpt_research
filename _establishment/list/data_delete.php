@@ -60,10 +60,24 @@ while($row = sql_fetch_array($rst)) {
 }
 sql_query("update {$none['est_noim']} set ne_file1='', ne_file2='' where nw_code = '{$nw_code}' and ne_date = '{$date}' and ne_type='2'");
 
-// 집행내역서 첨부파일 필드 초기화
-sql_query("update {$none['est_material']} set ne_file1='', ne_file2='', ne_file3='' where nw_code = '{$nw_code}' and ne_date = '{$date}'");
-sql_query("update {$none['est_equipment']} set ne_file1='', ne_file2='', ne_file3='' where nw_code = '{$nw_code}' and ne_date = '{$date}'");
-sql_query("update {$none['est_etc']} set ne_file1='', ne_file2='', ne_file3='' where nw_code = '{$nw_code}' and ne_date = '{$date}'");
-
+// 집행내역서 첨부파일 삭제 및 필드 초기화
+$table_dirs = array(
+    $none['est_material']  => 'material',
+    $none['est_equipment'] => 'equipment',
+    $none['est_etc']       => 'etc'
+);
+foreach($table_dirs as $tbl => $dir) {
+    $sql = "select ne_file1, ne_file2, ne_file3 from {$tbl} where nw_code = '{$nw_code}' and ne_date = '{$date}'";
+    $rst = sql_query($sql);
+    while($row = sql_fetch_array($rst)) {
+        foreach(array('ne_file1','ne_file2','ne_file3') as $f) {
+            if($row[$f]) {
+                $fp = NONE_PATH."/_data/{$dir}/{$nw_code}/".$row[$f];
+                if(file_exists($fp)) @unlink($fp);
+            }
+        }
+    }
+    sql_query("update {$tbl} set ne_file1='', ne_file2='', ne_file3='' where nw_code = '{$nw_code}' and ne_date = '{$date}'");
+}
 alert('첨부파일이 모두 삭제되었습니다.', './menu1_list.php?date=' . urlencode($date));
 ?>
