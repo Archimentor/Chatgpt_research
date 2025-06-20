@@ -1,259 +1,55 @@
-diff --git a/_statistics/list/menu7_list.php b/_statistics/list/menu7_list.php
-index 94711e9ca0acdb9d233e5da307cbfd28ff44bf82..73090a03cc3b9fceecde2d866822b6835593b80b 100644
---- a/_statistics/list/menu7_list.php
-+++ b/_statistics/list/menu7_list.php
-@@ -142,59 +142,62 @@ $write_pages = str_replace(array('열린','페이지','처음','이전','다음'
-     <div class="block-header">
-         <div class="row">
-             <div class="col-lg-5 col-md-8 col-sm-12">                        
-                 <h2>
-                     <a href="javascript:void(0);" class="btn btn-xs btn-link btn-toggle-fullwidth">
-                         <i class="fa fa-arrow-left"></i>
-                     </a>
-                     통계
-                 </h2>
-                 <ul class="breadcrumb">
-                     <li class="breadcrumb-item"><a href="/"><i class="icon-home"></i></a></li>                            
-                     <li class="breadcrumb-item">통계</li>
-                     <li class="breadcrumb-item active">현장소장현황</li>
-                 </ul>
-             </div>
-         </div>
-     </div><!-- /.block-header -->
- 
-     <div class="row clearfix">
-         <div class="col-lg-12 col-md-12">
-             <div class="card">
-                 <!-- 현장별 보기/소장별 보기 -->
-                 <div class="body">
-                     <form class="float-right" style="margin-right:5px">
-                         <div class="input-group">
--                            <select name="type" class="form-control"
--                                    onchange="location.href='?type='+this.value">
--                                <option value="1" <?php echo get_selected($type, 1); ?>>
--                                    현장별 보기
--                                </option>
--                                <option value="2" <?php echo get_selected($type, 2); ?>>
--                                    소장별 보기
--                                </option>
--                            </select>
-+                            <select name="type" class="form-control"
-+                                    onchange="location.href='?type='+this.value">
-+                                <option value="1" <?php echo get_selected($type, 1); ?>>
-+                                    현장별 보기
-+                                </option>
-+                                <option value="2" <?php echo get_selected($type, 2); ?>>
-+                                    소장별 보기
-+                                </option>
-+                                <option value="3" <?php echo get_selected($type, 3); ?>>
-+                                    소장별 보기(퇴사)
-+                                </option>
-+                            </select>
+diff --git a/homepage/history.html b/homepage/history.html
+index 5ebe65e57912c88aff660ff14b7a9052030fdf31..61ebbfbac548de52f38428508b9046763bb7eb94 100644
+--- a/homepage/history.html
++++ b/homepage/history.html
+@@ -107,43 +107,50 @@ include "left01.html";
+                         <div class="history-details">
+                           ChatGPT AI 시스템 도입(GPT-4)<br />
+                           ISO(9001,14001,45001) 경영시스템 인증<br />
+                           부산다운건축상 은상<br />
+                           다우데이타 MOU 협약 체결<br />
+                           경기도건축문화상 입상<br />
+                           특허 획득(제10-2601586호)<br />
+                           부산광역시 우수 건설기술인 인증<br />
+                           2023 우수신용등급 인증서 취득<br />
+                           2023 건축명장
                          </div>
-                     </form>
-                 </div><!-- /.body -->
  
-                 <div class="body project_report">
-                     <div class="table-responsive">
- <?php if($type == 1) { ?>
- <!-- ============================== 현장별 보기 ============================== -->
- <table class="table table-hover">
-     <thead class="thead-light">
-         <tr>
-             <th style="text-align:left;">현장코드 및 현장명</th>
-             <th>공사기간</th>
-             <th>현장소장</th>
-             <th>현장소장</th>
-             <th>현장소장</th>
-             <th>실투소장</th>
-             <th>실투소장</th>
-             <th>실투소장</th>
-             <th>품질관리자</th>
-             <th>품질관리자</th>
-             <th>품질관리자</th>
-             <th>안전관리자</th>
-             <th>안전관리자</th>
-             <th>안전관리자</th>
-@@ -240,100 +243,170 @@ if($i == 0) {
- }
- ?>
-     </tbody>
- </table>
+                         <!-- 2024 -->
+                         <div class="history-year">2024</div>
+                         <div class="history-details">
+                           상표 획득(제40-2178422호)<br />
+                           실내건축공사업 등록<br />
+                           부천시 건축공간문화상 입상<br />
+                           부산다운건축상 장려상<br />
+                           김해 건축대상제 최우수상 <br />
+                           서울시 "건축사와 함께하는 우리동네 좋은집찾기" 동상 <br />
+                           의료 협력 협약 : 힘내라병원<br />
+                           2024 건축명장
+                         </div>
  
- <!-- 페이지네이션 -->
- <div class="pg_wrap">
-     <span class="pg">
-         <?php echo $write_pages; ?>
-     </span>
- </div>
- 
- <?php } else if($type == 2) { ?>
- <!-- ============================== 소장별 보기 ============================== -->
- <table class="table table-hover">
-     <thead class="thead-light">
-         <tr>
-             <th class="text-center" style="width:15%;">현장소장명</th>
-             <th style="text-align:left;">현장코드 및 현장명</th>
-             <th class="text-center" style="width:25%;">공사기간</th>
-         </tr>
-     </thead>
-     <tbody>
- <?php
- $sql_man = "
--    select mb_id, mb_name, mb_3
--      from {$g5['member_table']}
--     where mb_level >= 2 and mb_level <= 10
--       and (mb_leave_date = '' OR mb_leave_date IS NULL OR mb_leave_date > CURDATE())
--     order by mb_name asc
-+    select mb_id, mb_name, mb_3
-+      from {$g5['member_table']}
-+     where mb_level >= 2 and mb_level <= 10
-+       and mb_level2 != 4
-+       and (mb_leave_date = '' OR mb_leave_date IS NULL OR mb_leave_date > CURDATE())
-+     order by mb_name asc
- ";
- $rst = sql_query($sql_man);
- $manager_data = array();
- $found_data   = false;
- 
- while($row_manager = sql_fetch_array($rst)) {
-     $manager_data[] = $row_manager;
- }
- 
- foreach($manager_data as $v) {
-     $mb_id   = $v['mb_id'];
-     $mb_name = $v['mb_name'];
- 
-     $sql_worksite = "
-       select nw_code, nw_subject, nw_sdate, nw_edate
-         from {$none['worksite']}
-        where nw_ptype1_1 = '".sql_real_escape_string($mb_id)."'
-           or nw_ptype1_2 = '".sql_real_escape_string($mb_id)."'
-           or nw_ptype1_3 = '".sql_real_escape_string($mb_id)."'
-           or nw_ptype2_1 = '".sql_real_escape_string($mb_id)."'
-           or nw_ptype2_2 = '".sql_real_escape_string($mb_id)."'
-           or nw_ptype2_3 = '".sql_real_escape_string($mb_id)."'
-        order by nw_sdate desc
-     ";
-     $rst_worksite   = sql_query($sql_worksite);
-     $worksite_count = sql_num_rows($rst_worksite);
- 
-     if($worksite_count == 0) continue;
- 
-     $found_data = true;
-     $first_row  = true;
- 
-     while($row_work = sql_fetch_array($rst_worksite)) {
-         echo '<tr>';
-         if ($first_row) {
-             echo '<td rowspan="'.$worksite_count.'" class="text-center" style="vertical-align: middle;">'
-                  .htmlspecialchars($mb_name).'</td>';
-             $first_row = false;
-         }
-         echo '<td style="text-align:left; white-space:normal;">['.$row_work['nw_code'].'] '.$row_work['nw_subject'].'</td>';
-         echo '<td class="text-center">'.$row_work['nw_sdate'].' - '.$row_work['nw_edate'].'</td>';
-         echo '</tr>';
-     }
- }
- 
--if(!$found_data) {
--    echo '<tr><td colspan="3" class="text-center">데이터가 없습니다.</td></tr>';
--}
--?>
--    </tbody>
--</table>
--<?php } ?>
-+if(!$found_data) {
-+    echo '<tr><td colspan="3" class="text-center">데이터가 없습니다.</td></tr>';
-+}
-+?>
-+    </tbody>
-+</table>
-+<?php } else if($type == 3) { ?>
-+<!-- ============================== 소장별 보기(퇴사) ============================== -->
-+<table class="table table-hover">
-+    <thead class="thead-light">
-+        <tr>
-+            <th class="text-center" style="width:15%;">현장소장명</th>
-+            <th style="text-align:left;">현장코드 및 현장명</th>
-+            <th class="text-center" style="width:25%;">공사기간</th>
-+        </tr>
-+    </thead>
-+    <tbody>
-+<?php
-+$sql_man = "
-+    select mb_id, mb_name, mb_3
-+      from {$g5['member_table']}
-+     where mb_level >= 2 and mb_level <= 10
-+       and mb_level2 = 4
-+     order by mb_name asc
-+";
-+$rst = sql_query($sql_man);
-+$manager_data = array();
-+$found_data   = false;
++                        <!-- 2025 -->
++                        <div class="history-year">2025</div>
++                        <div class="history-details">
++                          이노비즈 인증<br />
++                          연구개발전담부서 설립
++                        </div>
 +
-+while($row_manager = sql_fetch_array($rst)) {
-+    $manager_data[] = $row_manager;
-+}
-+
-+foreach($manager_data as $v) {
-+    $mb_id   = $v['mb_id'];
-+    $mb_name = $v['mb_name'];
-+
-+    $sql_worksite = "
-+      select nw_code, nw_subject, nw_sdate, nw_edate
-+        from {$none['worksite']}
-+       where nw_ptype1_1 = '".sql_real_escape_string($mb_id)."'
-+          or nw_ptype1_2 = '".sql_real_escape_string($mb_id)."'
-+          or nw_ptype1_3 = '".sql_real_escape_string($mb_id)."'
-+          or nw_ptype2_1 = '".sql_real_escape_string($mb_id)."'
-+          or nw_ptype2_2 = '".sql_real_escape_string($mb_id)."'
-+          or nw_ptype2_3 = '".sql_real_escape_string($mb_id)."'
-+       order by nw_sdate desc
-+    ";
-+    $rst_worksite   = sql_query($sql_worksite);
-+    $worksite_count = sql_num_rows($rst_worksite);
-+
-+    if($worksite_count == 0) continue;
-+
-+    $found_data = true;
-+    $first_row  = true;
-+
-+    while($row_work = sql_fetch_array($rst_worksite)) {
-+        echo '<tr>';
-+        if ($first_row) {
-+            echo '<td rowspan="'.$worksite_count.'" class="text-center" style="vertical-align: middle;">'
-+                 .htmlspecialchars($mb_name).'</td>';
-+            $first_row = false;
-+        }
-+        echo '<td style="text-align:left; white-space:normal;">['.$row_work['nw_code'].'] '.$row_work['nw_subject'].'</td>';
-+        echo '<td class="text-center">'.$row_work['nw_sdate'].' - '.$row_work['nw_edate'].'</td>';
-+        echo '</tr>';
-+    }
-+}
-+
-+if(!$found_data) {
-+    echo '<tr><td colspan="3" class="text-center">데이터가 없습니다.</td></tr>';
-+}
-+?>
-+    </tbody>
-+</table>
-+<?php } ?>
-                     </div><!-- /.table-responsive -->
-                 </div><!-- /.body.project_report -->
-             </div><!-- /.card -->
-         </div><!-- /.col -->
-     </div><!-- /.row -->
- </div><!-- /#main-content -->
+                       </div><!-- col-md-9 -->
+                     </div><!-- row -->
+                   </div><!-- col-md-12 -->
+                 </div><!-- row m-b-90 -->
+               </div><!-- container -->
+             </div><!-- entry-content -->
+           </div><!-- article -->
+         </main><!-- #main -->
+       </div><!-- #primary -->
+     </div><!-- #content -->
  
- <script>
- function del_(seq) {
-     if(confirm('정말 시공현황 정보를 삭제하시겠습니까?\n연동 된 정보가 있다면 모두 해제됩니다.')) {
-         location.href = '/_worksite/write/menu1_update.php?w=d&seq=' + seq;
-     } else {
-         return false;
-     }
- }
- </script>
+     <!-- 맨 위로 올라가기 버튼 -->
+     <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700">
+       <i class="fa fa-angle-up"></i>
+     </a>
+ </div><!-- .site-content-contain -->
  
- <?php include_once(NONE_PATH.'/footer.php'); ?>
+ <? include "footer.html"; ?>
