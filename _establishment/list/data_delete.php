@@ -60,5 +60,10 @@ while($row = sql_fetch_array($rst)) {
 }
 sql_query("update {$none['est_noim']} set ne_file1='', ne_file2='' where nw_code = '{$nw_code}' and ne_date = '{$date}' and ne_type='2'");
 
+// 집행내역서 첨부파일 필드 초기화
+sql_query("update {$none['est_material']} set ne_file1='', ne_file2='', ne_file3='' where nw_code = '{$nw_code}' and ne_date = '{$date}'");
+sql_query("update {$none['est_equipment']} set ne_file1='', ne_file2='', ne_file3='' where nw_code = '{$nw_code}' and ne_date = '{$date}'");
+sql_query("update {$none['est_etc']} set ne_file1='', ne_file2='', ne_file3='' where nw_code = '{$nw_code}' and ne_date = '{$date}'");
+
 alert('첨부파일이 모두 삭제되었습니다.', './menu1_list.php?date=' . urlencode($date));
 ?>
