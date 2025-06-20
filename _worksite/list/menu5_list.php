@@ -28,7 +28,9 @@ $page            = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 // --- SQL 생성 ---
 $sql_common = " FROM {$g5['board_file_table']} AS f LEFT JOIN {$none['smart_list']} AS s ON f.wr_id = s.seq LEFT JOIN {$none['worksite']} AS w ON s.work_id = w.nw_code ";
 $sql_search = " WHERE f.bo_table = 'smart' AND f.bf_content = '' ";
-if(isset($member['mb_level2']) && $member['mb_level2'] == 2) { $sql_search .= " AND ( w.nw_ptype1_1 = '{$member['mb_id']}' OR w.nw_ptype1_2 = '{$member['mb_id']}' OR w.nw_ptype1_3 = '{$member['mb_id']}' OR w.nw_ptype2_1 = '{$member['mb_id']}' OR w.nw_ptype2_2 = '{$member['mb_id']}' OR w.nw_ptype2_3 = '{$member['mb_id']}' ) "; }
+if(isset($member['mb_level2']) && $member['mb_level2'] == 2) {
+    $sql_search .= " AND ( w.nw_ptype1_1 = '{$member['mb_id']}' OR w.nw_ptype1_2 = '{$member['mb_id']}' OR w.nw_ptype1_3 = '{$member['mb_id']}' OR w.nw_ptype1_4 = '{$member['mb_id']}' OR w.nw_ptype1_5 = '{$member['mb_id']}' OR w.nw_ptype1_6 = '{$member['mb_id']}' OR w.nw_ptype2_1 = '{$member['mb_id']}' OR w.nw_ptype2_2 = '{$member['mb_id']}' OR w.nw_ptype2_3 = '{$member['mb_id']}' OR w.nw_ptype2_4 = '{$member['mb_id']}' OR w.nw_ptype2_5 = '{$member['mb_id']}' OR w.nw_ptype2_6 = '{$member['mb_id']}' ) ";
+}
 if ($filter_category) { $sql_search .= " AND f.bf_category = '".sql_real_escape_string($filter_category)."' "; }
 if ($filter_status == 0 || $filter_status == 1) { $sql_search .= " AND w.nw_status = '".sql_real_escape_string($filter_status)."' "; }
 if ($filter_worksite) { $sql_search .= " AND s.work_id = '".sql_real_escape_string($filter_worksite)."' "; }
@@ -51,7 +53,9 @@ while ($row = sql_fetch_array($result)) {
 $category_sql = "SELECT DISTINCT bf_category FROM {$g5['board_file_table']} WHERE bo_table = 'smart' AND bf_category != '' ORDER BY bf_category ASC";
 $category_result = sql_query($category_sql);
 $worksite_filter_sql = "SELECT nw_code, nw_subject FROM {$none['worksite']} WHERE 1=1 ";
-if(isset($member['mb_level2']) && $member['mb_level2'] == 2) { $worksite_filter_sql .= " AND ( nw_ptype1_1 = '{$member['mb_id']}' OR nw_ptype1_2 = '{$member['mb_id']}' OR nw_ptype1_3 = '{$member['mb_id']}' OR w.nw_ptype2_1 = '{$member['mb_id']}' OR w.nw_ptype2_2 = '{$member['mb_id']}' OR w.nw_ptype2_3 = '{$member['mb_id']}' ) "; }
+if(isset($member['mb_level2']) && $member['mb_level2'] == 2) {
+    $worksite_filter_sql .= " AND ( nw_ptype1_1 = '{$member['mb_id']}' OR nw_ptype1_2 = '{$member['mb_id']}' OR nw_ptype1_3 = '{$member['mb_id']}' OR nw_ptype1_4 = '{$member['mb_id']}' OR nw_ptype1_5 = '{$member['mb_id']}' OR nw_ptype1_6 = '{$member['mb_id']}' OR w.nw_ptype2_1 = '{$member['mb_id']}' OR w.nw_ptype2_2 = '{$member['mb_id']}' OR w.nw_ptype2_3 = '{$member['mb_id']}' OR w.nw_ptype2_4 = '{$member['mb_id']}' OR w.nw_ptype2_5 = '{$member['mb_id']}' OR w.nw_ptype2_6 = '{$member['mb_id']}' ) ";
+}
 if ($filter_status == 0 || $filter_status == 1) { $worksite_filter_sql .= " AND nw_status = '".sql_real_escape_string($filter_status)."' "; }
 $worksite_filter_sql .= " ORDER BY nw_code DESC ";
 $worksite_filter_result = sql_query($worksite_filter_sql);
