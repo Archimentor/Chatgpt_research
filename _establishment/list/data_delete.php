@@ -1,109 +1,87 @@
 <?php
 /**
- * 일괄 첨부파일 삭제 (_establishment/write/data_delete.php)
- * GET : seq, date(yyyy-mm-dd)
+ * 첨부파일 일괄삭제(디렉터리 자동 탐색)
  *
- * 1) 게시판 첨부파일 삭제
- * 2) est_% 테이블 모든 'file' 포함 컬럼 첨부파일 삭제
- * 3) none_est_noim_file 등 별도 테이블 처리
+ * 1. 게시판 파일
+ * 2. est_% 테이블 파일
+ * ‑ 파일명이 어디에 저장돼 있든, 실제 업로드 디렉터리를
+ *   _data/*/{nw_code}/ 또는 _data/est/*/ 로 glob 검색해 찾는다.
+ *
+ *  파일 못 찾으면 log 배열에 남김.
  */
-
 include_once('../../_common.php');
 if($is_guest) alert('로그인 후 이용바랍니다.');
 
-// ───── 파라미터 ─────
-$seq  = isset($_GET['seq'])  ? preg_replace('/[^0-9]/','',$_GET['seq'])  : '';
-$date = isset($_GET['date']) ? preg_replace('/[^0-9-]/','',$_GET['date']) : '';
-if(!$seq || !$date) alert('잘못된 접근입니다.');
+$seq  = preg_replace('/[^0-9]/','',$_GET['seq'] ?? '');
+$date = preg_replace('/[^0-9-]/','',$_GET['date'] ?? '');
+if(!$seq||!$date) alert('잘못된 접근입니다.');
 
-$uid = $seq . str_replace('-','',$date);
-$work = sql_fetch("SELECT nw_code FROM {$none['worksite']} WHERE seq='{$seq}'");
-$nw_code = $work['nw_code'];
+$uid = $seq.str_replace('-','',$date);
+$nw_code = sql_fetch("SELECT nw_code FROM {$none['worksite']} WHERE seq='{$seq}'")['nw_code'];
 
-// 삭제 개수 카운트
-$deleted = 0;
+$deleted = 0; $miss = [];
 
-// ───── 1. 게시판 첨부 ─────
-$sql = "SELECT seq, bo_table, bf_file
-          FROM {$g5['board_file_table']}
-         WHERE bo_table LIKE 'est_%'
-           AND (wr_id='{$uid}' OR bf_change_id='{$uid}')
-           AND bf_est_date='{$date}'";
-
-$rs = sql_query($sql);
-while($row = sql_fetch_array($rs)){
-    $path = NONE_PATH."/_data/est/{$row['bo_table']}/{$row['bf_file']}";
-    if(file_exists($path) && @unlink($path)) $deleted++;
-    sql_query("DELETE FROM {$g5['board_file_table']} WHERE seq='{$row['seq']}'");
+/** 파일 실제 삭제 */
+function rm_file($filename,$nw_code,&$deleted,&$miss){
+    if(!$filename) return;
+    $cands = glob(NONE_PATH."/_data/*/{$nw_code}/{$filename}");
+    $cands = array_merge($cands, glob(NONE_PATH."/_data/est/*/{$filename}"));
+    $found = false;
+    foreach($cands as $f){
+        if(file_exists($f) && @unlink($f)) { $deleted++; $found=true; }
+    }
+    if(!$found) $miss[] = $filename;
 }
 
-// ───── 2. est_% 테이블 자동 탐색 ─────
-$tbl_rs = sql_query("SHOW TABLES LIKE '".NONE_TABLE_PREFIX."est_%'");
-while($tbl = sql_fetch_row($tbl_rs)){
-    $table = $tbl[0];
+// ─ 1. board_file
+$rs = sql_query("SELECT seq, bf_file, bo_table
+   FROM {$g5['board_file_table']}
+  WHERE bo_table LIKE 'est_%'
+    AND (wr_id='{$uid}' OR bf_change_id='{$uid}')
+    AND bf_est_date='{$date}'");
+while($r=sql_fetch_array($rs)){
+    rm_file($r['bf_file'],$nw_code,$deleted,$miss);
+    sql_query("DELETE FROM {$g5['board_file_table']} WHERE seq='{$r['seq']}'");
+}
 
-    // file 컬럼 찾기
+// ─ 2. est_% tables
+$tbl_rs = sql_query("SHOW TABLES LIKE 'est_%'");
+while($t = sql_fetch_row($tbl_rs)){
+    $table = $t[0];
     $col_rs = sql_query("SHOW COLUMNS FROM {$table} LIKE '%file%'");
-    $file_cols = [];
-    while($col = sql_fetch_row($col_rs)){
-        $file_cols[] = $col[0];
+    $cols=[]; while($c=sql_fetch_row($col_rs)) $cols[]=$c[0];
+    if(!$cols) continue;
+
+    $has_nw = sql_fetch("SHOW COLUMNS FROM {$table} LIKE 'nw_code'")?true:false;
+    $has_dt = sql_fetch("SHOW COLUMNS FROM {$table} LIKE 'ne_date'")?true:false;
+    $cond=[];
+    if($has_nw) $cond[]="nw_code='{$nw_code}'";
+    if($has_dt) $cond[]="ne_date='{$date}'";
+    if(!$cond) continue;
+    $where = implode(' AND ',$cond);
+
+    $col_list = implode(',',$cols);
+    $drs = sql_query("SELECT {$col_list} FROM {$table} WHERE {$where}");
+    while($row=sql_fetch_array($drs)){
+        foreach($cols as $c) rm_file($row[$c],$nw_code,$deleted,$miss);
     }
-    if(!count($file_cols)) continue;
-
-    // 데이터 조회
-    $col_list = implode(',', $file_cols);
-    // 컬럼 ne_date 존재 여부 확인
-    $has_date = sql_fetch("SHOW COLUMNS FROM {$table} LIKE 'ne_date'") ? true : false;
-    $has_nw   = sql_fetch("SHOW COLUMNS FROM {$table} LIKE 'nw_code'") ? true : false;
-    $where = [];
-    if($has_nw)   $where[] = "nw_code='{$nw_code}'";
-    if($has_date) $where[] = "ne_date='{$date}'";
-    if(!count($where)) continue;
-
-    $w_sql = implode(' AND ', $where);
-
-    // 업로드 폴더 기본 이름 (none_est_noim -> noim)
-    $dir_base = preg_replace('/^'.preg_quote(NONE_TABLE_PREFIX, '/').'est_/', '', $table);
-
-    // ne_type 컬럼 존재 여부
-    $has_type = sql_fetch("SHOW COLUMNS FROM {$table} LIKE 'ne_type'") ? true : false;
-
-    $select_cols = $col_list;
-    if($has_type) $select_cols .= ',ne_type';
-    $data_rs = sql_query("SELECT {$select_cols} FROM {$table} WHERE {$w_sql}");
-
-    while($row = sql_fetch_array($data_rs)){
-        $dir = ($table == $none['est_noim'] && $has_type && $row['ne_type']=='2') ? 'noim2' : $dir_base;
-        foreach($file_cols as $c){
-            if(empty($row[$c])) continue;
-            $fp = NONE_PATH."/_data/{$dir}/{$nw_code}/".$row[$c];
-            if(file_exists($fp) && @unlink($fp)) $deleted++;
-        }
-    }
-    // DB 초기화
-    $sets = implode("='', ", $file_cols)."=''";
-    sql_query("UPDATE {$table} SET {$sets} WHERE {$w_sql}");
+    $sets = implode("='', ",$cols)."=''";
+    sql_query("UPDATE {$table} SET {$sets} WHERE {$where}");
 }
 
-// ───── 3. 용역회사 보조파일 ─────
-$sql = "SELECT seq FROM {$none['est_noim']}
-        WHERE nw_code='{$nw_code}' AND ne_date='{$date}' AND ne_type='2'";
-$rs2 = sql_query($sql);
-while($row = sql_fetch_array($rs2)){
-    $files = sql_fetch("
-        SELECT ne_file3, ne_file4 FROM none_est_noim_file
-         WHERE noim_seq='{$row['seq']}' AND ne_date='{$date}'");
-    if(!$files) continue;
-
-    foreach(['ne_file3','ne_file4'] as $f){
-        if(!$files[$f]) continue;
-        $p = NONE_PATH."/_data/noim2/{$nw_code}/".$files[$f];
-        if(file_exists($p) && @unlink($p)) $deleted++;
-    }
-    sql_query("DELETE FROM none_est_noim_file
-               WHERE noim_seq='{$row['seq']}' AND ne_date='{$date}'");
+// ─ 3. 추가 파일 테이블
+$rs = sql_query("SELECT ne_file3, ne_file4
+   FROM none_est_noim_file nf
+   JOIN {$none['est_noim']} n ON n.seq=nf.noim_seq
+  WHERE n.nw_code='{$nw_code}' AND n.ne_date='{$date}' AND n.ne_type='2'");
+while($r=sql_fetch_array($rs)){
+    foreach(['ne_file3','ne_file4'] as $f) rm_file($r[$f],$nw_code,$deleted,$miss);
 }
+sql_query("DELETE nf FROM none_est_noim_file nf
+           JOIN {$none['est_noim']} n ON n.seq=nf.noim_seq
+           WHERE n.nw_code='{$nw_code}' AND n.ne_date='{$date}' AND n.ne_type='2'");
 
-// ───── 결과 ─────
-alert("총 {$deleted}개 파일을 삭제했습니다.", './menu1_list.php?date='.urlencode($date));
+$msg = "삭제 완료 : {$deleted}개";
+if($miss) $msg .= "\n찾지 못한 파일 : ".implode(', ',$miss);
+alert($msg, './menu1_list.php?date='.urlencode($date));
 ?>
