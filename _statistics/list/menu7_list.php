@@ -216,24 +216,24 @@ for($i=0; $row=sql_fetch_array($result); $i++) {
     echo '<td>'.$row['nw_sdate'].' ~ '.$row['nw_edate'].'</td>';
 
     // 현장소장
-    echo '<td>'. get_manager_txt($row['nw_ptype1_1']) .'</td>';
-    echo '<td>'. get_manager_txt($row['nw_ptype1_2']) .'</td>';
-    echo '<td>'. get_manager_txt($row['nw_ptype1_3']) .'</td>';
+    echo '<td>'. get_manager_txt_local($row['nw_ptype1_1']) .'</td>';
+    echo '<td>'. get_manager_txt_local($row['nw_ptype1_2']) .'</td>';
+    echo '<td>'. get_manager_txt_local($row['nw_ptype1_3']) .'</td>';
 
     // 실제투입소장
-    echo '<td>'. get_manager_txt($row['nw_ptype2_1']) .'</td>';
-    echo '<td>'. get_manager_txt($row['nw_ptype2_2']) .'</td>';
-    echo '<td>'. get_manager_txt($row['nw_ptype2_3']) .'</td>';
+    echo '<td>'. get_manager_txt_local($row['nw_ptype2_1']) .'</td>';
+    echo '<td>'. get_manager_txt_local($row['nw_ptype2_2']) .'</td>';
+    echo '<td>'. get_manager_txt_local($row['nw_ptype2_3']) .'</td>';
 
     // 품질관리자
-    echo '<td>'. get_admin_txt($row['nw_ptype5_1']) .'</td>';
-    echo '<td>'. get_admin_txt($row['nw_ptype5_2']) .'</td>';
-    echo '<td>'. get_admin_txt($row['nw_ptype5_3']) .'</td>';
+    echo '<td>'. get_admin_txt_local($row['nw_ptype5_1']) .'</td>';
+    echo '<td>'. get_admin_txt_local($row['nw_ptype5_2']) .'</td>';
+    echo '<td>'. get_admin_txt_local($row['nw_ptype5_3']) .'</td>';
 
     // 안전관리자
-    echo '<td>'. get_admin_txt($row['nw_ptype6_1']) .'</td>';
-    echo '<td>'. get_admin_txt($row['nw_ptype6_2']) .'</td>';
-    echo '<td>'. get_admin_txt($row['nw_ptype6_3']) .'</td>';
+    echo '<td>'. get_admin_txt_local($row['nw_ptype6_1']) .'</td>';
+    echo '<td>'. get_admin_txt_local($row['nw_ptype6_2']) .'</td>';
+    echo '<td>'. get_admin_txt_local($row['nw_ptype6_3']) .'</td>';
 
     echo '<td>'.$status.'</td>';
     echo '</tr>';
