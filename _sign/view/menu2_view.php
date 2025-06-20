@@ -259,7 +259,7 @@ if(!$row) alert('잘못 된 접근입니다.');
 												
 												<table class="add_table">
 													<thead style="background:#f2f2f2;">
-														<tr>
+														<tr class="text-center">
 															<td rowspan="2">업체명</td>
 															<td rowspan="2">견적금액</td>
 															<td rowspan="2">세액</td>
@@ -272,7 +272,7 @@ if(!$row) alert('잘못 된 접근입니다.');
                                                                                <td rowspan="2">비고</td>
                                                                                <?php if($member['mb_2'] == 3) {?><td rowspan="2">체크</td><?php }?>
 														</tr>
-														<tr>
+														<tr class="text-center">
 															<td >은행명</td>
 															<td >계좌번호</td>
 															<td >예금주</td>
