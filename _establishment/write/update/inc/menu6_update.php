@@ -8,6 +8,10 @@ if($is_guest) alert('로그인 후 이용바랍니다.');
 $nw_code = isset($_POST['nw_code']) ? sql_real_escape_string(trim($_POST['nw_code'])) : '';
 $ne_date = isset($_POST['ne_date']) ? sql_real_escape_string(trim($_POST['ne_date'])) : '';
 $ne_settlement_user_id = isset($_POST['ne_settlement_user_id']) ? sql_real_escape_string(trim($_POST['ne_settlement_user_id'])) : '';
+// 월 요약 값 (금월입금, 지출, 잔액)
+$ne_deposit  = isset($_POST['ne_deposit'])  ? str_replace(',', '', $_POST['ne_deposit'])  : 0;
+$ne_expenses = isset($_POST['ne_expenses']) ? str_replace(',', '', $_POST['ne_expenses']) : 0;
+$ne_balance  = isset($_POST['ne_balance'])  ? str_replace(',', '', $_POST['ne_balance'])  : 0;
 
 // 필수 값 체크
 if (empty($nw_code) || empty($ne_date) || empty($ne_settlement_user_id)) {
@@ -50,10 +54,7 @@ for ($i = 0; $i < $row_count; $i++) {
     // 콤마 제거
     $ne_cash = isset($_POST['ne_cash'][$i]) ? str_replace(',', '', $_POST['ne_cash'][$i]) : 0;
     $ne_card = isset($_POST['ne_card'][$i]) ? str_replace(',', '', $_POST['ne_card'][$i]) : 0;
-    // 요약 정보는 각 행 데이터에는 불필요해 보임 (주석 처리 또는 삭제 고려)
-    // $ne_expenses_summary = isset($_POST['ne_expenses']) ? str_replace(',', '', $_POST['ne_expenses']) : 0;
-    // $ne_deposit_summary = isset($_POST['ne_deposit']) ? str_replace(',', '', $_POST['ne_deposit']) : 0;
-    // $ne_balance_summary = isset($_POST['ne_balance']) ? str_replace(',', '', $_POST['ne_balance']) : 0;
+
 
     // 각 배열 요소 값 가져오기 및 이스케이프 처리 (SQL Injection 방지)
     $ne_trade_date = isset($_POST['ne_trade_date'][$i]) ? sql_real_escape_string($_POST['ne_trade_date'][$i]) : '';
@@ -71,7 +72,6 @@ for ($i = 0; $i < $row_count; $i++) {
         mb_id = '{$member['mb_id']}', /* 작성자 ID (로그인 사용자) */
         nw_code = '{$nw_code}',
         ne_date = '{$ne_date}',
-        ne_deposit = '{$ne_deposit}', /* ★★★ 금월입금액 저장 ★★★ */
         ne_trade_date = '{$ne_trade_date}',
         ne_account_name = '{$ne_account_name}',
         ne_summary = '{$ne_summary}',
@@ -79,10 +79,9 @@ for ($i = 0; $i < $row_count; $i++) {
         ne_cash = '{$ne_cash_val}',
         ne_card = '{$ne_card_val}',
         ne_total = '{$ne_total_val}', /* 서버 계산값 */
-        /* 아래 요약 정보는 각 행에 저장할 필요가 없어 보입니다. (필요시 주석 해제) */
-        /* ne_expenses = '" . sql_real_escape_string($ne_expenses_summary) . "', */
-        /* ne_deposit = '" . sql_real_escape_string($ne_deposit_summary) . "', */
-        /* ne_balance = '" . sql_real_escape_string($ne_balance_summary) . "', */
+        ne_expenses = '{$ne_expenses}',
+        ne_deposit = '{$ne_deposit}',
+        ne_balance = '{$ne_balance}',
         ne_etc = '{$ne_etc}',
         ne_datetime = '".G5_TIME_YMDHIS."',
         ne_ip = '".$_SERVER['REMOTE_ADDR']."'
