@@ -38,7 +38,7 @@ while($row = sql_fetch_array($rs)){
 }
 
 // ───── 2. est_% 테이블 자동 탐색 ─────
-$tbl_rs = sql_query("SHOW TABLES LIKE 'est_%'");
+$tbl_rs = sql_query("SHOW TABLES LIKE '".NONE_TABLE_PREFIX."est_%'");
 while($tbl = sql_fetch_row($tbl_rs)){
     $table = $tbl[0];
 
@@ -61,11 +61,19 @@ while($tbl = sql_fetch_row($tbl_rs)){
     if(!count($where)) continue;
 
     $w_sql = implode(' AND ', $where);
-    $data_rs = sql_query("SELECT {$col_list} FROM {$table} WHERE {$w_sql}");
 
-    // 업로드 폴더
-    $dir = str_replace('est_','',$table);  // est_noim -> noim
+    // 업로드 폴더 기본 이름 (none_est_noim -> noim)
+    $dir_base = preg_replace('/^'.preg_quote(NONE_TABLE_PREFIX, '/').'est_/', '', $table);
+
+    // ne_type 컬럼 존재 여부
+    $has_type = sql_fetch("SHOW COLUMNS FROM {$table} LIKE 'ne_type'") ? true : false;
+
+    $select_cols = $col_list;
+    if($has_type) $select_cols .= ',ne_type';
+    $data_rs = sql_query("SELECT {$select_cols} FROM {$table} WHERE {$w_sql}");
+
     while($row = sql_fetch_array($data_rs)){
+        $dir = ($table == $none['est_noim'] && $has_type && $row['ne_type']=='2') ? 'noim2' : $dir_base;
         foreach($file_cols as $c){
             if(empty($row[$c])) continue;
             $fp = NONE_PATH."/_data/{$dir}/{$nw_code}/".$row[$c];
