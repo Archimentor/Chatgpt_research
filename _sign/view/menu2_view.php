@@ -258,8 +258,8 @@ if(!$row) alert('잘못 된 접근입니다.');
                                             <td style="border-top:1px solid #ccc;vertical-align:top" colspan="3" >
 												
 												<table class="add_table">
-													<thead style="background:#f2f2f2;">
-														<tr>
+                                       <thead style="background:#f2f2f2;">
+                                       <tr class="text-center">
 															<td rowspan="2">업체명</td>
 															<td rowspan="2">견적금액</td>
 															<td rowspan="2">세액</td>
