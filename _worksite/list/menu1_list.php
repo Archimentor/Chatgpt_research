@@ -134,7 +134,7 @@ if (!function_exists('get_owner_txt')) {
                     
                     <!-- 시공현장 목록 표 -->
                     <div class="table-responsive">
-                        <table class="table m-b-0 table-hover">
+                        <table class="table m-b-0 table-hover mobile-card">
                             <thead class="thead-light">
                                 <tr>
                                     <th>현장코드</th>
@@ -376,6 +376,27 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 .detail-content {
     padding: 10px;
+}
+</style>
+<script>
+$(function(){
+    $('.mobile-card').each(function(){
+        var headers=[];
+        $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
+        $(this).find('tbody tr').each(function(){
+            $(this).find('td').each(function(i){
+                $(this).attr('data-label', headers[i]);
+            });
+        });
+    });
+});
+</script>
+<style>
+@media (max-width:768px){
+    .mobile-card thead{display:none;}
+    .mobile-card tbody tr{display:block;border:1px solid #ddd;border-radius:4px;margin-bottom:1rem;padding:.5rem;}
+    .mobile-card tbody td{display:flex;justify-content:space-between;padding:.25rem 0;}
+    .mobile-card tbody td::before{content:attr(data-label);font-weight:bold;}
 }
 </style>
 

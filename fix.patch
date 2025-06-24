@@ -1,93 +1,100 @@
-diff --git a/_sign/list/menu1_list.php b/_sign/list/menu1_list.php
-index fc8a2590fa8b3d5cc6d3436e5c4e728d40b8ce42..ad4e3d1eb1d624d8a86a4b9fa5d67250f0894b39 100644
---- a/_sign/list/menu1_list.php
-+++ b/_sign/list/menu1_list.php
-@@ -142,51 +142,51 @@ $qstr .= "&amp;team=$team&amp;state=$state"
- 										</select>
- 										
- 										<select name="status" id="inputState" class="form-control" onchange="location.href='?team=<?php echo $team?>&stx=<?php echo $stx?>&state='+this.value">
- 											<option value="">진행중 문서</option>
- 											<option value="all" <?php echo get_selected($state, 'all')?>>전체보기</option>
- 											<option value="미처리" <?php echo get_selected($state, '미처리')?>>미처리</option>
- 											<option value="완료" <?php echo get_selected($state, '완료')?>>결재완료</option>
- 											<option value="전결" <?php echo get_selected($state, '전결')?>>전결</option>
- 											<option value="처리완료" <?php echo get_selected($state, '처리완료')?>>처리완료</option>
- 											<option value="반려" <?php echo get_selected($state, '반려')?>>반려</option>
- 										
- 										</select>
- 									<input type="text" name="stx" value="<?php echo $stx?>" class="form-control" placeholder="전체검색"  >
- 									<div class="input-group-append">
- 										<span class="input-group-text" id="search-mail"><i class="icon-magnifier"></i></span>
- 									</div>
- 								</div>
- 							</form>
-                         </div>	
- 						
- 					
- 						
-                         <div class="body project_report">
- 							
-                             <div class="table-responsive">
--                                <table class="table m-b-0 table-hover">
-+                                <table class="table m-b-0 table-hover mobile-card">
-                                     <thead class="thead-light">
-                                         <tr>
-                                             <th>번호</th>
-                                             <th>기안일자</th>
-                                             <th>기안부서 및 현장</th>
-                                             <th>문서명</th>
-                                             <th>공종</th>
-                                             <th>도급금액</th>
-                                             <th>외주비</th>
-                                             <th>자재비</th>
-                                             <th>중요도</th>
-                                             <th>기안자</th>
-                                             <th>완료일</th>
-                                             <th>결재현황</th>
-                                             <th>처리상태</th>
-                                         </tr>
-                                     </thead>
-                                     <tbody>
- 										
- 									
- 										<?php for($i=0; $row=sql_fetch_array($result); $i++) {
- 											
- 											$num = $total_count - ($page - 1) * $rows - $i;
- 											
- 											$cmmt = sql_fetch("select count(*) as cnt from {$none['sign_draft_comment']} where ns_type = 1 and ns_id = '{$row['seq']}'");
-diff --git a/_sign/list/menu1_list.php b/_sign/list/menu1_list.php
-index fc8a2590fa8b3d5cc6d3436e5c4e728d40b8ce42..ad4e3d1eb1d624d8a86a4b9fa5d67250f0894b39 100644
---- a/_sign/list/menu1_list.php
-+++ b/_sign/list/menu1_list.php
-@@ -374,28 +374,49 @@ $qstr .= "&amp;team=$team&amp;state=$state"
- 								</div>
- 							</div>
- 						<?php echo get_paging_none(G5_IS_MOBILE ? $config['cf_mobile_pages'] : $config['cf_write_pages'], $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='); ?>
-                     </div>
-                 </div>
-             </div>
-           
-           
-           
-             
+diff --git a/_worksite/list/menu1_list.php b/_worksite/list/menu1_list.php
+index 7cc647a1a161da2f9c13cff1f8ff4d997a73df4e..55a2294ddc51fd859c327aaa73ee84e5458f91cf 100644
+--- a/_worksite/list/menu1_list.php
++++ b/_worksite/list/menu1_list.php
+@@ -112,51 +112,51 @@ if (!function_exists('get_owner_txt')) {
+             </div>            
+         </div>
      </div>
-     
- </div>
- <script>
- function payment(seq) {
- 	
- 	if(confirm('처리완료 하시겠습니까?')) {
- 		location.href = '../write/state1_list_update.php?seq='+seq;
- 	} else {
- 		return false;
- 	}
- 	
+     <div class="row clearfix">
+         <div class="col-lg-12 col-md-12">
+             <div class="card">
+                 <div class="body">
+                     <?php if($member['mb_level2'] != 2) { ?>
+                         <a class="btn btn-primary float-right" href="../write/menu1_write.php" role="button">시공현장 등록</a> 
+                     <?php } ?>
+                     
+                     <!-- 검색 폼 -->
+                     <form class="float-right" style="margin-right:5px" method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                         <div class="input-group">
+                             <input type="text" name="stx" value="<?php echo htmlspecialchars($stx); ?>" class="form-control" placeholder="현장명 또는 현장코드">
+                             <div class="input-group-append">
+                                 <button class="btn btn-outline-secondary" type="submit"><i class="icon-magnifier"></i></button>
+                             </div>
+                         </div>
+                     </form>
+                     
+                     <div style="clear: both;"></div>
+                     
+                     <!-- 시공현장 목록 표 -->
+                     <div class="table-responsive">
+-                        <table class="table m-b-0 table-hover">
++                        <table class="table m-b-0 table-hover mobile-card">
+                             <thead class="thead-light">
+                                 <tr>
+                                     <th>현장코드</th>
+                                     <th>현장명</th>
+                                     <th>공사기간</th>
+                                     <th>공급가액</th>
+                                     <th>부가세</th>
+                                     <th>계약금액</th>
+                                     <th>현금금액</th>
+                                     <!--<th>총 공사금액</th>-->
+                                     <th>법인명(건축주)</th>
+                                     <th>현장소장</th>
+                                     <th>건축사</th>
+                                     <th>진행상태</th>
+                                     <th>메인노출</th>
+                                     <th>관리</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                                 <?php 
+                                 for($i=0; $row=sql_fetch_array($result); $i++) {
+                                     
+                                     // 상태 표시
+                                     if($row['nw_status'])
+                                         $status = '<span class="badge badge-success">완료</span>';
+diff --git a/_worksite/list/menu1_list.php b/_worksite/list/menu1_list.php
+index 7cc647a1a161da2f9c13cff1f8ff4d997a73df4e..55a2294ddc51fd859c327aaa73ee84e5458f91cf 100644
+--- a/_worksite/list/menu1_list.php
++++ b/_worksite/list/menu1_list.php
+@@ -352,31 +352,52 @@ document.addEventListener('DOMContentLoaded', function() {
  }
  
+ /* 반응형 디자인 */
+ @media (max-width: 768px) {
+     #main-content {
+         margin-left: 0;
+         padding: 10px;
+     }
+     .table-responsive {
+         overflow-x: auto;
+     }
+     .table th, .table td {
+         padding: 8px 10px;
+         font-size: 12px;
+     }
+     .btn-group .btn {
+         padding: 6px 12px;
+         font-size: 12px;
+     }
+ }
  
--</script>
+ /* 상세 정보 행 스타일 */
+ .detail-row {
+     background-color: #f9f9f9;
+ }
+-.detail-content {
+-    padding: 10px;
+-}
+-</style>
 -
-+</script>
+-<?php include_once(NONE_PATH.'/footer.php'); ?>
++.detail-content {
++    padding: 10px;
++}
++</style>
 +<script>
 +$(function(){
 +    $('.mobile-card').each(function(){
@@ -110,4 +117,4 @@ index fc8a2590fa8b3d5cc6d3436e5c4e728d40b8ce42..ad4e3d1eb1d624d8a86a4b9fa5d67250
 +}
 +</style>
 +
- <?php include_once(NONE_PATH.'/footer.php');?>
++<?php include_once(NONE_PATH.'/footer.php'); ?>

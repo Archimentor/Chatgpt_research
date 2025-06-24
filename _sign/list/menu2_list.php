@@ -282,7 +282,7 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
     <!-- ──────────────── 목록 테이블 ──────────────── -->
     <div class="body project_report">
         <div class="table-responsive">
-            <table class="table m-b-0 table-hover">
+            <table class="table m-b-0 table-hover mobile-card">
                 <thead class="thead-light">
                     <tr>
                         <th class="th-num">번호</th>
@@ -443,5 +443,26 @@ function payment(seq){
     }
 }
 </script>
+<script>
+$(function(){
+    $('.mobile-card').each(function(){
+        var headers=[];
+        $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
+        $(this).find('tbody tr').each(function(){
+            $(this).find('td').each(function(i){
+                $(this).attr('data-label', headers[i]);
+            });
+        });
+    });
+});
+</script>
+<style>
+@media (max-width:768px){
+    .mobile-card thead{display:none;}
+    .mobile-card tbody tr{display:block;border:1px solid #ddd;border-radius:4px;margin-bottom:1rem;padding:.5rem;}
+    .mobile-card tbody td{display:flex;justify-content:space-between;padding:.25rem 0;}
+    .mobile-card tbody td::before{content:attr(data-label);font-weight:bold;}
+}
+</style>
 
 <?php include_once(NONE_PATH.'/footer.php'); ?>

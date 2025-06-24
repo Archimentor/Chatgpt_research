@@ -239,7 +239,7 @@ if($member['mb_level2'] == 2) {
                         <div class="body project_report">
 							
                             <div class="table-responsive">
-                                <table class="table m-b-0 table-hover">
+                                <table class="table m-b-0 table-hover mobile-card">
                                     <thead class="thead-light">
                                         <tr>
                                             <th>작업일자</th>
@@ -350,6 +350,27 @@ if($member['mb_level2'] == 2) {
 <?php include_once(NONE_PATH.'/footer.php');?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ko.min.js" integrity="sha512-L4qpL1ZotXZLLe8Oo0ZyHrj/SweV7CieswUODAAPN/tnqN3PA1P+4qPu5vIryNor6HQ5o22NujIcAZIfyVXwbQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+$(function(){
+    $('.mobile-card').each(function(){
+        var headers=[];
+        $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
+        $(this).find('tbody tr').each(function(){
+            $(this).find('td').each(function(i){
+                $(this).attr('data-label', headers[i]);
+            });
+        });
+    });
+});
+</script>
+<style>
+@media (max-width:768px){
+    .mobile-card thead{display:none;}
+    .mobile-card tbody tr{display:block;border:1px solid #ddd;border-radius:4px;margin-bottom:1rem;padding:.5rem;}
+    .mobile-card tbody td{display:flex;justify-content:space-between;padding:.25rem 0;}
+    .mobile-card tbody td::before{content:attr(data-label);font-weight:bold;}
+}
+</style>
 <script>
 $('#datePicker').datepicker({
 		format: "yyyy-mm-dd",	//데이터 포맷 형식(yyyy : 년 mm : 월 dd : 일 )
