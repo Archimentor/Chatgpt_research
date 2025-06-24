@@ -1,285 +1,113 @@
 diff --git a/_sign/list/menu1_list.php b/_sign/list/menu1_list.php
-index 1780bde8c9d383d38ac298dd2fe031e5a500c660..78bccf4a59acec7be2962651e26a405e1f169681 100644
+index fc8a2590fa8b3d5cc6d3436e5c4e728d40b8ce42..ad4e3d1eb1d624d8a86a4b9fa5d67250f0894b39 100644
 --- a/_sign/list/menu1_list.php
 +++ b/_sign/list/menu1_list.php
-@@ -1,40 +1,40 @@
- <?php 
- include_once('../../_common.php');
- define('menu_sign', true);
- include_once(NONE_PATH.'/header.php'); 
- 
- 
- if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
-         // 실행부 또는 현장소장일 경우
- 	$sql_common = " from  {$none['sign_draft']}  ";
+@@ -142,51 +142,51 @@ $qstr .= "&amp;team=$team&amp;state=$state"
+ 										</select>
+ 										
+ 										<select name="status" id="inputState" class="form-control" onchange="location.href='?team=<?php echo $team?>&stx=<?php echo $stx?>&state='+this.value">
+ 											<option value="">진행중 문서</option>
+ 											<option value="all" <?php echo get_selected($state, 'all')?>>전체보기</option>
+ 											<option value="미처리" <?php echo get_selected($state, '미처리')?>>미처리</option>
+ 											<option value="완료" <?php echo get_selected($state, '완료')?>>결재완료</option>
+ 											<option value="전결" <?php echo get_selected($state, '전결')?>>전결</option>
+ 											<option value="처리완료" <?php echo get_selected($state, '처리완료')?>>처리완료</option>
+ 											<option value="반려" <?php echo get_selected($state, '반려')?>>반려</option>
+ 										
+ 										</select>
+ 									<input type="text" name="stx" value="<?php echo $stx?>" class="form-control" placeholder="전체검색"  >
+ 									<div class="input-group-append">
+ 										<span class="input-group-text" id="search-mail"><i class="icon-magnifier"></i></span>
+ 									</div>
+ 								</div>
+ 							</form>
+                         </div>	
+ 						
+ 					
+ 						
+                         <div class="body project_report">
+ 							
+                             <div class="table-responsive">
+-                                <table class="table m-b-0 table-hover">
++                                <table class="table m-b-0 table-hover mobile-card">
+                                     <thead class="thead-light">
+                                         <tr>
+                                             <th>번호</th>
+                                             <th>기안일자</th>
+                                             <th>기안부서 및 현장</th>
+                                             <th>문서명</th>
+                                             <th>공종</th>
+                                             <th>도급금액</th>
+                                             <th>외주비</th>
+                                             <th>자재비</th>
+                                             <th>중요도</th>
+                                             <th>기안자</th>
+                                             <th>완료일</th>
+                                             <th>결재현황</th>
+                                             <th>처리상태</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody>
+ 										
+ 									
+ 										<?php for($i=0; $row=sql_fetch_array($result); $i++) {
+ 											
+ 											$num = $total_count - ($page - 1) * $rows - $i;
+ 											
+ 											$cmmt = sql_fetch("select count(*) as cnt from {$none['sign_draft_comment']} where ns_type = 1 and ns_id = '{$row['seq']}'");
+diff --git a/_sign/list/menu1_list.php b/_sign/list/menu1_list.php
+index fc8a2590fa8b3d5cc6d3436e5c4e728d40b8ce42..ad4e3d1eb1d624d8a86a4b9fa5d67250f0894b39 100644
+--- a/_sign/list/menu1_list.php
++++ b/_sign/list/menu1_list.php
+@@ -374,28 +374,49 @@ $qstr .= "&amp;team=$team&amp;state=$state"
+ 								</div>
+ 							</div>
+ 						<?php echo get_paging_none(G5_IS_MOBILE ? $config['cf_mobile_pages'] : $config['cf_write_pages'], $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='); ?>
+                     </div>
+                 </div>
+             </div>
+           
+           
+           
+             
+     </div>
+     
+ </div>
+ <script>
+ function payment(seq) {
  	
--	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
--	while($work1 = sql_fetch_array($sql1)) {
--		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
--	}
--	$sql_search = " where ".implode(' or ', $work1_arr);
-+        $sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
-+        while($work1 = sql_fetch_array($sql1)) {
-+                $work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
-+        }
-+        $sql_search = " where (".implode(' or ', $work1_arr).")";
- 	
- } else {
- 	$sql_common = " from  {$none['sign_draft']}  ";
- 	$sql_search = " where (1) ";
- }
- 
- 
- if ($stx) {
-     $sql_search .= " and ( ";
-     switch ($sfl) {
-         case "bo_table" :
-             $sql_search .= " ($sfl like '$stx%') ";
-             break;
-         case "a.gr_id" :
-             $sql_search .= " ($sfl = '$stx') ";
-             break;
-         default :
- 		
- 			//기안자도 검색 
- 			$mb_check = sql_fetch("select mb_id from g5_member where mb_name LIKE '%$stx%'");
- 			
- 			if($mb_check)
- 				$sql_search .= " (ns_subject like '%$stx%' or ns_team like '%$stx%' or mb_id = '{$mb_check['mb_id']}') ";
- 			else 
- 				$sql_search .= " (ns_subject like '%$stx%' or ns_team like '%$stx%') ";
-diff --git a/_sign/list/menu2_list.php b/_sign/list/menu2_list.php
-index eb0ea94aac6502a2cce6270ffeecf3ce628b8049..9374dd9951aa4be543adda3ba0d068bf6500010a 100644
---- a/_sign/list/menu2_list.php
-+++ b/_sign/list/menu2_list.php
-@@ -24,54 +24,54 @@ if (!function_exists('get_next_approver_id')) {
- 
-             if ($id === '')                      continue; // 결재자 X
-             if ($stat === '')                    return $id; // 미결재
-             if (strpos($stat, '전결') !== false) continue; // 전결 건너뜀
-             if (strpos($stat, '반려') !== false) return ''; // 반려 → 이후 없음
-         }
-         return '';
-     }
- }
- 
- /* ------------------------------------------------------------------
-    1) 검색 조건
-    ----------------------------------------------------------------- */
- $sql_search = ''; $work1_arr = [];
- 
- if (($member['mb_2'] ?? '') == 10 || ($member['mb_level2'] ?? '') == 2) { // 실행부 또는 현장소장
-     $sql_common = " FROM {$none['sign_draft2']} ";
-     $sql1 = sql_query("
-         SELECT nw_code, pj_title_kr
-           FROM {$none['worksite']}
-          WHERE '{$member['mb_id']}' IN (
-                nw_ptype1_1,nw_ptype1_2,nw_ptype1_3,
-                nw_ptype2_1,nw_ptype2_2,nw_ptype2_3
-          )
-     ");
--    while ($w = sql_fetch_array($sql1)) {
--        $work1_arr[] = "ns_team='".sql_real_escape_string($w['nw_code'].' '.$w['pj_title_kr'])."'";
--    }
--    $sql_search = $work1_arr ? ' WHERE '.implode(' OR ',$work1_arr) : ' WHERE 1=0';
-+    while ($w = sql_fetch_array($sql1)) {
-+        $work1_arr[] = "ns_team='".sql_real_escape_string($w['nw_code'].' '.$w['pj_title_kr'])."'";
-+    }
-+    $sql_search = $work1_arr ? ' WHERE (' . implode(' OR ', $work1_arr) . ')' : ' WHERE 1=0';
- } else {                                                   // 그 외
-     $sql_common = " FROM {$none['sign_draft2']} ";
-     $sql_search = ' WHERE 1';
- }
- 
- /* ------------------------------------------------------------------
-    2) 검색어 (통합)
-    ----------------------------------------------------------------- */
- $sfl = trim($_GET['sfl'] ?? '');
- $stx = trim($_GET['stx'] ?? '');
- 
- if ($stx !== '') {
-     $s = sql_real_escape_string($stx);
-     $sql_search .= ' AND (';
- 
-     // 기안자 이름 → mb_id 목록
-     $mb_ids = [];
-     $r = sql_query("SELECT mb_id FROM {$g5['member_table']} WHERE mb_name LIKE '%{$s}%'");
-     while ($m = sql_fetch_array($r)) $mb_ids[] = "'".sql_real_escape_string($m['mb_id'])."'";
- 
-     $conds = ["ns_subject LIKE '%{$s}%'", "ns_team LIKE '%{$s}%'"];
-     if ($mb_ids) $conds[] = 'mb_id IN ('.implode(',',$mb_ids).')';
- 
-     $sql_search .= implode(' OR ', $conds).')';
- }
-diff --git a/_sign/list/menu3_list.php b/_sign/list/menu3_list.php
-index f66b0de0075be97329b160bb47aee2a82ba63659..190f2adbf91bb309c1ce8cfda06ced5bf6751ed6 100644
---- a/_sign/list/menu3_list.php
-+++ b/_sign/list/menu3_list.php
-@@ -1,39 +1,39 @@
- <?php 
- include_once('../../_common.php');
- define('menu_sign', true);
- include_once(NONE_PATH.'/header.php'); 
- 
- if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
-         // 실행부 또는 현장소장일경우
- 	$sql_common = " from  {$none['sign_draft3']}  ";
- 	
- 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
--	while($work1 = sql_fetch_array($sql1)) {
--		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
--	}
--	$sql_search = " where ".implode(' or ', $work1_arr);
-+        while($work1 = sql_fetch_array($sql1)) {
-+                $work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
-+        }
-+        $sql_search = " where (".implode(' or ', $work1_arr).")";
- 	
- } else {
- 	$sql_common = " from  {$none['sign_draft3']}  ";
- 	$sql_search = " where (1) ";
- }
- 
- if ($stx) {
-     $sql_search .= " and ( ";
-     switch ($sfl) {
-         case "bo_table" :
-             $sql_search .= " ($sfl like '$stx%') ";
-             break;
-         case "a.gr_id" :
-             $sql_search .= " ($sfl = '$stx') ";
-             break;
-         default :
-             $sql_search .= " (nw_subject like '%$stx%') ";
-             break;
-     }
-     $sql_search .= " ) ";
- }
- 
- if($team) {
- 	$sql_search .= " AND ns_team = '$team' ";
- 	
-diff --git a/_sign/list/menu4_list.php b/_sign/list/menu4_list.php
-index b736cea31a4479d5e49d7908637546b68e256f0b..2c4262e50025bb1ebb210e7898f01b0968129c3c 100644
---- a/_sign/list/menu4_list.php
-+++ b/_sign/list/menu4_list.php
-@@ -1,39 +1,39 @@
- <?php 
- include_once('../../_common.php');
- define('menu_sign', true);
- include_once(NONE_PATH.'/header.php'); 
- 
- if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
-         // 실행부 또는 현장소장일경우
- 	$sql_common = " from  {$none['sign_draft4']}  ";
- 	
- 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
--	while($work1 = sql_fetch_array($sql1)) {
--		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
--	}
--	$sql_search = " where ".implode(' or ', $work1_arr);
-+        while($work1 = sql_fetch_array($sql1)) {
-+                $work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
-+        }
-+        $sql_search = " where (".implode(' or ', $work1_arr).")";
- 	
- } else {
- 	$sql_common = " from  {$none['sign_draft4']}  ";
- 	$sql_search = " where (1) ";
- }
- 
- if ($stx) {
-     $sql_search .= " and ( ";
-     switch ($sfl) {
-         case "bo_table" :
-             $sql_search .= " ($sfl like '$stx%') ";
-             break;
-         case "a.gr_id" :
-             $sql_search .= " ($sfl = '$stx') ";
-             break;
-         default :
-             $sql_search .= " (nw_subject like '%$stx%') ";
-             break;
-     }
-     $sql_search .= " ) ";
- }
- if($team) {
- 	$sql_search .= " AND ns_team = '$team' ";
- 	
- }
-diff --git a/_sign/list/menu6_list.php b/_sign/list/menu6_list.php
-index c9eaa8e7cefbafc221010f01d930f8f84317178a..e7d57dcb6604ca1dbe1d5bf4a571b9dfc2f65a13 100644
---- a/_sign/list/menu6_list.php
-+++ b/_sign/list/menu6_list.php
-@@ -1,66 +1,66 @@
- <?php 
- include_once('../../_common.php');
- define('menu_sign', true);
- include_once(NONE_PATH.'/header.php'); 
- 
- if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
-         // 실행부 또는 현장소장일경우
- 	$sql_common = " from  {$none['sign_draft6']}  ";
- 	
- 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
--	while($work1 = sql_fetch_array($sql1)) {
--		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
--	}
--	$sql_search = " where ".implode(' or ', $work1_arr);
-+        while($work1 = sql_fetch_array($sql1)) {
-+                $work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
-+        }
-+        $sql_search = " where (".implode(' or ', $work1_arr).")";
- 	
- } else {
- 	$sql_common = " from  {$none['sign_draft6']}  ";
- 	$sql_search = " where (1) ";
- }
- 
- if ($stx) {
-     $sql_search .= " and ( ";
-     switch ($sfl) {
-         case "bo_table" :
-             $sql_search .= " ($sfl like '$stx%') ";
-             break;
-         case "a.gr_id" :
-             $sql_search .= " ($sfl = '$stx') ";
-             break;
-         default :
-             $sql_search .= " (nw_subject like '%$stx%') ";
-             break;
-     }
-     $sql_search .= " ) ";
- }
- if($team) {
- 	$sql_search .= " AND ns_team = '$team' ";
- 	
- }
- 
--if(!$state) $state = "all";
-+if(!$state) $state = "미처리";
- 
- if($state && $state != "all") {
- 	
- 	if($state == "완료") {
- 		$sql_search .= " AND ns_state2 = '처리완료' ";
+ 	if(confirm('처리완료 하시겠습니까?')) {
+ 		location.href = '../write/state1_list_update.php?seq='+seq;
  	} else {
- 		$sql_search .= " AND ns_state = '$state' ";
+ 		return false;
  	}
- } 
- 
- if (!$sst) {
-     $sst  = "seq";
-     $sod = "desc";
+ 	
  }
- $sql_order = " order by $sst $sod ";
- 
- $sql = " select count(*) as cnt {$sql_common} {$sql_search} {$sql_order} ";
- $row = sql_fetch($sql);
- $total_count = $row['cnt'];
  
  
- $rows = $config['cf_page_rows'];
- $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
- if ($page < 1) { $page = 1; } // 페이지가 없으면 첫 페이지 (1 페이지)
- $from_record = ($page - 1) * $rows; // 시작 열을 구함
+-</script>
+-
++</script>
++<script>
++$(function(){
++    $('.mobile-card').each(function(){
++        var headers=[];
++        $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
++        $(this).find('tbody tr').each(function(){
++            $(this).find('td').each(function(i){
++                $(this).attr('data-label', headers[i]);
++            });
++        });
++    });
++});
++</script>
++<style>
++@media (max-width:768px){
++    .mobile-card thead{display:none;}
++    .mobile-card tbody tr{display:block;border:1px solid #ddd;border-radius:4px;margin-bottom:1rem;padding:.5rem;}
++    .mobile-card tbody td{display:flex;justify-content:space-between;padding:.25rem 0;}
++    .mobile-card tbody td::before{content:attr(data-label);font-weight:bold;}
++}
++</style>
++
+ <?php include_once(NONE_PATH.'/footer.php');?>
