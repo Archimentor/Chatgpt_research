@@ -1,55 +1,54 @@
-diff --git a/homepage/history.html b/homepage/history.html
-index 5ebe65e57912c88aff660ff14b7a9052030fdf31..61ebbfbac548de52f38428508b9046763bb7eb94 100644
---- a/homepage/history.html
-+++ b/homepage/history.html
-@@ -107,43 +107,50 @@ include "left01.html";
-                         <div class="history-details">
-                           ChatGPT AI 시스템 도입(GPT-4)<br />
-                           ISO(9001,14001,45001) 경영시스템 인증<br />
-                           부산다운건축상 은상<br />
-                           다우데이타 MOU 협약 체결<br />
-                           경기도건축문화상 입상<br />
-                           특허 획득(제10-2601586호)<br />
-                           부산광역시 우수 건설기술인 인증<br />
-                           2023 우수신용등급 인증서 취득<br />
-                           2023 건축명장
-                         </div>
- 
-                         <!-- 2024 -->
-                         <div class="history-year">2024</div>
-                         <div class="history-details">
-                           상표 획득(제40-2178422호)<br />
-                           실내건축공사업 등록<br />
-                           부천시 건축공간문화상 입상<br />
-                           부산다운건축상 장려상<br />
-                           김해 건축대상제 최우수상 <br />
-                           서울시 "건축사와 함께하는 우리동네 좋은집찾기" 동상 <br />
-                           의료 협력 협약 : 힘내라병원<br />
-                           2024 건축명장
-                         </div>
- 
-+                        <!-- 2025 -->
-+                        <div class="history-year">2025</div>
-+                        <div class="history-details">
-+                          이노비즈 인증<br />
-+                          연구개발전담부서 설립
-+                        </div>
+diff --git a/mobile_entry.php b/mobile_entry.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..a78ffc98f092fbfe6ecc852bab54874ac8fbb61d
+--- /dev/null
++++ b/mobile_entry.php
+@@ -0,0 +1,48 @@
++<?php
++include_once('./_common.php');
++define('menu_mobile_entry', true);
++include_once(NONE_PATH.'/header.php');
++?>
 +
-                       </div><!-- col-md-9 -->
-                     </div><!-- row -->
-                   </div><!-- col-md-12 -->
-                 </div><!-- row m-b-90 -->
-               </div><!-- container -->
-             </div><!-- entry-content -->
-           </div><!-- article -->
-         </main><!-- #main -->
-       </div><!-- #primary -->
-     </div><!-- #content -->
- 
-     <!-- 맨 위로 올라가기 버튼 -->
-     <a id="gotoTop" href="#" class="scroll-top-link" data-easing="easeOutQuad" data-speed="700">
-       <i class="fa fa-angle-up"></i>
-     </a>
- </div><!-- .site-content-contain -->
- 
- <? include "footer.html"; ?>
++<div id="main-content">
++  <div class="container py-4">
++    <div class="mb-3">
++      <select class="form-select" id="worksite-select">
++        <option selected>내 현장 선택</option>
++      </select>
++    </div>
++    <div class="d-grid gap-3">
++      <div>
++        <p class="fw-bold mb-2">스마트일보</p>
++        <div class="d-grid gap-2">
++          <a href="/_worksite/list/menu3_list.php" class="btn btn-primary btn-lg">보기</a>
++          <a href="/_worksite/write/menu3_write.php" class="btn btn-outline-primary btn-lg">작성</a>
++        </div>
++      </div>
++      <div>
++        <p class="fw-bold mb-2">기안서</p>
++        <div class="d-grid gap-2">
++          <a href="/_sign/list/menu1_list.php" class="btn btn-primary btn-lg">보기</a>
++          <a href="/_sign/write/menu1_write.php" class="btn btn-outline-primary btn-lg">작성</a>
++        </div>
++      </div>
++      <div>
++        <p class="fw-bold mb-2">지출결의서</p>
++        <div class="d-grid gap-2">
++          <a href="/_sign/list/menu2_list.php" class="btn btn-primary btn-lg">보기</a>
++          <a href="/_sign/write/menu2_write.php" class="btn btn-outline-primary btn-lg">작성</a>
++        </div>
++      </div>
++      <div>
++        <p class="fw-bold mb-2">기성청구서</p>
++        <div class="d-grid gap-2">
++          <a href="/_establishment/list/menu1_list.php" class="btn btn-primary btn-lg">보기</a>
++          <a href="/_establishment/write/menu1_write.php" class="btn btn-outline-primary btn-lg">작성</a>
++        </div>
++      </div>
++      <a href="/" class="btn btn-secondary btn-lg mt-3">홈으로</a>
++    </div>
++  </div>
++</div>
++
++<?php include_once(NONE_PATH.'/footer.php'); ?>
