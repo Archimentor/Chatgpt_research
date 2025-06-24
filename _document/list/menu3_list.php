@@ -27,11 +27,29 @@ if ($stx) {
     $sql_search .= " ) ";
 } else {
 	
-	if($work) {
-		$sql_search .= " and work_id = '$work' ";
-	} else {
-		$sql_search .= " and ns_sdate LIKE '$date%' ";
-	}
+        if($work) {
+                $sql_search .= " and work_id = '$work' ";
+        } else {
+                $sql_search .= " and ns_sdate LIKE '$date%' ";
+        }
+}
+
+// 현장소장 권한일 경우 본인 현장만 조회
+if($member['mb_level2'] == 2) {
+    $sql_search .= " AND work_id IN (SELECT nw_code FROM {$none['worksite']} WHERE (
+        nw_ptype1_1 = '{$member['mb_id']}' OR
+        nw_ptype1_2 = '{$member['mb_id']}' OR
+        nw_ptype1_3 = '{$member['mb_id']}' OR
+        nw_ptype1_4 = '{$member['mb_id']}' OR
+        nw_ptype1_5 = '{$member['mb_id']}' OR
+        nw_ptype1_6 = '{$member['mb_id']}' OR
+        nw_ptype2_1 = '{$member['mb_id']}' OR
+        nw_ptype2_2 = '{$member['mb_id']}' OR
+        nw_ptype2_3 = '{$member['mb_id']}' OR
+        nw_ptype2_4 = '{$member['mb_id']}' OR
+        nw_ptype2_5 = '{$member['mb_id']}' OR
+        nw_ptype2_6 = '{$member['mb_id']}'
+    ))";
 }
 
 if (!$sst) {

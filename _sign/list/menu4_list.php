@@ -3,8 +3,8 @@ include_once('../../_common.php');
 define('menu_sign', true);
 include_once(NONE_PATH.'/header.php'); 
 
-if($member['mb_2'] == 10) {
-	//실행부일경우 
+if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
+        // 실행부 또는 현장소장일경우
 	$sql_common = " from  {$none['sign_draft4']}  ";
 	
 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
