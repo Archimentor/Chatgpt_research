@@ -36,7 +36,7 @@ if (!function_exists('get_next_approver_id')) {
    ----------------------------------------------------------------- */
 $sql_search = ''; $work1_arr = [];
 
-if (($member['mb_2'] ?? '') == 10) {                       // 실행부
+if (($member['mb_2'] ?? '') == 10 || ($member['mb_level2'] ?? '') == 2) { // 실행부 또는 현장소장
     $sql_common = " FROM {$none['sign_draft2']} ";
     $sql1 = sql_query("
         SELECT nw_code, pj_title_kr

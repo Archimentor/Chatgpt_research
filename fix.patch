@@ -1,36 +1,386 @@
-diff --git a/core/bbs/login_check.php b/core/bbs/login_check.php
-index 51eaf121430af416095da19ca96f5309670c5f91..b23d8e5882d1d6593da0955a71efe928682d9b32 100644
---- a/core/bbs/login_check.php
-+++ b/core/bbs/login_check.php
-@@ -131,26 +131,31 @@ if ($url) {
- if(function_exists('social_login_success_after')){
-     // 로그인 성공시 소셜 데이터를 기존의 데이터와 비교하여 바뀐 부분이 있으면 업데이트 합니다.
-     $link = social_login_success_after($mb, $link);
-     social_login_session_clear(1);
+diff --git a/_document/list/menu2_list.php b/_document/list/menu2_list.php
+index ea33586cf24cf0ede047fd5f7c3068a5d8c14bb7..230f663e75ba43f595be66e27454eaf8ef0c3642 100644
+--- a/_document/list/menu2_list.php
++++ b/_document/list/menu2_list.php
+@@ -5,57 +5,75 @@ include_once(NONE_PATH.'/header.php');
+ 
+ if(!$_GET['date']) {
+     $date = date('Y');
  }
  
- run_event('member_login_check', $mb, $link, $is_social_login);
+ // ========== 검색 조건 ==========
+ $sql_common = " FROM {$none['subcontract']} ";
+ $sql_search = " WHERE (1)";
  
- // 관리자로 로그인시 DATA 폴더의 쓰기 권한이 있는지 체크합니다. 쓰기 권한이 없으면 로그인을 못합니다.
- if( is_admin($mb['mb_id']) && is_dir(G5_DATA_PATH.'/tmp/') ){
-     $tmp_data_file = G5_DATA_PATH.'/tmp/tmp-write-test-'.time();
-     $tmp_data_check = @fopen($tmp_data_file, 'w');
-     if($tmp_data_check){
-         if(! @fwrite($tmp_data_check, G5_URL)){
-             $tmp_data_check = false;
-         }
+ if ($stx) {
+     $sql_search .= " AND ( ";
+     switch ($sfl) {
+         case "bo_table":
+             $sql_search .= " ($sfl LIKE '$stx%') ";
+             break;
+         case "a.gr_id":
+             $sql_search .= " ($sfl = '$stx') ";
+             break;
+         default:
+             // 공사명 or 업체명 검색
+             $sql_search .= " (work_name LIKE '%$stx%' OR ns_bname_txt LIKE '%$stx%') ";
+             break;
      }
-     @fclose($tmp_data_check);
-     @unlink($tmp_data_file);
- 
-     if(! $tmp_data_check){
-         alert("data 폴더에 쓰기권한이 없거나 또는 웹하드 용량이 없는 경우\\n로그인을 못할수도 있으니, 용량 체크 및 쓰기 권한을 확인해 주세요.", $link);
-     }
- }
- 
-+// 모바일 접속이면 모바일 메뉴로 이동
-+if (G5_IS_MOBILE) {
-+    $link = NONE_URL.'/mobile_entry.php';
+     $sql_search .= " ) ";
+ } else {
+-    if($work) {
+-        $sql_search .= " AND work_id = '$work' ";
+-    } else {
+-        // 예: ns_sdate LIKE '2023%'
+-        $sql_search .= " AND ns_sdate LIKE '$date%' ";
+-    }
+-}
++    if($work) {
++        $sql_search .= " AND work_id = '$work' ";
++    } else {
++        // 예: ns_sdate LIKE '2023%'
++        $sql_search .= " AND ns_sdate LIKE '$date%' ";
++    }
 +}
 +
- goto_url($link);
++// 현장소장 권한일 경우 본인 현장만 조회
++if($member['mb_level2'] == 2) {
++    $sql_search .= " AND work_id IN (SELECT nw_code FROM {$none['worksite']} WHERE (
++        nw_ptype1_1 = '{$member['mb_id']}' OR
++        nw_ptype1_2 = '{$member['mb_id']}' OR
++        nw_ptype1_3 = '{$member['mb_id']}' OR
++        nw_ptype1_4 = '{$member['mb_id']}' OR
++        nw_ptype1_5 = '{$member['mb_id']}' OR
++        nw_ptype1_6 = '{$member['mb_id']}' OR
++        nw_ptype2_1 = '{$member['mb_id']}' OR
++        nw_ptype2_2 = '{$member['mb_id']}' OR
++        nw_ptype2_3 = '{$member['mb_id']}' OR
++        nw_ptype2_4 = '{$member['mb_id']}' OR
++        nw_ptype2_5 = '{$member['mb_id']}' OR
++        nw_ptype2_6 = '{$member['mb_id']}'
++    ))";
++}
+ 
+ if(!$sst) {
+     $sst = "work_id";
+     $sod = "desc";
+ }
+ $sql_order = " ORDER BY $sst $sod ";
+ 
+ // 전체 개수
+ $sql = " SELECT COUNT(*) AS cnt {$sql_common} {$sql_search} {$sql_order} ";
+ $row = sql_fetch($sql);
+ $total_count = $row['cnt'];
+ 
+ $rows       = 600;
+ $total_page = ceil($total_count / $rows);
+ if ($page < 1) $page = 1;
+ $from_record = ($page - 1) * $rows;
+ 
+ // 메인 계약 목록
+ $sql = " SELECT * {$sql_common} {$sql_search} {$sql_order} LIMIT $from_record, $rows ";
+ $result = sql_query($sql, true);
+ 
+ $qstr .= "date=$date&amp;stx=$stx&amp;work={$_GET['work']}";
+ ?>
+ 
+ <div id="main-content">
+diff --git a/_document/list/menu3_list.php b/_document/list/menu3_list.php
+index 62516baa3aba4eab00c0ccdd4fccab1d74399dbe..20b027377f1e1df8950182dfba00ce8004b1b3c9 100644
+--- a/_document/list/menu3_list.php
++++ b/_document/list/menu3_list.php
+@@ -5,56 +5,74 @@ include_once(NONE_PATH.'/header.php');
+ 
+ if(!$_GET['date'])
+ 	$date = date('Y');
+ 
+ 
+ $sql_common = " from  {$none['subcontract']}  ";
+ $sql_search = " where  (1)";
+ 
+ 
+ if ($stx) {
+     $sql_search .= " and ( ";
+     switch ($sfl) {
+         case "bo_table" :
+             $sql_search .= " ($sfl like '$stx%') ";
+             break;
+         case "a.gr_id" :
+             $sql_search .= " ($sfl = '$stx') ";
+             break;
+         default :
+             $sql_search .= " (work_name like '%$stx%' or ns_bname_txt LIKE '%$stx%') ";
+             break;
+     }
+     $sql_search .= " ) ";
+ } else {
+ 	
+-	if($work) {
+-		$sql_search .= " and work_id = '$work' ";
+-	} else {
+-		$sql_search .= " and ns_sdate LIKE '$date%' ";
+-	}
+-}
++        if($work) {
++                $sql_search .= " and work_id = '$work' ";
++        } else {
++                $sql_search .= " and ns_sdate LIKE '$date%' ";
++        }
++}
++
++// 현장소장 권한일 경우 본인 현장만 조회
++if($member['mb_level2'] == 2) {
++    $sql_search .= " AND work_id IN (SELECT nw_code FROM {$none['worksite']} WHERE (
++        nw_ptype1_1 = '{$member['mb_id']}' OR
++        nw_ptype1_2 = '{$member['mb_id']}' OR
++        nw_ptype1_3 = '{$member['mb_id']}' OR
++        nw_ptype1_4 = '{$member['mb_id']}' OR
++        nw_ptype1_5 = '{$member['mb_id']}' OR
++        nw_ptype1_6 = '{$member['mb_id']}' OR
++        nw_ptype2_1 = '{$member['mb_id']}' OR
++        nw_ptype2_2 = '{$member['mb_id']}' OR
++        nw_ptype2_3 = '{$member['mb_id']}' OR
++        nw_ptype2_4 = '{$member['mb_id']}' OR
++        nw_ptype2_5 = '{$member['mb_id']}' OR
++        nw_ptype2_6 = '{$member['mb_id']}'
++    ))";
++}
+ 
+ if (!$sst) {
+     $sst  = "work_id";
+     $sod = "desc";
+ }
+ $sql_order = " order by $sst $sod ";
+ 
+ $sql = " select count(*) as cnt {$sql_common} {$sql_search} {$sql_order} ";
+ $row = sql_fetch($sql);
+ $total_count = $row['cnt'];
+ 
+ $rows = 600;
+ $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
+ if ($page < 1) { $page = 1; } // 페이지가 없으면 첫 페이지 (1 페이지)
+ $from_record = ($page - 1) * $rows; // 시작 열을 구함
+ 
+ $sql = " select * {$sql_common} {$sql_search} {$sql_order} limit {$from_record}, {$rows} ";
+ $result = sql_query($sql, true);
+ 
+ $qstr .= "date=$date&amp;stx=$stx&amp;work={$_GET['work']}";
+ 
+ 
+ ?>
+ <style>
+ .no_file { color:#ddd }
+diff --git a/_sign/list/menu1_list.php b/_sign/list/menu1_list.php
+index 9ee7e4593dc2d3c2c0282bcdb165c5b1c0e6833d..54819ac4847c2b04a4b1d0ea108df77b8e27a7db 100644
+--- a/_sign/list/menu1_list.php
++++ b/_sign/list/menu1_list.php
+@@ -1,33 +1,33 @@
+ <?php 
+ include_once('../../_common.php');
+ define('menu_sign', true);
+ include_once(NONE_PATH.'/header.php'); 
+ 
+ 
+-if($member['mb_2'] == 10) {
+-	//실행부일경우 
++if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
++        // 실행부 또는 현장소장일 경우
+ 	$sql_common = " from  {$none['sign_draft']}  ";
+ 	
+ 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
+ 	while($work1 = sql_fetch_array($sql1)) {
+ 		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
+ 	}
+ 	$sql_search = " where ".implode(' or ', $work1_arr);
+ 	
+ } else {
+ 	$sql_common = " from  {$none['sign_draft']}  ";
+ 	$sql_search = " where (1) ";
+ }
+ 
+ 
+ if ($stx) {
+     $sql_search .= " and ( ";
+     switch ($sfl) {
+         case "bo_table" :
+             $sql_search .= " ($sfl like '$stx%') ";
+             break;
+         case "a.gr_id" :
+             $sql_search .= " ($sfl = '$stx') ";
+             break;
+         default :
+ 		
+diff --git a/_sign/list/menu2_list.php b/_sign/list/menu2_list.php
+index 0298d2985e08779c420bfafbad4b1691779c0359..37abb2eb8c66ca3935547bf0df5f8f09af3af117 100644
+--- a/_sign/list/menu2_list.php
++++ b/_sign/list/menu2_list.php
+@@ -14,51 +14,51 @@ include_once(NONE_PATH.'/header.php');
+ 
+ /* ------------------------------------------------------------------
+    0) 공통 함수 : 다음 결재자 ID
+    ----------------------------------------------------------------- */
+ if (!function_exists('get_next_approver_id')) {
+     function get_next_approver_id(array $row): string
+     {
+         for ($i = 1; $i <= 5; $i++) {
+             $id   = $row["ns_id{$i}"]      ?? '';
+             $stat = $row["ns_id{$i}_stat"] ?? '';
+ 
+             if ($id === '')                      continue; // 결재자 X
+             if ($stat === '')                    return $id; // 미결재
+             if (strpos($stat, '전결') !== false) continue; // 전결 건너뜀
+             if (strpos($stat, '반려') !== false) return ''; // 반려 → 이후 없음
+         }
+         return '';
+     }
+ }
+ 
+ /* ------------------------------------------------------------------
+    1) 검색 조건
+    ----------------------------------------------------------------- */
+ $sql_search = ''; $work1_arr = [];
+ 
+-if (($member['mb_2'] ?? '') == 10) {                       // 실행부
++if (($member['mb_2'] ?? '') == 10 || ($member['mb_level2'] ?? '') == 2) { // 실행부 또는 현장소장
+     $sql_common = " FROM {$none['sign_draft2']} ";
+     $sql1 = sql_query("
+         SELECT nw_code, pj_title_kr
+           FROM {$none['worksite']}
+          WHERE '{$member['mb_id']}' IN (
+                nw_ptype1_1,nw_ptype1_2,nw_ptype1_3,
+                nw_ptype2_1,nw_ptype2_2,nw_ptype2_3
+          )
+     ");
+     while ($w = sql_fetch_array($sql1)) {
+         $work1_arr[] = "ns_team='".sql_real_escape_string($w['nw_code'].' '.$w['pj_title_kr'])."'";
+     }
+     $sql_search = $work1_arr ? ' WHERE '.implode(' OR ',$work1_arr) : ' WHERE 1=0';
+ } else {                                                   // 그 외
+     $sql_common = " FROM {$none['sign_draft2']} ";
+     $sql_search = ' WHERE 1';
+ }
+ 
+ /* ------------------------------------------------------------------
+    2) 검색어 (통합)
+    ----------------------------------------------------------------- */
+ $sfl = trim($_GET['sfl'] ?? '');
+ $stx = trim($_GET['stx'] ?? '');
+ 
+ if ($stx !== '') {
+diff --git a/_sign/list/menu3_list.php b/_sign/list/menu3_list.php
+index 0a70e8c69e281dee056971f9d0de6908ffacabcc..bb243a87851ccdb76f88bad3675ef86d37f4d321 100644
+--- a/_sign/list/menu3_list.php
++++ b/_sign/list/menu3_list.php
+@@ -1,32 +1,32 @@
+ <?php 
+ include_once('../../_common.php');
+ define('menu_sign', true);
+ include_once(NONE_PATH.'/header.php'); 
+ 
+-if($member['mb_2'] == 10) {
+-	//실행부일경우 
++if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
++        // 실행부 또는 현장소장일경우
+ 	$sql_common = " from  {$none['sign_draft3']}  ";
+ 	
+ 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
+ 	while($work1 = sql_fetch_array($sql1)) {
+ 		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
+ 	}
+ 	$sql_search = " where ".implode(' or ', $work1_arr);
+ 	
+ } else {
+ 	$sql_common = " from  {$none['sign_draft3']}  ";
+ 	$sql_search = " where (1) ";
+ }
+ 
+ if ($stx) {
+     $sql_search .= " and ( ";
+     switch ($sfl) {
+         case "bo_table" :
+             $sql_search .= " ($sfl like '$stx%') ";
+             break;
+         case "a.gr_id" :
+             $sql_search .= " ($sfl = '$stx') ";
+             break;
+         default :
+             $sql_search .= " (nw_subject like '%$stx%') ";
+             break;
+diff --git a/_sign/list/menu4_list.php b/_sign/list/menu4_list.php
+index 1b877569c4f7b34c7af4ed9ee084c92fdbd29b37..7bc18fc8acc33d58b2a800d3b7ca356a7bf05d74 100644
+--- a/_sign/list/menu4_list.php
++++ b/_sign/list/menu4_list.php
+@@ -1,32 +1,32 @@
+ <?php 
+ include_once('../../_common.php');
+ define('menu_sign', true);
+ include_once(NONE_PATH.'/header.php'); 
+ 
+-if($member['mb_2'] == 10) {
+-	//실행부일경우 
++if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
++        // 실행부 또는 현장소장일경우
+ 	$sql_common = " from  {$none['sign_draft4']}  ";
+ 	
+ 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
+ 	while($work1 = sql_fetch_array($sql1)) {
+ 		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
+ 	}
+ 	$sql_search = " where ".implode(' or ', $work1_arr);
+ 	
+ } else {
+ 	$sql_common = " from  {$none['sign_draft4']}  ";
+ 	$sql_search = " where (1) ";
+ }
+ 
+ if ($stx) {
+     $sql_search .= " and ( ";
+     switch ($sfl) {
+         case "bo_table" :
+             $sql_search .= " ($sfl like '$stx%') ";
+             break;
+         case "a.gr_id" :
+             $sql_search .= " ($sfl = '$stx') ";
+             break;
+         default :
+             $sql_search .= " (nw_subject like '%$stx%') ";
+             break;
+diff --git a/_sign/list/menu6_list.php b/_sign/list/menu6_list.php
+index 262b192eb262f01e2b61996dc3296beb1bb1ff33..eca21948740bd88571ccb7ec48f786f9bfcb42b2 100644
+--- a/_sign/list/menu6_list.php
++++ b/_sign/list/menu6_list.php
+@@ -1,32 +1,32 @@
+ <?php 
+ include_once('../../_common.php');
+ define('menu_sign', true);
+ include_once(NONE_PATH.'/header.php'); 
+ 
+-if($member['mb_2'] == 10) {
+-	//실행부일경우 
++if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
++        // 실행부 또는 현장소장일경우
+ 	$sql_common = " from  {$none['sign_draft6']}  ";
+ 	
+ 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
+ 	while($work1 = sql_fetch_array($sql1)) {
+ 		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
+ 	}
+ 	$sql_search = " where ".implode(' or ', $work1_arr);
+ 	
+ } else {
+ 	$sql_common = " from  {$none['sign_draft6']}  ";
+ 	$sql_search = " where (1) ";
+ }
+ 
+ if ($stx) {
+     $sql_search .= " and ( ";
+     switch ($sfl) {
+         case "bo_table" :
+             $sql_search .= " ($sfl like '$stx%') ";
+             break;
+         case "a.gr_id" :
+             $sql_search .= " ($sfl = '$stx') ";
+             break;
+         default :
+             $sql_search .= " (nw_subject like '%$stx%') ";
+             break;
