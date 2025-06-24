@@ -8,10 +8,10 @@ if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
 	$sql_common = " from  {$none['sign_draft4']}  ";
 	
 	$sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
-	while($work1 = sql_fetch_array($sql1)) {
-		$work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
-	}
-	$sql_search = " where ".implode(' or ', $work1_arr);
+        while($work1 = sql_fetch_array($sql1)) {
+                $work1_arr[] = "ns_team = '".$work1['nw_code']." ".$work1['pj_title_kr']."'";
+        }
+        $sql_search = " where (".implode(' or ', $work1_arr).")";
 	
 } else {
 	$sql_common = " from  {$none['sign_draft4']}  ";

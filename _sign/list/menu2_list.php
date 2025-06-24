@@ -49,7 +49,7 @@ if (($member['mb_2'] ?? '') == 10 || ($member['mb_level2'] ?? '') == 2) { // 실
     while ($w = sql_fetch_array($sql1)) {
         $work1_arr[] = "ns_team='".sql_real_escape_string($w['nw_code'].' '.$w['pj_title_kr'])."'";
     }
-    $sql_search = $work1_arr ? ' WHERE '.implode(' OR ',$work1_arr) : ' WHERE 1=0';
+    $sql_search = $work1_arr ? ' WHERE (' . implode(' OR ', $work1_arr) . ')' : ' WHERE 1=0';
 } else {                                                   // 그 외
     $sql_common = " FROM {$none['sign_draft2']} ";
     $sql_search = ' WHERE 1';
