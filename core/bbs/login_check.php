@@ -153,4 +153,9 @@ if( is_admin($mb['mb_id']) && is_dir(G5_DATA_PATH.'/tmp/') ){
     }
 }
 
+// 모바일 접속이면 모바일 메뉴로 이동
+if (G5_IS_MOBILE) {
+    $link = NONE_URL.'/mobile_entry.php';
+}
+
 goto_url($link);
