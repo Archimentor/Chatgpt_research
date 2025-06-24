@@ -2,7 +2,7 @@
 include_once('./_common.php');
 
 // 내 현장 목록 조회 - 현장소장은 본인 현장만
-$work_sql = "select nw_code, nw_subject from {$none['worksite']} where (1)";
+$work_sql = "select seq, nw_code, nw_subject from {$none['worksite']} where (1)";
 if($member['mb_level2'] == 2) {
     $work_sql .= " and ("
         ." nw_ptype1_1 = '{$member['mb_id']}' or"
@@ -40,7 +40,7 @@ $work_res = sql_query($work_sql);
     <select class="form-select" id="worksite-select">
       <option value="">내 현장 선택</option>
       <?php while($row = sql_fetch_array($work_res)) { ?>
-      <option value="<?=htmlspecialchars($row['nw_code'])?>">[<?=htmlspecialchars($row['nw_code'])?>] <?=htmlspecialchars($row['nw_subject'])?></option>
+      <option value="<?=htmlspecialchars($row['seq'])?>">[<?=htmlspecialchars($row['nw_code'])?>] <?=htmlspecialchars($row['nw_subject'])?></option>
       <?php } ?>
     </select>
   </div>
@@ -83,8 +83,8 @@ $work_res = sql_query($work_sql);
         <div class="card-body d-flex justify-content-between align-items-center">
           <span class="fw-bold">기성청구서</span>
           <div>
-            <a href="/_establishment/list/menu1_list.php" class="btn btn-sm btn-primary me-1">보기</a>
-            <a href="/_establishment/write/menu1_write.php" class="btn btn-sm btn-outline-primary">작성</a>
+            <a href="/_establishment/list/menu1_list.php" class="btn btn-sm btn-primary me-1" id="claim-view-link">보기</a>
+            <a href="/_establishment/write/menu1_write.php" class="btn btn-sm btn-outline-primary" id="claim-write-link">작성</a>
           </div>
         </div>
       </div>
@@ -96,5 +96,16 @@ $work_res = sql_query($work_sql);
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="<?=NONE_URL?>/common/n1/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+$(function(){
+  $('#worksite-select').on('change', function(){
+    var seq = $(this).val();
+    var viewBase = '/_establishment/list/menu1_list.php';
+    var writeBase = '/_establishment/write/menu1_write.php';
+    $('#claim-view-link').attr('href', seq ? viewBase + '?seq=' + seq : viewBase);
+    $('#claim-write-link').attr('href', seq ? writeBase + '?seq=' + seq : writeBase);
+  });
+});
+</script>
 </body>
 </html>
