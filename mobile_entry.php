@@ -1,0 +1,48 @@
+<?php
+include_once('./_common.php');
+define('menu_mobile_entry', true);
+include_once(NONE_PATH.'/header.php');
+?>
+
+<div id="main-content">
+  <div class="container py-4">
+    <div class="mb-3">
+      <select class="form-select" id="worksite-select">
+        <option selected>내 현장 선택</option>
+      </select>
+    </div>
+    <div class="d-grid gap-3">
+      <div>
+        <p class="fw-bold mb-2">스마트일보</p>
+        <div class="d-grid gap-2">
+          <a href="/_worksite/list/menu3_list.php" class="btn btn-primary btn-lg">보기</a>
+          <a href="/_worksite/write/menu3_write.php" class="btn btn-outline-primary btn-lg">작성</a>
+        </div>
+      </div>
+      <div>
+        <p class="fw-bold mb-2">기안서</p>
+        <div class="d-grid gap-2">
+          <a href="/_sign/list/menu1_list.php" class="btn btn-primary btn-lg">보기</a>
+          <a href="/_sign/write/menu1_write.php" class="btn btn-outline-primary btn-lg">작성</a>
+        </div>
+      </div>
+      <div>
+        <p class="fw-bold mb-2">지출결의서</p>
+        <div class="d-grid gap-2">
+          <a href="/_sign/list/menu2_list.php" class="btn btn-primary btn-lg">보기</a>
+          <a href="/_sign/write/menu2_write.php" class="btn btn-outline-primary btn-lg">작성</a>
+        </div>
+      </div>
+      <div>
+        <p class="fw-bold mb-2">기성청구서</p>
+        <div class="d-grid gap-2">
+          <a href="/_establishment/list/menu1_list.php" class="btn btn-primary btn-lg">보기</a>
+          <a href="/_establishment/write/menu1_write.php" class="btn btn-outline-primary btn-lg">작성</a>
+        </div>
+      </div>
+      <a href="/" class="btn btn-secondary btn-lg mt-3">홈으로</a>
+    </div>
+  </div>
+</div>
+
+<?php include_once(NONE_PATH.'/footer.php'); ?>
