@@ -244,9 +244,11 @@ $qstr .= "&status=$status&date=$date";
 											</td>
 											<td><?php echo $row['nw_subject']?></td>
 											<td class="text-center"><a href="../write/menu1_write.php?w=<?php echo $w?>&seq=<?php echo $row['seq']?>&date=<?php echo $date?>&index=1">작성하기</a></td>
-											<td class="text-center">
-												<a href="./download.php?type=excel&seq=<?php echo $row['seq']?>&date=<?php echo $date?>" title="엑셀 다운로드" style="color:#444"><span class="glyphicon fa fa-file-excel-o"></span></a>&nbsp;&nbsp;
-											</td>
+                                        <td class="text-center">
+                                                <a href="./download.php?type=excel&seq=<?php echo $row['seq']?>&date=<?php echo $date?>" title="엑셀 저장" style="color:#444">
+                                                        <span class="glyphicon fa fa-file-excel-o"></span> 엑셀 저장
+                                                </a>
+                                        </td>
 											<td class="text-center">
 												<a href="./data_download.php?type=all&seq=<?php echo $row['seq']?>&date=<?php echo $date?>" title="일괄 다운로드" style="color:#444"><span class="glyphicon fa fa-download"></span></a>
 											</td>
