@@ -403,6 +403,20 @@ $(function(){
             });
         });
     });
+
+    if (window.innerWidth <= 768) {
+        $('.mobile-card tbody tr').each(function(){
+            var $tds = $(this).find('td');
+            var num  = $tds.eq(0).text().trim();
+            var team = $tds.eq(2).text().trim();
+            var header = $('<div class="mobile-card-header d-flex justify-content-between mb-2 font-weight-bold"></div>');
+            header.append($('<span class="mc-num"></span>').text(num));
+            header.append($('<span class="mc-team text-right"></span>').text(team));
+            $(this).prepend(header);
+            $tds.eq(0).hide();
+            $tds.eq(2).hide();
+        });
+    }
 });
 </script>
 <style>
@@ -434,6 +448,14 @@ $(function(){
         color: #555; /* Slightly darker label color */
         flex-shrink: 0; /* Prevent label from shrinking */
         margin-right: 1rem; /* Space between label and value */
+    }
+    .mobile-card-header {
+        display:flex;
+        justify-content: space-between;
+        font-size: 1rem;
+        padding-bottom: .5rem;
+        border-bottom: 1px solid #eee;
+        margin-bottom: .5rem;
     }
     /* Specific styling for important fields */
     .mobile-card tbody td:nth-child(4) { /* 문서명 (Document Title) */
