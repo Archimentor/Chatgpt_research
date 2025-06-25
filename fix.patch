@@ -1,101 +1,44 @@
-diff --git a/_worksite/list/menu1_list.php b/_worksite/list/menu1_list.php
-index 7cc647a1a161da2f9c13cff1f8ff4d997a73df4e..55a2294ddc51fd859c327aaa73ee84e5458f91cf 100644
---- a/_worksite/list/menu1_list.php
-+++ b/_worksite/list/menu1_list.php
-@@ -112,51 +112,51 @@ if (!function_exists('get_owner_txt')) {
-             </div>            
-         </div>
+diff --git a/_sign/list/menu1_list.php b/_sign/list/menu1_list.php
+index e7dbfb6b94a3cbe5d917aa9c489b2d8a3a073353..961c2cbe53b4c67a6f801a29eb0d4601b3a626f2 100644
+--- a/_sign/list/menu1_list.php
++++ b/_sign/list/menu1_list.php
+@@ -371,82 +371,104 @@ $qstr .= "&amp;team=$team&amp;state=$state"
+ 								</div>
+ 							</div>
+ 						<?php echo get_paging_none(G5_IS_MOBILE ? $config['cf_mobile_pages'] : $config['cf_write_pages'], $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='); ?>
+                     </div>
+                 </div>
+             </div>
+ 
+ 
      </div>
-     <div class="row clearfix">
-         <div class="col-lg-12 col-md-12">
-             <div class="card">
-                 <div class="body">
-                     <?php if($member['mb_level2'] != 2) { ?>
-                         <a class="btn btn-primary float-right" href="../write/menu1_write.php" role="button">시공현장 등록</a> 
-                     <?php } ?>
-                     
-                     <!-- 검색 폼 -->
-                     <form class="float-right" style="margin-right:5px" method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                         <div class="input-group">
-                             <input type="text" name="stx" value="<?php echo htmlspecialchars($stx); ?>" class="form-control" placeholder="현장명 또는 현장코드">
-                             <div class="input-group-append">
-                                 <button class="btn btn-outline-secondary" type="submit"><i class="icon-magnifier"></i></button>
-                             </div>
-                         </div>
-                     </form>
-                     
-                     <div style="clear: both;"></div>
-                     
-                     <!-- 시공현장 목록 표 -->
-                     <div class="table-responsive">
--                        <table class="table m-b-0 table-hover">
-+                        <table class="table m-b-0 table-hover mobile-card">
-                             <thead class="thead-light">
-                                 <tr>
-                                     <th>현장코드</th>
-                                     <th>현장명</th>
-                                     <th>공사기간</th>
-                                     <th>공급가액</th>
-                                     <th>부가세</th>
-                                     <th>계약금액</th>
-                                     <th>현금금액</th>
-                                     <!--<th>총 공사금액</th>-->
-                                     <th>법인명(건축주)</th>
-                                     <th>현장소장</th>
-                                     <th>건축사</th>
-                                     <th>진행상태</th>
-                                     <th>메인노출</th>
-                                     <th>관리</th>
-                                 </tr>
-                             </thead>
-                             <tbody>
-                                 <?php 
-                                 for($i=0; $row=sql_fetch_array($result); $i++) {
-                                     
-                                     // 상태 표시
-                                     if($row['nw_status'])
-                                         $status = '<span class="badge badge-success">완료</span>';
-diff --git a/_worksite/list/menu1_list.php b/_worksite/list/menu1_list.php
-index 7cc647a1a161da2f9c13cff1f8ff4d997a73df4e..55a2294ddc51fd859c327aaa73ee84e5458f91cf 100644
---- a/_worksite/list/menu1_list.php
-+++ b/_worksite/list/menu1_list.php
-@@ -352,31 +352,52 @@ document.addEventListener('DOMContentLoaded', function() {
+ 
+ </div>
+ <script>
+ function payment(seq) {
+ 
+ 	if(confirm('처리완료 하시겠습니까?')) {
+ 		location.href = '../write/state1_list_update.php?seq='+seq;
+ 	} else {
+ 		return false;
+ 	}
+ 
  }
  
- /* 반응형 디자인 */
- @media (max-width: 768px) {
-     #main-content {
-         margin-left: 0;
-         padding: 10px;
-     }
-     .table-responsive {
-         overflow-x: auto;
-     }
-     .table th, .table td {
-         padding: 8px 10px;
-         font-size: 12px;
-     }
-     .btn-group .btn {
-         padding: 6px 12px;
-         font-size: 12px;
-     }
- }
  
- /* 상세 정보 행 스타일 */
- .detail-row {
-     background-color: #f9f9f9;
- }
--.detail-content {
--    padding: 10px;
--}
--</style>
--
--<?php include_once(NONE_PATH.'/footer.php'); ?>
-+.detail-content {
-+    padding: 10px;
-+}
-+</style>
-+<script>
+ </script>
+ <script>
+-$(function(){
+-    $('.mobile-card').each(function(){
+-        var headers=[];
+-        $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
+-        $(this).find('tbody tr').each(function(){
+-            $(this).find('td').each(function(i){
+-                $(this).attr('data-label', headers[i]);
+-            });
+-        });
+-    });
+-});
 +$(function(){
 +    $('.mobile-card').each(function(){
 +        var headers=[];
@@ -106,15 +49,162 @@ index 7cc647a1a161da2f9c13cff1f8ff4d997a73df4e..55a2294ddc51fd859c327aaa73ee84e5
 +            });
 +        });
 +    });
++
++    if (window.innerWidth <= 768) {
++        $('.mobile-card tbody tr').each(function(){
++            var $tds = $(this).find('td');
++            var num  = $tds.eq(0).text().trim();
++            var team = $tds.eq(2).text().trim();
++            var header = $('<div class="mobile-card-header d-flex justify-content-between mb-2 font-weight-bold"></div>');
++            header.append($('<span class="mc-num"></span>').text(num));
++            header.append($('<span class="mc-team text-right"></span>').text(team));
++            $(this).prepend(header);
++            $tds.eq(0).hide();
++            $tds.eq(2).hide();
++        });
++    }
 +});
-+</script>
-+<style>
-+@media (max-width:768px){
-+    .mobile-card thead{display:none;}
-+    .mobile-card tbody tr{display:block;border:1px solid #ddd;border-radius:4px;margin-bottom:1rem;padding:.5rem;}
+ </script>
+ <style>
+ @media (max-width: 768px) {
+     .mobile-card thead {
+         display: none;
+     }
+     .mobile-card tbody tr {
+         display: block;
+         border: 1px solid #ddd;
+         border-radius: 8px; /* Slightly more rounded corners */
+         margin-bottom: 1rem;
+         padding: 1rem; /* More padding for better spacing */
+         box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+     }
+     .mobile-card tbody td {
+         display: flex;
+         justify-content: space-between;
+         align-items: center; /* Vertically align items */
+         padding: 0.5rem 0; /* Increased vertical padding */
+         border-bottom: 1px solid #eee; /* Light separator between fields */
+     }
+     .mobile-card tbody td:last-child {
+         border-bottom: none; /* No border for the last item */
+     }
+-    .mobile-card tbody td::before {
+-        content: attr(data-label);
+-        font-weight: bold;
+-        color: #555; /* Slightly darker label color */
+-        flex-shrink: 0; /* Prevent label from shrinking */
+-        margin-right: 1rem; /* Space between label and value */
+-    }
+-    /* Specific styling for important fields */
++    .mobile-card tbody td::before {
++        content: attr(data-label);
++        font-weight: bold;
++        color: #555; /* Slightly darker label color */
++        flex-shrink: 0; /* Prevent label from shrinking */
++        margin-right: 1rem; /* Space between label and value */
++    }
++    .mobile-card-header {
++        display:flex;
++        justify-content: space-between;
++        font-size: 1rem;
++        padding-bottom: .5rem;
++        border-bottom: 1px solid #eee;
++        margin-bottom: .5rem;
++    }
++    /* Specific styling for important fields */
+     .mobile-card tbody td:nth-child(4) { /* 문서명 (Document Title) */
+         font-size: 1.1em;
+         font-weight: bold;
+         color: #007bff; /* Highlight document title */
+     }
+     .mobile-card tbody td:nth-child(12), /* 결재현황 (Approval Status) */
+     .mobile-card tbody td:nth-child(13) { /* 처리상태 (Processing Status) */
+         font-weight: bold;
+         color: #dc3545; /* Red for status indicators */
+     }
+ }
+ </style>
+ 
+ <?php include_once(NONE_PATH.'/footer.php');?>
+\ No newline at end of file
+diff --git a/_sign/list/menu2_list.php b/_sign/list/menu2_list.php
+index 712af233764f7b525227a316e035a6c29a44812f..b04353b9675cb806fa76243b599497eb47519af1 100644
+--- a/_sign/list/menu2_list.php
++++ b/_sign/list/menu2_list.php
+@@ -422,47 +422,62 @@ if ($total_count == 0):?>
+             </table>
+         </div>
+     </div>
+ 
+     <!-- 페이징 -->
+     <?php
+     echo get_paging_none(
+         G5_IS_MOBILE ? ($config['cf_mobile_pages'] ?? 5) : ($config['cf_write_pages'] ?? 10),
+         $page, $total_page,
+         $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='
+     );
+     ?>
+ </div>
+ </div>
+ </div>
+ </div><!-- /#main-content -->
+ 
+ <script>
+ function payment(seq){
+     if (confirm('대금지급을 완료하시겠습니까?')){
+         location.href='../write/state2_list_update.php?seq='+seq;
+     }
+ }
+ </script>
+ <script>
+-$(function(){
+-    $('.mobile-card').each(function(){
+-        var headers=[];
+-        $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
+-        $(this).find('tbody tr').each(function(){
+-            $(this).find('td').each(function(i){
+-                $(this).attr('data-label', headers[i]);
+-            });
+-        });
+-    });
+-});
++$(function(){
++    $('.mobile-card').each(function(){
++        var headers=[];
++        $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
++        $(this).find('tbody tr').each(function(){
++            $(this).find('td').each(function(i){
++                $(this).attr('data-label', headers[i]);
++            });
++        });
++    });
++
++    if (window.innerWidth <= 768) {
++        $('.mobile-card tbody tr').each(function(){
++            var $tds = $(this).find('td');
++            var num  = $tds.eq(0).text().trim();
++            var team = $tds.eq(2).text().trim();
++            var header = $('<div class="mobile-card-header d-flex justify-content-between mb-2 font-weight-bold"></div>');
++            header.append($('<span class="mc-num"></span>').text(num));
++            header.append($('<span class="mc-team text-right"></span>').text(team));
++            $(this).prepend(header);
++            $tds.eq(0).hide();
++            $tds.eq(2).hide();
++        });
++    }
++});
+ </script>
+ <style>
+ @media (max-width:768px){
+     .mobile-card thead{display:none;}
+     .mobile-card tbody tr{display:block;border:1px solid #ddd;border-radius:4px;margin-bottom:1rem;padding:.5rem;}
+-    .mobile-card tbody td{display:flex;justify-content:space-between;padding:.25rem 0;}
+-    .mobile-card tbody td::before{content:attr(data-label);font-weight:bold;}
+-}
 +    .mobile-card tbody td{display:flex;justify-content:space-between;padding:.25rem 0;}
 +    .mobile-card tbody td::before{content:attr(data-label);font-weight:bold;}
++    .mobile-card-header{display:flex;justify-content:space-between;font-size:1rem;padding-bottom:.5rem;border-bottom:1px solid #eee;margin-bottom:.5rem;}
 +}
-+</style>
-+
-+<?php include_once(NONE_PATH.'/footer.php'); ?>
+ </style>
+ 
+ <?php include_once(NONE_PATH.'/footer.php'); ?>
