@@ -352,10 +352,24 @@ while ($row = sql_fetch_array($result)) {
 
 // 입사일(오름차순) 및 이름(오름차순)으로 직원 목록 정렬
 usort($employee_list_data, function($a, $b){
-    if ($a['mb_in_date'] == $b['mb_in_date']) {
+    $dateA = $a['mb_in_date'];
+    $dateB = $b['mb_in_date'];
+
+    // '0000-00-00'을 가장 큰 값으로 처리하여 맨 뒤로 보냄
+    if ($dateA === '0000-00-00' && $dateB !== '0000-00-00') {
+        return 1; // A를 B보다 뒤에 배치
+    }
+    if ($dateA !== '0000-00-00' && $dateB === '0000-00-00') {
+        return -1; // B를 A보다 뒤에 배치
+    }
+
+    // 입사일이 같을 경우 이름으로 정렬
+    if ($dateA == $dateB) {
         return strcmp($a['mb_name'], $b['mb_name']);
     }
-    return strcmp($a['mb_in_date'], $b['mb_in_date']);
+
+    // 일반적인 입사일 오름차순 정렬
+    return strcmp($dateA, $dateB);
 });
 
 // 6) 달력용 변수 계산
