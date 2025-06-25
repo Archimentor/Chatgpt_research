@@ -1,11 +1,11 @@
 <?php
 /********************************************************************
- *  지출결의서 목록
- *  요구사항 반영 (2025‑04‑18)
- *   1.  문서명 글꼴 크기 원복
- *   2.  “계좌정보”, “중요도” 열 제거
- *   3.  헤더(번호~처리상태) 중앙정렬
- *   4.  번호·기안일자·업체명 데이터 중앙정렬
+ * 지출결의서 목록
+ * 요구사항 반영 (2025‑04‑18)
+ * 1.  문서명 글꼴 크기 원복
+ * 2.  “계좌정보”, “중요도” 열 제거
+ * 3.  헤더(번호~처리상태) 중앙정렬
+ * 4.  번호·기안일자·업체명 데이터 중앙정렬
  ********************************************************************/
 
 include_once('../../_common.php');
@@ -131,7 +131,7 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
 
 .th-num   { width:60px }
 .th-date  { width:100px }
-.th-team  { width:250px }
+.th-team  { width:350px } /* 기안부서 및 현장 너비를 350px로 넓힘 */
 .th-amount,
 .th-appr,
 .th-state   { width:130px }            /* 결제금액·결재현황·처리상태 동일폭 */
@@ -141,7 +141,12 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
 .td-date,
 .td-company                     { text-align:center; }   /* 번호·일자·업체명 중앙 */
 
-.td-team    { max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
+.td-team    {
+    max-width:340px; /* 잘리는 너비 지정 (th-team보다 약간 작게 설정) */
+    white-space:nowrap; /* 줄바꿈 방지 */
+    overflow:hidden; /* 내용 숨김 */
+    text-overflow:ellipsis; /* 말줄임표 표시 */
+}
 .td-subject a{
     font-size:inherit;
     display:-webkit-box;
@@ -167,6 +172,96 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
 @media (max-width:991.98px){
     .project_report .table{ table-layout:auto; }
     .th-subject, .td-subject{ min-width:160px; }
+}
+
+/* === Consolidated Mobile Card Styles (< 768px) === */
+@media (max-width: 768px) {
+    .mobile-card {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden; /* Ensure no horizontal scrolling */
+    }
+    .mobile-card thead {
+        display: none; /* Hide table header on mobile */
+    }
+    .mobile-card tbody tr {
+        display: flex; /* Make table rows behave as blocks for card layout */
+        flex-direction: column; /* Stack items vertically */
+        border: 1px solid #dee2e6; /* Card border */
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        padding: 1rem; /* Internal padding for the card */
+        box-shadow: 0 2px 4px rgba(0,0,0,.08); /* Subtle shadow */
+        overflow: hidden; /* Hide any overflow within the card */
+        width: 100%; /* Ensure each card takes full width */
+        box-sizing: border-box; /* Include padding/border in width calculation */
+    }
+
+    /* Target all direct children of tbody tr (divs and visible tds) for common styling */
+    .mobile-card tbody tr > *:not(:last-child) { /* Apply border to all except the very last child */
+        border-bottom: 1px solid #f1f1f1;
+    }
+    .mobile-card tbody tr > * { /* Common padding and font for all card items */
+        padding: .5rem .75rem;
+        word-break: break-word;
+        font-size: 0.82rem;
+        line-height: 1.3;
+        box-sizing: border-box;
+    }
+
+    /* Mobile Card Header for [번호 + 공사명] */
+    .mobile-card-header {
+        display: block; /* Original block behavior */
+        text-align: left;
+        font-size: 1rem; /* Larger font size for the header */
+        padding-bottom: .5rem; /* Keep this for spacing below header */
+        margin-bottom: .5rem; /* Keep this margin below header */
+        font-weight: bold;
+    }
+
+    /* 문서명 (Document Title) - Specific styling */
+    .mobile-card-subject {
+        display: block; /* Make it a block element to center text */
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .mobile-card-subject::before {
+        content: none; /* Hide label for document name */
+    }
+
+    /* Styles for original <td> elements (업체명, 결제금액, 결재현황, 처리상태) */
+    .mobile-card tbody td {
+        display: none !important; /* Hide all original td elements */
+    }
+
+    /* Common style for new div items (기안일자, 업체명, 결제금액, 결재현황, 처리상태) */
+    .mobile-card-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .5rem .75rem;
+        word-break: break-word;
+        font-size: 0.82rem;
+        line-height: 1.3;
+        box-sizing: border-box;
+    }
+    .mobile-card-item::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #555;
+        flex-shrink: 0;
+        margin-right: 1rem;
+    }
+
+    /* Ensure 결재현황 and 처리상태 are bold and red, with labels */
+    .mobile-card-item[data-label="결재현황"],
+    .mobile-card-item[data-label="처리상태"] {
+        font-weight: bold;
+        color: #dc3545;
+    }
 }
 </style>
 
@@ -198,7 +293,7 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
     <div class="body">
                     <a class="btn btn-primary float-right" href="../write/menu2_write.php" role="button">
                         지출결의서 등록
-                    </a> 
+                    </a>
                     <form class="float-right" style="margin-right:5px">
                         <div class="input-group">
                             <!-- 기안부서 및 현장 -->
@@ -209,12 +304,12 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
                                     <?php echo get_department_select2($team)?>
                                 </optgroup>
                                 <optgroup label="진행현장">
-                                <?php 
+                                <?php
                                 $workSql = "
-                                    select seq, nw_code, nw_subject, pj_title_kr 
+                                    select seq, nw_code, nw_subject, pj_title_kr
                                       from {$none['worksite']}
-                                     where nw_status  = '0' 
-                                       and nw_code != '210707' 
+                                     where nw_status  = '0'
+                                       and nw_code != '210707'
                                      order by nw_code desc
                                 ";
                                 $workRst = sql_query($workSql);
@@ -228,9 +323,9 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
                                 <?php } ?>
                                 </optgroup>
                                 <optgroup label="완료현장">
-                                <?php 
+                                <?php
                                 $workSql2 = "
-                                    select seq, nw_code, nw_subject, pj_title_kr 
+                                    select seq, nw_code, nw_subject, pj_title_kr
                                       from {$none['worksite']}
                                      where nw_status = '1'
                                        and nw_code != '210707'
@@ -247,7 +342,7 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
                                 <?php } ?>
                                 </optgroup>
                             </select>
-                            
+
                             <!-- 문서상태 -->
                             <select name="status" id="inputState" class="form-control"
                                 onchange="location.href='?team=<?php echo $team?>&state='+this.value">
@@ -277,7 +372,7 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
                             </div>
                         </div>
                     </form>
-                </div>  
+                </div>
 
     <!-- ──────────────── 목록 테이블 ──────────────── -->
     <div class="body project_report">
@@ -287,12 +382,12 @@ foreach (['sfl','stx','sst','sod','team','state'] as $p)
                     <tr>
                         <th class="th-num">번호</th>
                         <th class="th-date">기안일자</th>
-                        <th class="th-team">기안부서/현장</th>
+                        <th class="th-team">기안부서 및 현장</th> <!-- 대괄호 제거 -->
                         <th class="th-subject">문서명</th>
                         <th class="th-company">업체명</th>
                         <th class="th-amount">결제금액</th>
                         <th class="th-appr">결재현황</th>
-                        <th class="th-state">처리상태</th> 
+                        <th class="th-state">처리상태</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -445,6 +540,7 @@ function payment(seq){
 </script>
 <script>
 $(function(){
+    // Assign data-label attributes to table cells for mobile display
     $('.mobile-card').each(function(){
         var headers=[];
         $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
@@ -457,27 +553,195 @@ $(function(){
 
     if (window.innerWidth <= 768) {
         $('.mobile-card tbody tr').each(function(){
-            var $tds = $(this).find('td');
-            var num  = $tds.eq(0).text().trim();
-            var team = $tds.eq(2).text().trim();
-            var header = $('<div class="mobile-card-header d-flex justify-content-between mb-2 font-weight-bold"></div>');
-            header.append($('<span class="mc-num"></span>').text(num));
-            header.append($('<span class="mc-team text-right"></span>').text(team));
-            $(this).prepend(header);
-            $tds.eq(0).hide();
-            $tds.eq(2).hide();
+            var $tr = $(this); // Cache the current row
+            var $tds = $tr.find('td');
+
+            var num = $tds.eq(0).text().trim(); // 번호
+            // var date = $tds.eq(1).text().trim(); // 기안일자는 이제 개별 항목으로 처리
+            var team = $tds.eq(2).text().trim(); // 기안부서/현장
+            var subjectHtml = $tds.eq(3).html(); // 문서명 content
+
+            // Construct the header text in the format "[번호] 기안부서/현장"
+            var headerText = "[" + num + "] " + team;
+
+            // 1. Create and prepend the header
+            $('<div class="mobile-card-header"/>').text(headerText).prependTo($tr);
+
+            // 2. Create and append the 문서명 div (최상단)
+            $('<div class="mobile-card-item mobile-card-subject" data-label="문서명">' + subjectHtml + '</div>').appendTo($tr);
+
+            // 3. Loop through all original <td> elements from index 1 (기안일자) to the end (index 7, 처리상태)
+            // and append them as new labeled divs, respecting their data-labels.
+            // Indices 0, 2, 3 are handled separately (header, subject)
+            // So we start from index 1 and then from index 4 onwards.
+
+            // Process 기안일자 (index 1) separately as it's directly after subject
+            var $dateTd = $tds.eq(1);
+            var dateLabel = $dateTd.attr('data-label');
+            var dateContent = $dateTd.html();
+            if (dateLabel && dateContent.trim() !== '') {
+                $('<div class="mobile-card-item" data-label="' + dateLabel + '">' + dateContent + '</div>').appendTo($tr);
+            }
+
+            // Process from 업체명 (index 4) to 처리상태 (index 7)
+            for (var i = 4; i <= 7; i++) {
+                var $originalTd = $tds.eq(i);
+                var label = $originalTd.attr('data-label');
+                var content = $originalTd.html();
+
+                // Skip if no label or content, or if it's already handled (like header elements)
+                if (label && content.trim() !== '') {
+                    $('<div class="mobile-card-item" data-label="' + label + '">' + content + '</div>').appendTo($tr);
+                }
+            }
+
+            // 4. Hide all original <td> elements. This is crucial to prevent duplication.
+            // Instead of hiding individual ones, let's just target them all based on index
+            $tds.hide(); // Hide all original tds after their content has been moved.
         });
     }
 });
 </script>
 <style>
-@media (max-width:768px){
-    .mobile-card thead{display:none;}
-    .mobile-card tbody tr{display:block;border:1px solid #ddd;border-radius:4px;margin-bottom:1rem;padding:.5rem;}
-    .mobile-card tbody td{display:flex;justify-content:space-between;padding:.25rem 0;}
-    .mobile-card tbody td::before{content:attr(data-label);font-weight:bold;}
-    .mobile-card-header{display:flex;justify-content:space-between;font-size:1rem;padding-bottom:.5rem;border-bottom:1px solid #eee;margin-bottom:.5rem;}
+/* Default styles for desktop/larger screens (from original file) */
+.project_report .table          { table-layout:fixed;width:100%; }
+.project_report th,td           { vertical-align:middle;padding:.6rem .5rem; }
+
+.project_report th              { text-align:center; }   /* 헤더 중앙정렬 */
+
+.th-num   { width:60px }
+.th-date  { width:100px }
+.th-team  { width:350px } /* 기안부서 및 현장 너비를 350px로 넓힘 */
+.th-amount,
+.th-appr,
+.th-state   { width:130px }            /* 결제금액·결재현황·처리상태 동일폭 */
+.th-company{width:180px}
+
+.td-num,
+.td-date,
+.td-company                     { text-align:center; }   /* 번호·일자·업체명 중앙 */
+
+.td-team    {
+    max-width:340px; /* 잘리는 너비 지정 (th-team보다 약간 작게 설정) */
+    white-space:nowrap; /* 줄바꿈 방지 */
+    overflow:hidden; /* 내용 숨김 */
+    text-overflow:ellipsis; /* 말줄임표 표시 */
+}
+.td-subject a{
+    font-size:inherit;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:3;              /* 문서명 2줄 → 3줄 */
+    overflow:hidden;word-break:break-all;
+}
+.td-amount{ text-align:right }
+
+
+/* ───────── 데스크톱(≥992 px) ─────────
+   ① table‑layout:fixed  (열 폭 확정)
+   ② 문서명 열은 **폭 지정하지 않음** → 남는 공간 전부 사용
+   ③ 최소 읽기 폭 보장 : min-width:240px   */
+   @media (min-width:992px){
+    .project_report .table{ table-layout:fixed; }
+    .th-subject, .td-subject{ min-width:240px; }     /* ← 폭은 ‘auto’ */
+}
+
+/* ───────── 태블릿·모바일(<992 px) ─────────
+   ① table‑layout:auto  → 각 셀이 내용 기반으로 자연 배분
+   ② 문서명은 최소 160px  (0 px 로 눌리지 않음) */
+@media (max-width:991.98px){
+    .project_report .table{ table-layout:auto; }
+    .th-subject, .td-subject{ min-width:160px; }
+}
+
+/* === Consolidated Mobile Card Styles (< 768px) === */
+@media (max-width: 768px) {
+    .mobile-card {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden; /* Ensure no horizontal scrolling */
+    }
+    .mobile-card thead {
+        display: none; /* Hide table header on mobile */
+    }
+    .mobile-card tbody tr {
+        display: flex; /* Make table rows behave as blocks for card layout */
+        flex-direction: column; /* Stack items vertically */
+        border: 1px solid #dee2e6; /* Card border */
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        padding: 1rem; /* Internal padding for the card */
+        box-shadow: 0 2px 4px rgba(0,0,0,.08); /* Subtle shadow */
+        overflow: hidden; /* Hide any overflow within the card */
+        width: 100%; /* Ensure each card takes full width */
+        box-sizing: border-box; /* Include padding/border in width calculation */
+    }
+
+    /* Target all direct children of tbody tr (divs and visible tds) for common styling */
+    .mobile-card tbody tr > *:not(:last-child) { /* Apply border to all except the very last child */
+        border-bottom: 1px solid #f1f1f1;
+    }
+    .mobile-card tbody tr > * { /* Common padding and font for all card items */
+        padding: .5rem .75rem;
+        word-break: break-word;
+        font-size: 0.82rem;
+        line-height: 1.3;
+        box-sizing: border-box;
+    }
+
+    /* Mobile Card Header for [번호 + 공사명] */
+    .mobile-card-header {
+        display: block; /* Original block behavior */
+        text-align: left;
+        font-size: 1rem; /* Larger font size for the header */
+        padding-bottom: .5rem; /* Keep this for spacing below header */
+        margin-bottom: .5rem; /* Keep this margin below header */
+        font-weight: bold;
+    }
+
+    /* 문서명 (Document Title) - Specific styling */
+    .mobile-card-subject {
+        display: block; /* Make it a block element to center text */
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .mobile-card-subject::before {
+        content: none; /* Hide label for document name */
+    }
+
+    /* Styles for original <td> elements (업체명, 결제금액, 결재현황, 처리상태) */
+    .mobile-card tbody td {
+        display: none !important; /* Hide all original td elements */
+    }
+
+    /* Common style for new div items (기안일자, 업체명, 결제금액, 결재현황, 처리상태) */
+    .mobile-card-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .5rem .75rem;
+        word-break: break-word;
+        font-size: 0.82rem;
+        line-height: 1.3;
+        box-sizing: border-box;
+    }
+    .mobile-card-item::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #555;
+        flex-shrink: 0;
+        margin-right: 1rem;
+    }
+
+    /* Ensure 결재현황 and 처리상태 are bold and red, with labels */
+    .mobile-card-item[data-label="결재현황"],
+    .mobile-card-item[data-label="처리상태"] {
+        font-weight: bold;
+        color: #dc3545;
+    }
 }
 </style>
-
 <?php include_once(NONE_PATH.'/footer.php'); ?>

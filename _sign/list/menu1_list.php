@@ -6,7 +6,7 @@ include_once(NONE_PATH.'/header.php');
 
 if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
         // 실행부 또는 현장소장일 경우
-	$sql_common = " from  {$none['sign_draft']}  ";
+    $sql_common = " from  {$none['sign_draft']}  ";
 
         $sql1 = sql_query("select nw_code, pj_title_kr  from {$none['worksite']} where (nw_ptype1_1 = '{$member['mb_id']}' or nw_ptype1_2 = '{$member['mb_id']}' or nw_ptype1_3 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}' or nw_ptype2_1 = '{$member['mb_id']}') ");
         while($work1 = sql_fetch_array($sql1)) {
@@ -15,8 +15,8 @@ if($member['mb_2'] == 10 || $member['mb_level2'] == 2) {
         $sql_search = " where (".implode(' or ', $work1_arr).")";
 
 } else {
-	$sql_common = " from  {$none['sign_draft']}  ";
-	$sql_search = " where (1) ";
+    $sql_common = " from  {$none['sign_draft']}  ";
+    $sql_search = " where (1) ";
 }
 
 
@@ -31,35 +31,35 @@ if ($stx) {
             break;
         default :
 
-			//기안자도 검색
-			$mb_check = sql_fetch("select mb_id from g5_member where mb_name LIKE '%$stx%'");
+            //기안자도 검색
+            $mb_check = sql_fetch("select mb_id from g5_member where mb_name LIKE '%$stx%'");
 
-			if($mb_check)
-				$sql_search .= " (ns_subject like '%$stx%' or ns_team like '%$stx%' or mb_id = '{$mb_check['mb_id']}') ";
-			else
-				$sql_search .= " (ns_subject like '%$stx%' or ns_team like '%$stx%') ";
+            if($mb_check)
+                $sql_search .= " (ns_subject like '%$stx%' or ns_team like '%$stx%' or mb_id = '{$mb_check['mb_id']}') ";
+            else
+                $sql_search .= " (ns_subject like '%$stx%' or ns_team like '%$stx%') ";
             break;
     }
     $sql_search .= " ) ";
 }
 
 if($team && !$stx) {
-	$sql_search .= " AND ns_team LIKE '$team%' ";
+    $sql_search .= " AND ns_team LIKE '$team%' ";
 
 }
 
 if(!$state && !$stx) {
-	$sql_search .= " AND ( ns_state != '처리완료' and ns_state != '완료'  and ns_state != '반려'   )   ";
-	//$sql_search .= " ";
+    $sql_search .= " AND ( ns_state != '처리완료' and ns_state != '완료'  and ns_state != '반려'   )   ";
+    //$sql_search .= " ";
 } else if($state && $state != "all") {
 
-	if($state == "완료" || $state == "전결") {
-		$sql_search .= " AND ns_state = '$state' and ns_payment_date = '0000-00-00 00:00:00' ";
-	} else if($state == "처리완료") {
-		$sql_search .= " AND ns_payment_date != '0000-00-00 00:00:00' ";
-	} else {
-		$sql_search .= " AND ns_state = '$state'";
-	}
+    if($state == "완료" || $state == "전결") {
+        $sql_search .= " AND ns_state = '$state' and ns_payment_date = '0000-00-00 00:00:00' ";
+    } else if($state == "처리완료") {
+        $sql_search .= " AND ns_payment_date != '0000-00-00 00:00:00' ";
+    } else {
+        $sql_search .= " AND ns_state = '$state'";
+    }
 }
 
 if (!$sst) {
@@ -88,80 +88,81 @@ $qstr .= "&amp;team=$team&amp;state=$state"
 ?>
 <div id="main-content">
 <div class="block-header">
-	<div class="row">
-		<div class="col-lg-5 col-md-8 col-sm-12">
-			<h2><a href="javascript:void(0);" class="btn btn-xs btn-link btn-toggle-fullwidth"><i class="fa fa-arrow-left"></i></a>전자결재</h2>
-			<ul class="breadcrumb">
-				<li class="breadcrumb-item"><a href="/"><i class="icon-home"></i></a></li>
-				<li class="breadcrumb-item">전체문서관리</li>
-				<li class="breadcrumb-item active">기안서</li>
-			</ul>
-		</div>
+    <div class="row">
+        <div class="col-lg-5 col-md-8 col-sm-12">
+            <h2><a href="javascript:void(0);" class="btn btn-xs btn-link btn-toggle-fullwidth"><i class="fa fa-arrow-left"></i></a>전자결재</h2>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/"><i class="icon-home"></i></a></li>
+                <li class="breadcrumb-item">전체문서관리</li>
+                <li class="breadcrumb-item active">기안서</li>
+            </ul>
+        </div>
 
-	</div>
+    </div>
 </div>
  <div class="row clearfix">
                 <div class="col-lg-12 col-md-12">
 
                     <div class="card">
-						<div class="body">
+                        <div class="body">
                             <a class="btn btn-primary float-right" href="../write/menu1_write.php" role="button">기안서 등록</a>
-							<form class="float-right" style="margin-right:5px">
-								<div class="input-group">
+                            <form class="float-right" style="margin-right:5px">
+                                <div class="input-group">
 
 
-										<select name="status" id="inputState" class="form-control" onchange="location.href='?state=<?php echo $state?>&team='+this.value">
-											<option value="">기안부서 및 현장 선택</option>
-												<optgroup label="부서">
-													<?php echo get_department_select2($team)?>
-												</optgroup>
-												<optgroup label="진행현장">
-													<?php
-													$workSql = "select seq, nw_code, nw_subject, pj_title_kr  from {$none['worksite']} where nw_status  = '0' and nw_code != '210707' order by nw_code desc";
-													$workRst = sql_query($workSql);
-													while($work = sql_fetch_array($workRst)) {
+                                        <select name="status" id="inputState" class="form-control" onchange="location.href='?state=<?php echo $state?>&team='+this.value">
+                                            <option value="">기안부서 및 현장 선택</option>
+                                                <optgroup label="부서">
+                                                    <?php echo get_department_select2($team)?>
+                                                </optgroup>
+                                                <optgroup label="진행현장">
+                                                    <?php
+                                                    $workSql = "select seq, nw_code, pj_title_kr  from {$none['worksite']} where nw_status  = '0' and nw_code != '210707' order by nw_code desc";
+                                                    $workRst = sql_query($workSql);
+                                                    while($work = sql_fetch_array($workRst)) {
 
-														$nw_code = $work['nw_code'].' '.$work['pj_title_kr'];
-													?>
-													<option value="<?php echo $work['nw_code']?>" <?php echo get_selected($work['nw_code'], $team)?>><?php echo $nw_code?></option>
-													<?php }?>
+                                                        $nw_code = $work['nw_code'].' '.$work['pj_title_kr'];
+                                                    ?>
+                                                    <option value="<?php echo $work['nw_code']?>" <?php echo get_selected($work['nw_code'], $team)?>><?php echo $nw_code?></option>
+                                                    <?php }?>
 
-												</optgroup>
-												<optgroup label="완료현장">
-												<?php
-													$workSql2 = "select seq, nw_code, nw_subject, pj_title_kr  from {$none['worksite']} where nw_status  = '1' and nw_code != '210707' order by nw_code desc";
-													$workRst2 = sql_query($workSql2);
-													while($work2 = sql_fetch_array($workRst2)) {
+                                                </optgroup>
+                                                <optgroup label="완료현장">
+                                                <?php
+                                                    $workSql2 = "select seq, nw_code, pj_title_kr  from {$none['worksite']} where nw_status  = '1' and nw_code != '210707' order by nw_code desc";
+                                                    $workRst2 = sql_query($workSql2);
+                                                    while($work2 = sql_fetch_array($workRst2)) {
 
-														$nw_code2 = $work2['nw_code'].' '.$work2['pj_title_kr'];
-													?>
-													<option value="<?php echo $work2['nw_code']?>" <?php echo get_selected($work2['nw_code'], $team)?>><?php echo $nw_code2?></option>
-													<?php }?>
-												</optgroup>
-										</select>
+                                                        $nw_code2 = $work2['nw_code'].' '.$work2['pj_title_kr'];
+                                                    ?>
+                                                    <option value="<?php echo $work2['nw_code']?>" <?php echo get_selected($work2['nw_code'], $team)?>><?php echo $nw_code2?></option>
+                                                    <?php }?>
+                                                </optgroup>
+                                        </select>
 
-										<select name="status" id="inputState" class="form-control" onchange="location.href='?team=<?php echo $team?>&stx=<?php echo $stx?>&state='+this.value">
-											<option value="">진행중 문서</option>
-											<option value="all" <?php echo get_selected($state, 'all')?>>전체보기</option>
-											<option value="미처리" <?php echo get_selected($state, '미처리')?>>미처리</option>
-											<option value="완료" <?php echo get_selected($state, '완료')?>>결재완료</option>
-											<option value="전결" <?php echo get_selected($state, '전결')?>>전결</option>
-											<option value="처리완료" <?php echo get_selected($state, '처리완료')?>>처리완료</option>
-											<option value="반려" <?php echo get_selected($state, '반려')?>>반려</option>
+                                        <select name="status" id="inputState" class="form-control" onchange="location.href='?team=<?php echo $team?>&stx=<?php echo $stx?>&state='+this.value">
+                                            <option value="">진행중 문서</option>
+                                            <option value="all" <?php echo get_selected($state, 'all')?>>전체보기</option>
+                                            <option value="미처리" <?php echo get_selected($state, '미처리')?>>미처리</option>
+                                            <option value="완료" <?php echo get_selected($state, '완료')?>>결재완료</option>
+                                            <option value="전결" <?php echo get_selected($state, '전결')?>>전결</option>
+                                            <option value="처리완료" <?php echo get_selected($state, '처리완료')?>>처리완료</option>
+                                            <option value="반려" <?php echo get_selected($state, '반려')?>>반려</option>
 
-										</select>
-									<input type="text" name="stx" value="<?php echo $stx?>" class="form-control" placeholder="전체검색"  >
-									<div class="input-group-append">
-										<span class="input-group-text" id="search-mail"><i class="icon-magnifier"></i></span>
-									</div>
-								</div>
-							</form>
+                                        </select>
+                                    <input type="text" name="stx" value="<?php echo $stx?>" class="form-control" placeholder="전체검색"  >
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="search-mail"><i class="icon-magnifier"></i></span>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
 
                         <div class="body project_report">
 
                             <div class="table-responsive">
-                                <table class="table m-b-0 table-hover mobile-card">
+                                <!-- PC 버전 테이블: id="desktop-table"로 식별 -->
+                                <table class="table m-b-0 table-hover" id="desktop-table">
                                     <thead class="thead-light">
                                         <tr>
                                             <th>번호</th>
@@ -182,195 +183,195 @@ $qstr .= "&amp;team=$team&amp;state=$state"
                                     <tbody>
 
 
-										<?php for($i=0; $row=sql_fetch_array($result); $i++) {
+                                        <?php for($i=0; $row=sql_fetch_array($result); $i++) {
 
-											$num = $total_count - ($page - 1) * $rows - $i;
+                                            $num = $total_count - ($page - 1) * $rows - $i;
 
-											$cmmt = sql_fetch("select count(*) as cnt from {$none['sign_draft_comment']} where ns_type = 1 and ns_id = '{$row['seq']}'");
+                                            $cmmt = sql_fetch("select count(*) as cnt from {$none['sign_draft_comment']} where ns_type = 1 and ns_id = '{$row['seq']}'");
 
-											$mb = get_member($row['mb_id'], 'mb_name, mb_3');
-											$state = "미처리";
+                                            $mb = get_member($row['mb_id'], 'mb_name, mb_3');
+                                            $state = "미처리";
 
-											if(!$row['ns_id1_stat']) {
+                                            if(!$row['ns_id1_stat']) {
 
-												$nextID = $row['ns_id1'];
+                                                $nextID = $row['ns_id1'];
 
-											}
+                                            }
 
-											if($row['ns_id1_stat']) {
-												$nextID = $row['ns_id2'];
-											}
-											if($row['ns_id2_stat']) {
-												$nextID = $row['ns_id3'];
-											}
-											if($row['ns_id3_stat']) {
-												$nextID = $row['ns_id4'];
-											}
-											if($row['ns_id4_stat']) {
-												$nextID = $row['ns_id5'];
-											}
-
-
-											$next_mb = get_member($nextID, 'mb_name, mb_3');
-
-											if(strpos($row['ns_id0_stat'],'전결') !== false){
-
-												$nextID = $row['mb_id'];
-												$data = explode('|', $row['ns_id0_stat']);
-												$state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
-												$sDate = date('y-m-d', strtotime($data[1]));
-											}
-											if(strpos($row['ns_id1_stat'],'전결') !== false){
-
-												$nextID = $row['ns_id1'];
-												$data = explode('|', $row['ns_id1_stat']);
-												$state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
-												$sDate = date('y-m-d', strtotime($data[1]));
-											}
-
-											if(strpos($row['ns_id2_stat'],'전결') !== false){
-												$nextID = $row['ns_id2'];
-												$data = explode('|', $row['ns_id2_stat']);
-												$state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
-												$sDate = date('y-m-d', strtotime($data[1]));
-											}
-
-											if(strpos($row['ns_id3_stat'],'전결') !== false){
-												$nextID = $row['ns_id3'];
-												$data = explode('|', $row['ns_id3_stat']);
-												$state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
-												$sDate = date('y-m-d', strtotime($data[1]));
-											}
-
-											if(strpos($row['ns_id4_stat'],'전결') !== false){
-												$nextID = $row['ns_id4'];
-												$data = explode('|', $row['ns_id4_stat']);
-												$state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
-												$sDate = date('y-m-d', strtotime($data[1]));
-											}
-
-											if(strpos($row['ns_id5_stat'],'전결') !== false){
-												$nextID = $row['ns_id5'];
-												$data = explode('|', $row['ns_id5_stat']);
-												$state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
-												$sDate = date('y-m-d', strtotime($data[1]));
-											}
-
-											$next_mb = get_member($nextID, 'mb_name, mb_3');
+                                            if($row['ns_id1_stat']) {
+                                                $nextID = $row['ns_id2'];
+                                            }
+                                            if($row['ns_id2_stat']) {
+                                                $nextID = $row['ns_id3'];
+                                            }
+                                            if($row['ns_id3_stat']) {
+                                                $nextID = $row['ns_id4'];
+                                            }
+                                            if($row['ns_id4_stat']) {
+                                                $nextID = $row['ns_id5'];
+                                            }
 
 
-											if(strpos($row['ns_id0_stat'],'반려') !== false){
+                                            $next_mb = get_member($nextID, 'mb_name, mb_3');
 
-												$nextID = $row['mb_id'];
-												$data = explode('|', $row['ns_id0_stat']);
-												$state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
-											}
+                                            if(strpos($row['ns_id0_stat'],'전결') !== false){
 
-											if(strpos($row['ns_id1_stat'],'반려') !== false){
+                                                $nextID = $row['mb_id'];
+                                                $data = explode('|', $row['ns_id0_stat']);
+                                                $state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
+                                                $sDate = date('y-m-d', strtotime($data[1]));
+                                            }
+                                            if(strpos($row['ns_id1_stat'],'전결') !== false){
 
-												$nextID = $row['ns_id1'];
-												$data = explode('|', $row['ns_id1_stat']);
-												$state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
-											}
+                                                $nextID = $row['ns_id1'];
+                                                $data = explode('|', $row['ns_id1_stat']);
+                                                $state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
+                                                $sDate = date('y-m-d', strtotime($data[1]));
+                                            }
 
-											if(strpos($row['ns_id2_stat'],'반려') !== false){
-												$nextID = $row['ns_id2'];
-												$data = explode('|', $row['ns_id2_stat']);
-												$state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
-											}
+                                            if(strpos($row['ns_id2_stat'],'전결') !== false){
+                                                $nextID = $row['ns_id2'];
+                                                $data = explode('|', $row['ns_id2_stat']);
+                                                $state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
+                                                $sDate = date('y-m-d', strtotime($data[1]));
+                                            }
 
-											if(strpos($row['ns_id3_stat'],'반려') !== false){
-												$nextID = $row['ns_id3'];
-												$data = explode('|', $row['ns_id3_stat']);
-												$state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
-											}
+                                            if(strpos($row['ns_id3_stat'],'전결') !== false){
+                                                $nextID = $row['ns_id3'];
+                                                $data = explode('|', $row['ns_id3_stat']);
+                                                $state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
+                                                $sDate = date('y-m-d', strtotime($data[1]));
+                                            }
 
-											if(strpos($row['ns_id4_stat'],'반려') !== false){
-												$nextID = $row['ns_id4'];
-												$data = explode('|', $row['ns_id4_stat']);
-												$state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
-											}
+                                            if(strpos($row['ns_id4_stat'],'전결') !== false){
+                                                $nextID = $row['ns_id4'];
+                                                $data = explode('|', $row['ns_id4_stat']);
+                                                $state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
+                                                $sDate = date('y-m-d', strtotime($data[1]));
+                                            }
 
-											if(strpos($row['ns_id5_stat'],'반려') !== false){
-												$nextID = $row['ns_id5'];
-												$data = explode('|', $row['ns_id5_stat']);
-												$state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
+                                            if(strpos($row['ns_id5_stat'],'전결') !== false){
+                                                $nextID = $row['ns_id5'];
+                                                $data = explode('|', $row['ns_id5_stat']);
+                                                $state = "<strong style=\"color:red\">처리완료</strong><br><small>".$data[1]."</small>";
+                                                $sDate = date('y-m-d', strtotime($data[1]));
+                                            }
 
-											}
-
-											$next_mb = get_member($nextID, 'mb_name, mb_3');
-
-
-											if($row['ns_state'] != "미처리") {
-												$sDate = date('y-m-d', strtotime($data[1]));
-											} else {
-												$sDate = "";
-											}
-
-											if($row['ns_state'] == "진행중" || $row['ns_state'] == "전결") {
-												$state = "진행중";
-												$data = explode('|', $row['ns_id'.$row['ns_sign_cnt'].'_stat']);
-
-												$sDate = date('y-m-d', strtotime($data[1]));
-
-												//공무부, 연구부일경우 처리완료 처리 가능
-												if($member['mb_2'] == 2 || $member['mb_2'] == 4) {
-
-													$state = "<strong style=\"color:red;cursor:pointer\" onclick=\"payment(".$row['seq'].")\">진행중</strong><br><small>".$data[1]."</small>";
-												} else {
-													$state = "<strong style=\"color:red\">진행중</strong><br><small>".$data[1]."</small>";
-												}
-												$nextID = $row['ns_id'.$row['ns_sign_cnt']];
-
-											}
-
-											if($row['ns_state'] == "완료" && $row['ns_payment_date'] != '0000-00-00 00:00:00') {
-
-												$state = "처리완료";
-												$state = "<strong style=\"color:red\">처리완료</strong><br><small>".$row['ns_payment_date']."</small>";
-												$nextID = $row['ns_id'.$row['ns_sign_cnt']];
-											}
+                                            $next_mb = get_member($nextID, 'mb_name, mb_3');
 
 
-										?>
-										<tr>
-											<td  class="text-center"><?php echo $num;?>
+                                            if(strpos($row['ns_id0_stat'],'반려') !== false){
 
-											</td>
-											<td><?php echo $row['ns_date']?></td>
-											<td><?php echo $row['ns_team']?></td>
-											<td style="width:400px"><a href="../view/menu1_view.php?w=u&seq=<?php echo $row['seq']?>"><?php echo $row['ns_subject']?> (<?php echo $cmmt['cnt']?>)</a></td>
-											<td><?php echo $row['ns_gongjung']?></td>
-											<td class="text-right"><?php echo number_format($row['ns_price'])?></td>
-											<td class="text-right"><?php echo number_format($row['ns_price2'])?></td>
-											<td class="text-right"><?php echo number_format($row['ns_price3'])?></td>
-											<td class="text-center"><?php echo $row['ns_importance']?></td>
-											<td class="text-center"><?php echo $mb['mb_name']?> <?php echo get_mposition_txt($mb['mb_3'])?></td>
-											<td class="text-center"><?php echo $sDate?></td>
-											<td class="text-center"><?php echo $next_mb['mb_name']?> <?php echo get_mposition_txt($next_mb['mb_3'])?>
+                                                $nextID = $row['mb_id'];
+                                                $data = explode('|', $row['ns_id0_stat']);
+                                                $state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
+                                            }
 
-											<?php if($row['ns_state'] != "미처리") {?>
-											<br><strong style="color:red"><?php echo $row['ns_state']?>문서</strong>
-											<?php }?>
+                                            if(strpos($row['ns_id1_stat'],'반려') !== false){
 
-											</td>
-											<td class="text-center"><?php echo $state?></td>
-										</tr>
-										<?php
+                                                $nextID = $row['ns_id1'];
+                                                $data = explode('|', $row['ns_id1_stat']);
+                                                $state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
+                                            }
+
+                                            if(strpos($row['ns_id2_stat'],'반려') !== false){
+                                                $nextID = $row['ns_id2'];
+                                                $data = explode('|', $row['ns_id2_stat']);
+                                                $state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
+                                            }
+
+                                            if(strpos($row['ns_id3_stat'],'반려') !== false){
+                                                $nextID = $row['ns_id3'];
+                                                $data = explode('|', $row['ns_id3_stat']);
+                                                $state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
+                                            }
+
+                                            if(strpos($row['ns_id4_stat'],'반려') !== false){
+                                                $nextID = $row['ns_id4'];
+                                                $data = explode('|', $row['ns_id4_stat']);
+                                                $state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
+                                            }
+
+                                            if(strpos($row['ns_id5_stat'],'반려') !== false){
+                                                $nextID = $row['ns_id5'];
+                                                $data = explode('|', $row['ns_id5_stat']);
+                                                $state = "<strong style=\"color:red\">반려</strong><br><small>".$data[1]."</small>";
+
+                                            }
+
+                                            $next_mb = get_member($nextID, 'mb_name, mb_3');
 
 
-										} ?>
+                                            if($row['ns_state'] != "미처리") {
+                                                $sDate = date('y-m-d', strtotime($data[1]));
+                                            } else {
+                                                $sDate = "";
+                                            }
 
-										<?php if($i == 0) {?>
-										<tr>
-											<td colspan="12" class="align-center">검색 된 데이터가 없습니다.</td>
-										</tr>
-										<?php }?>
-									</tbody>
-									</table>
-								</div>
-							</div>
-						<?php echo get_paging_none(G5_IS_MOBILE ? $config['cf_mobile_pages'] : $config['cf_write_pages'], $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='); ?>
+                                            if($row['ns_state'] == "진행중" || $row['ns_state'] == "전결") {
+                                                $state = "진행중";
+                                                $data = explode('|', $row['ns_id'.$row['ns_sign_cnt'].'_stat']);
+
+                                                $sDate = date('y-m-d', strtotime($data[1]));
+
+                                                //공무부, 연구부일경우 처리완료 처리 가능
+                                                if($member['mb_2'] == 2 || $member['mb_2'] == 4) {
+
+                                                    $state = "<strong style=\"color:red;cursor:pointer\" onclick=\"payment(".$row['seq'].")\">진행중</strong><br><small>".$data[1]."</small>";
+                                                } else {
+                                                    $state = "<strong style=\"color:red\">진행중</strong><br><small>".$data[1]."</small>";
+                                                }
+                                                $nextID = $row['ns_id'.$row['ns_sign_cnt']];
+
+                                            }
+
+                                            if($row['ns_state'] == "완료" && $row['ns_payment_date'] != '0000-00-00 00:00:00') {
+
+                                                $state = "처리완료";
+                                                $state = "<strong style=\"color:red\">처리완료</strong><br><small>".$row['ns_payment_date']."</small>";
+                                                $nextID = $row['ns_id'.$row['ns_sign_cnt']];
+                                            }
+
+
+                                        ?>
+                                        <tr>
+                                            <td  class="text-center"><?php echo $num;?>
+
+                                            </td>
+                                            <td><?php echo $row['ns_date']?></td>
+                                            <td><?php echo $row['ns_team']?></td>
+                                            <td style="width:400px"><a href="../view/menu1_view.php?w=u&seq=<?php echo $row['seq']?>"><?php echo $row['ns_subject']?> (<?php echo $cmmt['cnt']?>)</a></td>
+                                            <td><?php echo $row['ns_gongjung']?></td>
+                                            <td class="text-right"><?php echo number_format($row['ns_price'])?></td>
+                                            <td class="text-right"><?php echo number_format($row['ns_price2'])?></td>
+                                            <td class="text-right"><?php echo number_format($row['ns_price3'])?></td>
+                                            <td class="text-center"><?php echo $row['ns_importance']?></td>
+                                            <td class="text-center"><?php echo $mb['mb_name']?> <?php echo get_mposition_txt($mb['mb_3'])?></td>
+                                            <td class="text-center"><?php echo $sDate?></td>
+                                            <td class="text-center"><?php echo $next_mb['mb_name']?> <?php echo get_mposition_txt($next_mb['mb_3'])?>
+
+                                            <?php if($row['ns_state'] != "미처리") {?>
+                                            <br><strong style="color:red"><?php echo $row['ns_state']?>문서</strong>
+                                            <?php }?>
+
+                                            </td>
+                                            <td class="text-center"><?php echo $state?></td>
+                                        </tr>
+                                        <?php
+
+
+                                        } ?>
+
+                                        <?php if($i == 0) {?>
+                                        <tr>
+                                            <td colspan="12" class="align-center">검색 된 데이터가 없습니다.</td>
+                                        </tr>
+                                        <?php }?>
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php echo get_paging_none(G5_IS_MOBILE ? $config['cf_mobile_pages'] : $config['cf_write_pages'], $page, $total_page, $_SERVER['SCRIPT_NAME'].'?'.$qstr.'&amp;page='); ?>
                     </div>
                 </div>
             </div>
@@ -382,19 +383,22 @@ $qstr .= "&amp;team=$team&amp;state=$state"
 <script>
 function payment(seq) {
 
-	if(confirm('처리완료 하시겠습니까?')) {
-		location.href = '../write/state1_list_update.php?seq='+seq;
-	} else {
-		return false;
-	}
+    if(confirm('처리완료 하시겠습니까?')) {
+        location.href = '../write/state1_list_update.php?seq='+seq;
+    } else {
+        return false;
+    }
 
 }
 
 
 </script>
 <script>
+// This script applies data-label attributes to all td elements on page load, for both desktop and mobile.
+// This is necessary because the mobile card transformation relies on these data-labels.
 $(function(){
-    $('.mobile-card').each(function(){
+    // Initially apply data-label attributes to the desktop table cells
+    $('#desktop-table').each(function(){
         var headers=[];
         $(this).find('thead th').each(function(){headers.push($(this).text().trim());});
         $(this).find('tbody tr').each(function(){
@@ -404,71 +408,216 @@ $(function(){
         });
     });
 
-    if (window.innerWidth <= 768) {
-        $('.mobile-card tbody tr').each(function(){
-            var $tds = $(this).find('td');
-            var num  = $tds.eq(0).text().trim();
-            var team = $tds.eq(2).text().trim();
-            var header = $('<div class="mobile-card-header d-flex justify-content-between mb-2 font-weight-bold"></div>');
-            header.append($('<span class="mc-num"></span>').text(num));
-            header.append($('<span class="mc-team text-right"></span>').text(team));
-            $(this).prepend(header);
-            $tds.eq(0).hide();
-            $tds.eq(2).hide();
-        });
+    // Function to apply mobile card layout
+    function applyMobileCardLayout() {
+        var $table = $('#desktop-table');
+        // Check if screen is mobile size AND mobile-card class is not already applied
+        if (window.innerWidth <= 768 && !$table.hasClass('mobile-card')) {
+            $table.addClass('mobile-card'); // Add mobile-card class to trigger mobile styles
+            // Perform DOM manipulation for mobile layout
+            $table.find('tbody tr').each(function(){
+                var $tr = $(this);
+                var $tds = $tr.find('td');
+
+                var num = $tds.eq(0).text().trim(); // 번호
+                var date = $tds.eq(1).text().trim(); // 기안일자
+                var team = $tds.eq(2).text().trim(); // 기안부서 및 현장 (공사명)
+                var subjectHtml = $tds.eq(3).html(); // 문서명 content
+
+                // Construct the header text in the format "[번호] 기안부서 및 현장"
+                var headerText = "[" + num + "] " + team;
+
+                // 1. Create and prepend the header
+                $('<div class="mobile-card-header"/>').text(headerText).prependTo($tr);
+
+                // 2. Create and append the 문서명 div (최상단)
+                $('<div class="mobile-card-item mobile-card-subject" data-label="문서명">' + subjectHtml + '</div>').appendTo($tr);
+
+                // 3. Loop through remaining original <td> elements and append them as new labeled divs
+                // Columns to process:
+                // 기안일자 (idx 1), 공종 (idx 4), 도급금액 (idx 5), 외주비 (idx 6), 자재비 (idx 7),
+                // 중요도 (idx 8), 기안자 (idx 9), 완료일 (idx 10), 결재현황 (idx 11), 처리상태 (idx 12)
+                var columnsToMove = [1, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // All relevant original td indices
+
+                $.each(columnsToMove, function(index, i) {
+                    var $originalTd = $tds.eq(i);
+                    var label = $originalTd.attr('data-label');
+                    var content = $originalTd.html();
+
+                    if (label && content.trim() !== '') {
+                        $('<div class="mobile-card-item" data-label="' + label + '">' + content + '</div>').appendTo($tr);
+                    }
+                });
+
+                // 4. Hide all original <td> elements after their content has been moved.
+                $tds.hide();
+            });
+        }
     }
+
+    // Function to revert to desktop table layout
+    function revertToDesktopLayout() {
+        var $table = $('#desktop-table');
+        // Check if screen is desktop size AND mobile-card class is currently applied
+        if (window.innerWidth > 768 && $table.hasClass('mobile-card')) {
+            $table.removeClass('mobile-card'); // Remove mobile-card class
+            // Revert DOM manipulation for desktop layout
+            $table.find('tbody tr').each(function(){
+                $(this).find('.mobile-card-header').remove(); // Remove added header
+                $(this).find('.mobile-card-item').remove(); // Remove all added mobile items
+                $(this).find('td').show(); // Show all original td elements
+            });
+        }
+    }
+
+    // Initial check on page load
+    applyMobileCardLayout();
+    revertToDesktopLayout(); // Call both to ensure correct state initially based on current window size
+
+    // Listen for window resize events
+    $(window).on('resize', function() {
+        applyMobileCardLayout();
+        revertToDesktopLayout();
+    });
 });
 </script>
 <style>
+/* Default styles for desktop/larger screens */
+/* PC 버전의 표 스타일은 변경하지 않습니다. */
+#desktop-table { /* Target the desktop table specifically by its ID */
+    table-layout: auto; /* Allow browser to determine column widths based on content */
+    width: 100%;
+}
+#desktop-table th, #desktop-table td {
+    vertical-align: middle;
+    padding: .6rem .5rem;
+}
+#desktop-table th {
+    text-align: center;
+}
+
+/* Explicit alignment for PC table cells based on typical data types */
+#desktop-table td { /* General alignment for all cells, will be overridden by specific column rules below */
+    text-align: left; /* Default text alignment */
+}
+#desktop-table td:nth-child(1), /* 번호 (Number) */
+#desktop-table td:nth-child(2), /* 기안일자 (Drafting Date) */
+#desktop-table td:nth-child(9), /* 중요도 (Importance) */
+#desktop-table td:nth-child(10), /* 기안자 (Drafter) */
+#desktop-table td:nth-child(11), /* 완료일 (Completion Date) */
+#desktop-table td:nth-child(12), /* 결재현황 (Approval Status) */
+#desktop-table td:nth-child(13) { /* 처리상태 (Processing Status) */
+    text-align: center; /* Center align for numbers, dates, and statuses */
+}
+#desktop-table td:nth-child(6), /* 도급금액 (Contract Amount) */
+#desktop-table td:nth-child(7), /* 외주비 (Outsourcing Cost) */
+#desktop-table td:nth-child(8) { /* 자재비 (Material Cost) */
+    text-align: right; /* Right align for monetary values */
+}
+/* No specific width defined for th, allowing auto sizing as per original behavior. */
+/* The inline style 'width:400px' on the 문서명 (Document Title) td will control its width. */
+
+
+/* Desktop specific table-layout and min-width for subject */
+/* Removed 'table-layout:fixed' from here to prevent equal column distribution on larger screens.
+   'table-layout:auto' from the general #desktop-table rule will now apply consistently. */
+@media (min-width:992px){
+    /* #desktop-table { table-layout:fixed; } Removed to allow auto width based on content */
+    #desktop-table .td-subject { min-width:240px; } /* Min-width for subject on larger screens */
+}
+@media (max-width:991.98px) and (min-width:769px) { /* Tablet range, still desktop-like table view */
+    #desktop-table { table-layout:auto; } /* Auto layout for tablets for better content fitting */
+    #desktop-table .td-subject { min-width:160px; } /* Smaller min-width for tablets */
+}
+
+/* === Consolidated Mobile Card Styles (< 769px) === */
 @media (max-width: 768px) {
+    .mobile-card { /* This class is added by JS for mobile view */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden; /* Ensure no horizontal scrolling */
+    }
     .mobile-card thead {
-        display: none;
+        display: none; /* Hide table header on mobile */
     }
     .mobile-card tbody tr {
-        display: block;
-        border: 1px solid #ddd;
-        border-radius: 8px; /* Slightly more rounded corners */
+        display: flex; /* Make table rows behave as blocks for card layout */
+        flex-direction: column; /* Stack items vertically */
+        border: 1px solid #dee2e6; /* Card border */
+        border-radius: 8px;
         margin-bottom: 1rem;
-        padding: 1rem; /* More padding for better spacing */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+        padding: 1rem; /* Internal padding for the card */
+        box-shadow: 0 2px 4px rgba(0,0,0,.08); /* Subtle shadow */
+        overflow: hidden; /* Hide any overflow within the card */
+        width: 100%; /* Ensure each card takes full width */
+        box-sizing: border-box; /* Include padding/border in width calculation */
     }
+
+    /* Target all direct children of tbody tr (divs and visible tds) for common styling */
+    .mobile-card tbody tr > *:not(:last-child) { /* Apply border to all except the very last child */
+        border-bottom: 1px solid #f1f1f1;
+    }
+    .mobile-card tbody tr > * { /* Common padding and font for all card items */
+        padding: .5rem .75rem;
+        word-break: break-word;
+        font-size: 0.82rem;
+        line-height: 1.3;
+        box-sizing: border-box;
+    }
+
+    /* Mobile Card Header for [번호 + 공사명] */
+    .mobile-card-header {
+        display: block; /* Original block behavior */
+        text-align: left;
+        font-size: 1rem; /* Larger font size for the header */
+        padding-bottom: .5rem; /* Keep this for spacing below header */
+        margin-bottom: .5rem; /* Keep this margin below header */
+        font-weight: bold;
+    }
+
+    /* 문서명 (Document Title) - Specific styling */
+    .mobile-card-subject {
+        display: block; /* Make it a block element to center text */
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        color: #007bff;
+    }
+    .mobile-card-subject::before {
+        content: none; /* Hide label for document name */
+    }
+
+    /* Styles for original <td> elements now handled by new divs */
     .mobile-card tbody td {
+        display: none !important; /* Hide all original td elements */
+    }
+
+    /* Common style for new div items (기안일자, 공종, 도급금액, 외주비, 자재비, 중요도, 기안자, 완료일, 결재현황, 처리상태) */
+    .mobile-card-item {
         display: flex;
         justify-content: space-between;
-        align-items: center; /* Vertically align items */
-        padding: 0.5rem 0; /* Increased vertical padding */
-        border-bottom: 1px solid #eee; /* Light separator between fields */
+        align-items: center;
+        padding: .5rem .75rem;
+        word-break: break-word;
+        font-size: 0.82rem;
+        line-height: 1.3;
+        box-sizing: border-box;
     }
-    .mobile-card tbody td:last-child {
-        border-bottom: none; /* No border for the last item */
-    }
-    .mobile-card tbody td::before {
+    .mobile-card-item::before {
         content: attr(data-label);
         font-weight: bold;
-        color: #555; /* Slightly darker label color */
-        flex-shrink: 0; /* Prevent label from shrinking */
-        margin-right: 1rem; /* Space between label and value */
+        color: #555;
+        flex-shrink: 0;
+        margin-right: 1rem;
     }
-    .mobile-card-header {
-        display:flex;
-        justify-content: space-between;
-        font-size: 1rem;
-        padding-bottom: .5rem;
-        border-bottom: 1px solid #eee;
-        margin-bottom: .5rem;
-    }
-    /* Specific styling for important fields */
-    .mobile-card tbody td:nth-child(4) { /* 문서명 (Document Title) */
-        font-size: 1.1em;
+
+    /* Ensure 결재현황 and 처리상태 are bold and red, with labels */
+    .mobile-card-item[data-label="결재현황"],
+    .mobile-card-item[data-label="처리상태"] {
         font-weight: bold;
-        color: #007bff; /* Highlight document title */
-    }
-    .mobile-card tbody td:nth-child(12), /* 결재현황 (Approval Status) */
-    .mobile-card tbody td:nth-child(13) { /* 처리상태 (Processing Status) */
-        font-weight: bold;
-        color: #dc3545; /* Red for status indicators */
+        color: #dc3545;
     }
 }
 </style>
-
-<?php include_once(NONE_PATH.'/footer.php');?>
+<?php include_once(NONE_PATH.'/footer.php'); ?>
