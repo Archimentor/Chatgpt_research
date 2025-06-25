@@ -350,12 +350,12 @@ while ($row = sql_fetch_array($result)) {
     }
 }
 
-// 근속년수(내림차순) 및 이름(오름차순)으로 직원 목록 정렬
+// 입사일(오름차순) 및 이름(오름차순)으로 직원 목록 정렬
 usort($employee_list_data, function($a, $b){
-    if ($a['seniority_years'] == $b['seniority_years']) {
+    if ($a['mb_in_date'] == $b['mb_in_date']) {
         return strcmp($a['mb_name'], $b['mb_name']);
     }
-    return $b['seniority_years'] <=> $a['seniority_years'];
+    return strcmp($a['mb_in_date'], $b['mb_in_date']);
 });
 
 // 6) 달력용 변수 계산
@@ -545,7 +545,7 @@ $week_days           = ['일','월','화','수','목','금','토'];
       <div class="col-lg-12">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">직원 목록 (근속년수, 이름순)</h3>
+            <h3 class="card-title">직원 목록 (입사일, 이름순)</h3>
           </div>
           <div class="card-body">
             <div class="table-responsive">
