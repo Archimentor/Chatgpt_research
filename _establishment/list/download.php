@@ -38,6 +38,23 @@ foreach ($sheetMap as $no => $title) {
     }
     $html = ob_get_clean();
 
+    // Parse column widths from the HTML so the Excel sheet keeps the layout
+    $colWidths = [];
+    if (trim($html) !== '') {
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<meta http-equiv="content-type" content="text/html; charset=utf-8">'.$html);
+        libxml_clear_errors();
+        $cols = $dom->getElementsByTagName('col');
+        foreach ($cols as $idxCol => $col) {
+            $style = $col->getAttribute('style');
+            if (preg_match('/width\s*:\s*([0-9.]+)px/i', $style, $m)) {
+                $width = floatval($m[1]) / 7; // approximate px to excel width
+                $colWidths[$idxCol] = $width;
+            }
+        }
+    }
+
     if (trim($html) === '') {
         continue;
     }
@@ -48,7 +65,14 @@ foreach ($sheetMap as $no => $title) {
     $reader = new PHPExcel_Reader_HTML();
     $reader->setSheetIndex($idx);
     $objPHPExcel = $reader->loadIntoExisting($temp, $objPHPExcel);
-    $objPHPExcel->getActiveSheet()->setTitle($title);
+    $sheet = $objPHPExcel->getActiveSheet();
+    $sheet->setTitle($title);
+
+    // apply column widths
+    foreach ($colWidths as $c => $w) {
+        $col = PHPExcel_Cell::stringFromColumnIndex($c);
+        $sheet->getColumnDimension($col)->setWidth($w);
+    }
     unlink($temp);
     $idx++;
 }
